@@ -1,0 +1,77 @@
+{
+  "name": "simple-password-manager",
+  "version": "1.0.0",
+  "description": "A simple password manager inspired by KeePass",
+  "main": "public/electron.js",
+  "scripts": {
+    "dev": "concurrently \"npm run react-dev\" \"npm run electron-dev\"",
+    "react-dev": "react-scripts start",
+    "electron-dev": "wait-on http://localhost:3000 && electron .",
+    "build": "react-scripts build",
+    "electron-build": "electron-builder",
+    "dist": "npm run build && npm run electron-build",
+    "start": "electron ."
+  },
+  "keywords": [
+    "password",
+    "manager",
+    "security",
+    "electron",
+    "react"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "electron": "^37.2.0",
+    "electron-builder": "^24.6.4",
+    "electron-is-dev": "^2.0.0",
+    "fork-ts-checker-webpack-plugin": "^9.1.0",
+    "react-scripts": "^5.0.1",
+    "wait-on": "^7.2.0"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.16",
+    "crypto-js": "^4.2.0",
+    "lucide-react": "^0.294.0",
+    "postcss": "^8.4.31",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.5.0",
+    "tailwindcss": "^3.3.6"
+  },
+  "homepage": "./",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "build": {
+    "appId": "media.laux.simplepasswordmanager.app",
+    "productName": "Simple Password Manager",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "build/**/*",
+      "public/electron.js",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}
