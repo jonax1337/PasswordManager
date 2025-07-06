@@ -1,57 +1,30 @@
-<div align="center">
-
 # Simple Password Manager
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Version](https://img.shields.io/badge/version-0.0.1--beta-orange.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
+![Electron](https://img.shields.io/badge/Electron-47848F?style=flat&logo=Electron&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)
 
-![Electron](https://img.shields.io/badge/Electron-47848F?style=for-the-badge&logo=Electron&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-
-**A secure and modern password manager built with Electron and React**
+A secure and modern password manager built with Electron and React, inspired by KeePass but with a fresh, intuitive interface.
 
 [📥 Download](https://github.com/jonax1337/simple-password-manager/releases) • [🐛 Report Bug](https://github.com/jonax1337/simple-password-manager/issues) • [💡 Request Feature](https://github.com/jonax1337/simple-password-manager/issues)
 
-</div>
-
 ## ✨ Features
 
-<table>
-<tr>
-<td width="50%">
-
-### 🔒 Security & Privacy
-- **AES Encryption** - Military-grade encryption for all data
-- **Local Storage** - Your passwords never leave your device
-- **Master Password** - Single password to rule them all
-- **Auto-lock** - Secure timeout protection
-
-### 🎨 Modern Interface  
-- **Multiple Themes** - Light, dark, cute, and system themes
-- **Smart Icons** - Brand logos (Google, Facebook, etc.) and emojis
-- **Responsive Design** - Works on any screen size
-- **Custom Titlebar** - Native look and feel
-
-</td>
-<td width="50%">
-
-### 📁 Organization
-- **Hierarchical Folders** - Organize with nested folder structure  
-- **Smart Search** - Find entries instantly
-- **Recent Files** - Quick access to last used database
-- **File Association** - Double-click .pmdb files to open
-
-### 🔧 Productivity
-- **Password Generator** - Create strong passwords with custom rules
-- **Copy & Paste** - One-click copying of credentials
-- **Keyboard Shortcuts** - Work faster with hotkeys
-- **Auto-save** - Never lose your work
-
-</td>
-</tr>
-</table>
+- 🔐 **AES Encryption** - Military-grade encryption for all data
+- 💾 **Local Storage** - Your passwords never leave your device  
+- 🔑 **Master Password** - Single password to rule them all
+- 🎨 **Multiple Themes** - Light, dark, cute, and system themes
+- 🎯 **Smart Icons** - 30+ brand logos (Google, Facebook, etc.) and emojis
+- 📁 **Hierarchical Folders** - Organize with nested folder structure
+- 🔍 **Smart Search** - Find entries instantly
+- 🔧 **Password Generator** - Create strong passwords with custom rules
+- 📂 **Recent Files** - Quick access to last used database
+- 🖱️ **File Association** - Double-click .pmdb files to open directly
+- ⌨️ **Keyboard Shortcuts** - Work faster with hotkeys
+- 💻 **Cross-Platform** - Works on Windows, macOS, and Linux
 
 ## 🚀 Quick Start
 
@@ -306,10 +279,6 @@ MIT License - Feel free to use this project for personal or commercial purposes.
 
 ---
 
-<div align="center">
-
 **⭐ Star this project if you find it useful!**
 
 Made with ❤️ by [Jonas Laux](https://github.com/jonax1337)
-
-</div>
