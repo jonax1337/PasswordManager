@@ -188,16 +188,23 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolder, search
                 </div>
               </div>
 
-              {/* Notes section - takes remaining space */}
-              <div className="flex-1 flex flex-col min-h-0 mt-auto">
-                <label className="text-xs font-medium theme-text-secondary mb-1 flex-shrink-0">Notes</label>
-                <div className="flex-1 overflow-y-auto scrollbar-thin theme-input rounded-md p-2 min-h-[60px] max-h-[120px]">
+              {/* Notes section - always visible, compact design */}
+              <div className="flex flex-col min-h-0 mt-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium theme-text-secondary flex-shrink-0">Notes</label>
+                  {entry.notes && 
+                    <span className="text-[10px] theme-text-tertiary">
+                      {entry.notes.length > 100 ? `${entry.notes.length} chars` : ''}
+                    </span>
+                  }
+                </div>
+                <div className="overflow-y-auto scrollbar-thin theme-input rounded-md p-1.5 min-h-[40px] max-h-[80px] mt-0.5">
                   {entry.notes ? (
-                    <p className="text-xs theme-text-secondary whitespace-pre-wrap leading-relaxed" title={entry.notes}>
+                    <p className="text-[11px] theme-text-secondary whitespace-pre-wrap leading-tight" title={entry.notes}>
                       {entry.notes}
                     </p>
                   ) : (
-                    <p className="text-xs theme-text-secondary opacity-50 italic flex items-center justify-center h-full">
+                    <p className="text-[11px] theme-text-secondary opacity-50 italic flex items-center justify-center h-full">
                       No notes
                     </p>
                   )}

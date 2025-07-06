@@ -192,8 +192,8 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
         currentFile={currentFile}
       />
       <div className="flex flex-1 overflow-hidden">
-      {/* Sidebar - responsive with custom scrollbar */}
-      <div className="hidden lg:block lg:w-64 xl:w-72 flex-shrink-0">
+      {/* Sidebar - always visible */}
+      <div className="block w-64 xl:w-72 flex-shrink-0">
         <div className="h-full smooth-scroll scrollbar-cool">
           <Sidebar
             folders={database.folders}
@@ -209,9 +209,9 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header - responsive */}
-        <header className="theme-surface shadow-sm theme-border border-b px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex-shrink-0">
-          <div className="flex items-center justify-between gap-1 sm:gap-2 lg:gap-4">
+        {/* Header - fixed height to match sidebar */}
+        <header className="header-height theme-surface shadow-sm theme-border border-b px-3 sm:px-4 lg:px-6 flex-shrink-0">
+          <div className="flex items-center justify-between gap-1 sm:gap-2 lg:gap-4 w-full">
             {/* Left side - Title */}
             <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               <h1 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold theme-text truncate">
@@ -227,7 +227,7 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
                 onClick={() => setIsSearchOpen(true)}
                 title="Search entries"
               >
-                <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Search className="w-4 h-4 sm:w-4 sm:h-4" />
               </button>
 
               <button
@@ -235,7 +235,7 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
                 className="p-2 sm:p-3 theme-button rounded-lg"
                 title="Add new entry"
               >
-                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Plus className="w-4 h-4 sm:w-4 sm:h-4" />
               </button>
               
               <button
@@ -243,7 +243,7 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
                 className="p-2 sm:p-3 theme-button rounded-lg transition-colors password-generator-button"
                 title="Generate password"
               >
-                <Key className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Key className="w-4 h-4 sm:w-4 sm:h-4" />
               </button>
               
               <button
@@ -255,62 +255,12 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
                 }`}
                 title={hasUnsavedChanges ? 'Save changes' : 'Save database'}
               >
-                <Save className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-
-              <button
-                onClick={onClose}
-                className="p-2 sm:p-3 bg-red-500 text-white hover:bg-red-600 rounded-lg transition-colors"
-                title="Close database"
-              >
-                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Save className="w-4 h-4 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>
 
-          {/* Mobile sidebar toggle - show folders on small screens with custom scrollbar */}
-          <div className="lg:hidden mt-3">
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
-              <button
-                onClick={() => setSelectedFolder('')}
-                className={`px-3 py-1 rounded-full text-sm whitespace-nowrap flex-shrink-0 flex items-center gap-1 ${
-                  selectedFolder === ''
-                    ? 'theme-surface theme-text theme-border border'
-                    : 'theme-button-secondary'
-                }`}
-              >
-                <Folder className="w-3 h-3" />
-                All ({database.entries.length})
-              </button>
-              {getAllFolders().map(folder => {
-                // Zähle die Einträge für diesen Ordner
-                const folderEntryCount = database.entries.filter(entry => entry.folder === folder.path).length;
-                
-                return (
-                  <button
-                    key={folder.id}
-                    onClick={() => setSelectedFolder(folder.path)}
-                    className={`px-3 py-1 rounded-full text-sm whitespace-nowrap flex-shrink-0 flex items-center gap-1 ${
-                      selectedFolder === folder.path
-                        ? 'theme-surface theme-text theme-border border'
-                        : 'theme-button-secondary'
-                    }`}
-                  >
-                    <FolderClosed className="w-3 h-3" />
-                    {/* Füge Einrückung für Unterordner hinzu */}
-                    {folder.level > 0 && (
-                      <span className="inline-block opacity-50 mr-1">
-                        {[...Array(folder.level)].map((_, i) => (
-                          <span key={i} className="ml-1">›</span>
-                        ))}
-                      </span>
-                    )}
-                    {folder.name} ({folderEntryCount})
-                  </button>
-                );
-              }) || []}
-            </div>
-          </div>
+          {/* Mobile sidebar toggle removed - sidebar is always visible */}
         </header>
 
         {/* Main content area - scrollable with cool custom scrollbar */}

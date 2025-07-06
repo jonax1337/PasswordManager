@@ -25,6 +25,14 @@ html, body, #root {
   overflow: hidden;
 }
 
+/* Einheitliche Höhe für Kopfzeilen */
+.header-height {
+  height: 54px;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+}
+
 /* Custom theme-aware form controls */
 
 /* Password strength colors */

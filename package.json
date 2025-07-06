@@ -86,7 +86,7 @@
         "arch": ["x64"]
       },
       "publisherName": "Simple Password Manager",
-      "verifyUpdateCodeSignature": false
+      "verifyUpdateCodeSignature": true
     },
     "linux": {
       "icon": "assets/icon.png",
@@ -99,9 +99,11 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "Simple Password Manager"
+      "createDesktopShortcut": "always ask",
+      "createStartMenuShortcut": "always ask",
+      "shortcutName": "Simple Password Manager",
+      "shortcutComment": "Simple Password Manager",
+      "shortcutIcon": "assets/icon.ico"
     },
     "fileAssociations": [
       {

@@ -37,8 +37,8 @@ const Sidebar = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRenam
 
   return (
     <div className="w-full h-full theme-surface shadow-lg theme-border border-r flex flex-col overflow-hidden">
-      <div className="p-4 lg:p-6 theme-border border-b flex-shrink-0">
-        <div className="flex items-center justify-between">
+      <div className="header-height px-3 sm:px-4 lg:px-6 theme-border border-b flex-shrink-0">
+        <div className="flex items-center justify-between w-full">
           <h2 className="text-base lg:text-lg font-semibold theme-text">Folders</h2>
           <button
             onClick={handleAddRootFolder}

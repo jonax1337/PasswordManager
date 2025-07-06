@@ -12,6 +12,7 @@ import './App.css';
 function App() {
   const [appState, setAppState] = useState('welcome'); // 'welcome', 'login', 'create', 'unlocking', 'authenticated'
   const [isAutoLoaded, setIsAutoLoaded] = useState(false); // Track if we auto-loaded a recent database
+  const [hasInitialLoad, setHasInitialLoad] = useState(false); // Track if we've done the initial startup check
   const [showUnlockAnimation, setShowUnlockAnimation] = useState(false);
   const [database, setDatabase] = useState({
     entries: [],
@@ -48,10 +49,11 @@ function App() {
     }
   }, [database, lastSavedDatabase]);
 
-  // Check for command line file or recent database on startup
+  // Check for command line file or recent database on startup - only once
   useEffect(() => {
     const checkStartupDatabase = async () => {
-      if (window.electronAPI && appState === 'welcome') {
+      if (window.electronAPI && !hasInitialLoad) {
+        setHasInitialLoad(true);
         try {
           // First check for command line file
           const pendingFile = await window.electronAPI.getPendingFile();
@@ -98,7 +100,7 @@ function App() {
     };
 
     checkStartupDatabase();
-  }, [appState]);
+  }, [hasInitialLoad]);
 
   useEffect(() => {
     if (window.electronAPI) {

@@ -40,7 +40,7 @@ const LockAnimation = ({ onAnimationComplete }) => {
   }, [onAnimationComplete]);
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center theme-background transition-all duration-500 ${
+    <div className={`fixed inset-0 z-50 flex items-center justify-center theme-card transition-all duration-500 ${
       animationStage === 3 ? 'bg-opacity-0' : 'bg-opacity-70'
     }`}>
       <div className={`transform transition-all duration-500 ease-in-out ${
