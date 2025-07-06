@@ -2,10 +2,12 @@ const { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron')
 const path = require('path');
 const fs = require('fs');
 
-// Check if we're in development mode - FORCE PRODUCTION MODE
-const isDev = false;
+// Check if we're in development mode
+const isDev = process.env.NODE_ENV === 'development' || 
+             !app.isPackaged;
 
 let mainWindow;
+let pendingFileToOpen = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -48,7 +50,17 @@ function createWindow() {
   }
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  
+  // Check if app was opened with a file
+  if (process.argv.length > 1) {
+    const filePath = process.argv.find(arg => arg.endsWith('.pmdb'));
+    if (filePath && fs.existsSync(filePath)) {
+      pendingFileToOpen = filePath;
+    }
+  }
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -109,6 +121,16 @@ ipcMain.handle('load-database', async (event) => {
   return { success: false, canceled: true };
 });
 
+// Load database from specific path (for recent database)
+ipcMain.handle('load-database-file', async (event, filePath) => {
+  try {
+    const data = fs.readFileSync(filePath, 'utf8');
+    return { success: true, data, filePath };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
 // Window control handlers
 ipcMain.handle('minimize-window', () => {
   if (mainWindow) {
@@ -135,6 +157,39 @@ ipcMain.handle('close-window', () => {
 // Handle external URL opening
 ipcMain.handle('open-external', async (event, url) => {
   await shell.openExternal(url);
+});
+
+// Recent database management
+const Store = require('electron-store');
+const store = new Store();
+
+ipcMain.handle('get-recent-database', () => {
+  return store.get('recentDatabase', null);
+});
+
+ipcMain.handle('set-recent-database', (event, filePath) => {
+  store.set('recentDatabase', filePath);
+});
+
+ipcMain.handle('clear-recent-database', () => {
+  store.delete('recentDatabase');
+});
+
+// Handle file opening from command line
+ipcMain.handle('get-pending-file', () => {
+  const file = pendingFileToOpen;
+  pendingFileToOpen = null; // Clear after retrieving
+  return file;
+});
+
+// Handle opening files when app is already running
+app.on('open-file', (event, filePath) => {
+  event.preventDefault();
+  if (mainWindow) {
+    mainWindow.webContents.send('open-file', filePath);
+  } else {
+    pendingFileToOpen = filePath;
+  }
 });
 
 const template = [

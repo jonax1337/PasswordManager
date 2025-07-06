@@ -11,6 +11,7 @@ import './App.css';
 
 function App() {
   const [appState, setAppState] = useState('welcome'); // 'welcome', 'login', 'create', 'unlocking', 'authenticated'
+  const [isAutoLoaded, setIsAutoLoaded] = useState(false); // Track if we auto-loaded a recent database
   const [showUnlockAnimation, setShowUnlockAnimation] = useState(false);
   const [database, setDatabase] = useState({
     entries: [],
@@ -47,6 +48,58 @@ function App() {
     }
   }, [database, lastSavedDatabase]);
 
+  // Check for command line file or recent database on startup
+  useEffect(() => {
+    const checkStartupDatabase = async () => {
+      if (window.electronAPI && appState === 'welcome') {
+        try {
+          // First check for command line file
+          const pendingFile = await window.electronAPI.getPendingFile();
+          if (pendingFile) {
+            try {
+              const result = await window.electronAPI.loadDatabaseFile(pendingFile);
+              if (result.success) {
+                setPendingDatabaseData(result);
+                setCurrentFile(pendingFile);
+                setIsAutoLoaded(false); // Command line opening is not auto-loading
+                await window.electronAPI.setRecentDatabase(pendingFile);
+                setAppState('login');
+                return;
+              }
+            } catch (error) {
+              console.error('Error loading command line file:', error);
+            }
+          }
+          
+          // If no command line file, check for recent database
+          const recentPath = await window.electronAPI.getRecentDatabase();
+          if (recentPath) {
+            // Load the database file data without dialog
+            try {
+              const result = await window.electronAPI.loadDatabaseFile(recentPath);
+              if (result.success) {
+                setPendingDatabaseData(result);
+                setCurrentFile(recentPath);
+                setIsAutoLoaded(true);
+                setAppState('login');
+              } else {
+                // File doesn't exist anymore, clear recent database
+                await window.electronAPI.clearRecentDatabase();
+              }
+            } catch (error) {
+              // File doesn't exist anymore, clear recent database
+              await window.electronAPI.clearRecentDatabase();
+            }
+          }
+        } catch (error) {
+          console.error('Error checking startup database:', error);
+        }
+      }
+    };
+
+    checkStartupDatabase();
+  }, [appState]);
+
   useEffect(() => {
     if (window.electronAPI) {
       window.electronAPI.onMenuNewDatabase(async () => {
@@ -61,10 +114,27 @@ function App() {
         await handleSaveDatabase();
       });
 
+      // Handle file opening when app is already running
+      window.electronAPI.onOpenFile(async (event, filePath) => {
+        try {
+          const result = await window.electronAPI.loadDatabaseFile(filePath);
+          if (result.success) {
+            setPendingDatabaseData(result);
+            setCurrentFile(filePath);
+            setIsAutoLoaded(false);
+            await window.electronAPI.setRecentDatabase(filePath);
+            setAppState('login');
+          }
+        } catch (error) {
+          console.error('Error opening file:', error);
+        }
+      });
+
       return () => {
         window.electronAPI.removeAllListeners('menu-new-database');
         window.electronAPI.removeAllListeners('menu-open-database');
         window.electronAPI.removeAllListeners('menu-save-database');
+        window.electronAPI.removeAllListeners('open-file');
       };
     }
   }, []);
@@ -170,6 +240,9 @@ function App() {
         if (result.success && !result.canceled) {
           setPendingDatabaseData(result);
           setCurrentFile(result.filePath);
+          setIsAutoLoaded(false); // This is manual loading
+          // Save as recent database
+          await window.electronAPI.setRecentDatabase(result.filePath);
           setAppState('login');
         }
       }
@@ -260,6 +333,8 @@ function App() {
         
         if (result.success) {
           setCurrentFile(result.filePath);
+          // Save as recent database
+          await window.electronAPI.setRecentDatabase(result.filePath);
           setLastSavedDatabase(JSON.parse(JSON.stringify(database))); // Deep copy
           setHasUnsavedChanges(false);
           return true;
@@ -288,6 +363,11 @@ function App() {
       setMasterPassword('');
       setHasUnsavedChanges(false);
       setLastSavedDatabase(null);
+      setIsAutoLoaded(false);
+      // Clear recent database when going back
+      if (isAutoLoaded && window.electronAPI) {
+        window.electronAPI.clearRecentDatabase();
+      }
     };
 
     if (appState === 'authenticated' && hasUnsavedChanges) {

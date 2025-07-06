@@ -1,184 +1,317 @@
+<div align="center">
+
 # Simple Password Manager
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Version](https://img.shields.io/badge/version-0.0.1-green.svg)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
+![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
+
+![Electron](https://img.shields.io/badge/Electron-191970?style=for-the-badge&logo=Electron&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 
 A secure and stylish password manager application built with Electron and React, inspired by KeePass but with a modern, fresh UI.
 
-## Features
+[Download Latest Release](https://github.com/jonax1337/simple-password-manager/releases) · [Report Bug](https://github.com/jonax1337/simple-password-manager/issues) · [Request Feature](https://github.com/jonax1337/simple-password-manager/issues)
 
-- 🔐 **Secure Encryption**: AES encryption for password storage
-- 🎨 **Modern UI**: Clean, intuitive interface with Tailwind CSS and custom themes
-- 🎯 **Smart Icons**: Support for brand-specific icons (Google, Facebook, Instagram, etc.) and emojis
-- 🔑 **Password Generation**: Customizable password generator with strength indicators
-- 📁 **Organization**: Organize passwords with folders and hierarchical structure
-- 🔍 **Search & Filter**: Quick search and filtering capabilities
-- 💾 **Local Storage**: Passwords are stored locally in encrypted database files
-- ⌨️ **Keyboard Shortcuts**: Efficient keyboard navigation
-- 🖥️ **Cross-Platform**: Works on Windows, macOS, and Linux
-- 🌙 **Multiple Themes**: Light, dark, cute, and system themes available
+</div>
 
-## Getting Started
+## ✨ Features
 
-### Prerequisites
+<table>
+<tr>
+<td width="50%">
 
-- Node.js (version 14 or higher)
+### 🔒 Security & Privacy
+- **AES Encryption** - Military-grade encryption for all data
+- **Local Storage** - Your passwords never leave your device
+- **Master Password** - Single password to rule them all
+- **Auto-lock** - Secure timeout protection
+
+### 🎨 Modern Interface  
+- **Multiple Themes** - Light, dark, cute, and system themes
+- **Smart Icons** - Brand logos (Google, Facebook, etc.) and emojis
+- **Responsive Design** - Works on any screen size
+- **Custom Titlebar** - Native look and feel
+
+</td>
+<td width="50%">
+
+### 📁 Organization
+- **Hierarchical Folders** - Organize with nested folder structure  
+- **Smart Search** - Find entries instantly
+- **Recent Files** - Quick access to last used database
+- **File Association** - Double-click .pmdb files to open
+
+### 🔧 Productivity
+- **Password Generator** - Create strong passwords with custom rules
+- **Copy & Paste** - One-click copying of credentials
+- **Keyboard Shortcuts** - Work faster with hotkeys
+- **Auto-save** - Never lose your work
+
+</td>
+</tr>
+</table>
+
+## 🚀 Quick Start
+
+### For End Users
+
+1. **Download** the latest installer from [Releases](https://github.com/your-username/simple-password-manager/releases)
+2. **Install** the application
+3. **Create** your first database or **open** an existing one
+4. **Start** managing your passwords securely!
+
+### For Developers
+
+#### Prerequisites
+- Node.js (version 16 or higher)
 - npm or yarn package manager
 
-### Installation
-
-1. Clone the repository or download the source code
-2. Navigate to the project directory
-3. Install dependencies:
+#### Installation & Setup
 
 ```bash
+# Clone the repository
+git clone https://github.com/your-username/simple-password-manager.git
+cd simple-password-manager
+
+# Install dependencies
 npm install
+
+# Install electron-store for settings
+npm install electron-store
 ```
 
-### Running the Application
-
-#### Development Mode
+#### Development
 
 ```bash
+# Start development server
 npm run dev
 ```
 
-This will start both the React development server and the Electron application.
+This starts both React development server and Electron application with hot reload.
 
-#### Production Build
+#### Building
 
 ```bash
+# Build for production
 npm run build
-npm run electron-build
-```
 
-This will create a production build and package the application for your platform.
+# Create installer (Windows)
+npm run electron-build -- --win
 
-### Building for Distribution
+# Create installer (macOS)  
+npm run electron-build -- --mac
 
-```bash
+# Create installer (Linux)
+npm run electron-build -- --linux
+
+# Build for all platforms
 npm run dist
 ```
 
-This will create distributable packages in the `dist` folder.
+Built applications will be in the `release/` folder.
 
-## Usage
+## 📖 Usage Guide
+
+<details>
+<summary><strong>🗂️ Database Management</strong></summary>
 
 ### Creating a New Database
-
 1. Launch the application
-2. Go to **File → New Database**
-3. Set your master password
-4. Start adding your password entries
+2. Click **Create New Database** or `Ctrl+N`
+3. Choose a location and filename for your `.pmdb` file
+4. Set a strong master password
+5. Start adding your password entries
 
 ### Opening an Existing Database
-
-1. Go to **File → Open Database**
-2. Select your `.pmdb` file
+1. Click **Open Database** or `Ctrl+O`
+2. Select your `.pmdb` file (or double-click it in Explorer)
 3. Enter your master password to unlock
 
-### Adding Password Entries
+> **💡 Tip**: Recently opened databases are automatically suggested on startup!
 
-1. Click the **Add Entry** button or press `Ctrl+Alt+Win+N`
-2. Fill in the entry details:
-   - **Title**: Name for your entry (e.g., "Gmail", "Facebook")
-   - **Folder**: Organization folder for your entry
-   - **URL**: Website URL (optional)
+</details>
+
+<details>
+<summary><strong>🔑 Managing Password Entries</strong></summary>
+
+### Adding New Entries
+1. Click **Add Entry** or press `Ctrl+Alt+Win+N`
+2. Fill in the details:
+   - **Title**: Recognizable name (e.g., "Gmail", "Work Email")
+   - **Folder**: Choose or create an organization folder
+   - **URL**: Website URL (clickable for quick access)
    - **Username**: Your username or email
-   - **Password**: Your password (use the generator for strong passwords)
-   - **Icon**: Choose from brand icons, emojis, or general icons
-   - **Notes**: Additional information (optional)
+   - **Password**: Use the generator for strong passwords
+   - **Icon**: Pick from 30+ brand logos, emojis, or general icons
+   - **Notes**: Additional information or security questions
 
-### Generating Strong Passwords
+### Using the Password Generator
+1. Click **Generate** in the password field or press `Ctrl+G`
+2. Customize options:
+   - **Length**: 4-128 characters
+   - **Character types**: Letters, numbers, symbols
+   - **Exclude similar**: Avoid confusing characters (i, l, 1, L, o, 0, O)
+3. Copy and use the generated password
 
-1. Click the **Generate** button or press `Ctrl+G` (or `Cmd+G` on Mac)
-2. Customize the password options:
-   - Length (4-128 characters)
-   - Character types (uppercase, lowercase, numbers, symbols)
-   - Exclude similar characters option
-3. Copy the generated password
+</details>
 
-### Organizing Entries
+<details>
+<summary><strong>📁 Organization & Search</strong></summary>
 
-- Use **Folders** to categorize your passwords with hierarchical structure
-- Create subfolders for better organization
-- Use the **Search** bar to quickly find specific entries
-- Filter by folder using the sidebar tree view
-- Choose from brand-specific icons, emojis, or general icons for visual identification
+### Folder Management
+- **Create folders**: Right-click in the folder tree
+- **Nested structure**: Organize with subfolders (Work → Email → Gmail)
+- **Move entries**: Drag & drop or edit entry folder
+- **Folder icons**: Automatic icons based on content
 
-### Security Features
+### Finding Entries
+- **Search bar**: Type to find entries by title, username, or URL
+- **Folder filtering**: Click folders to show only those entries
+- **Recent files**: Last opened database loads automatically
 
-- **Master Password**: Your database is protected by a master password
-- **AES Encryption**: All passwords are encrypted using AES encryption
-- **Local Storage**: Your passwords never leave your device
-- **Auto-lock**: The application requires your master password each time you open it
+</details>
 
-## File Structure
+<details>
+<summary><strong>🎨 Themes & Customization</strong></summary>
+
+### Available Themes
+- **Light**: Clean and bright interface
+- **Dark**: Easy on the eyes for night use  
+- **Cute**: Playful pink-themed design
+- **System**: Automatically matches your OS theme
+
+### Changing Themes
+1. Click **Style** in the menu bar
+2. Select your preferred theme
+3. Theme is saved and applied automatically
+
+</details>
+
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+N` | Create New Database |
+| `Ctrl+O` | Open Database |
+| `Ctrl+S` | Save Database |
+| `Ctrl+Shift+S` | Save Database As |
+| `Ctrl+Alt+Win+N` | Add New Entry |
+| `Ctrl+G` | Generate Password |
+| `Ctrl+Q` | Quit Application |
+
+## 🏗️ Technical Stack
+
+### Frontend
+- **React 18** - Modern React with hooks
+- **Tailwind CSS** - Utility-first styling
+- **Lucide React** - Beautiful icon system
+- **React Icons** - Brand-specific icons
+
+### Backend  
+- **Electron** - Cross-platform desktop framework
+- **Node.js** - JavaScript runtime
+- **CryptoJS** - AES encryption implementation
+- **Electron Store** - Settings persistence
+
+### Development
+- **React Scripts** - Build tooling
+- **Electron Builder** - Application packaging
+- **Concurrently** - Development workflow
+
+## 🔒 Security & Privacy
+
+<div align="center">
+
+| Feature | Implementation |
+|---------|----------------|
+| **Encryption** | AES-256 industry standard |
+| **Storage** | Local files only, never cloud |
+| **Master Password** | Never stored, memory-only |
+| **File Format** | Encrypted .pmdb files |
+| **Zero Knowledge** | Your data stays on your device |
+
+</div>
+
+> **🛡️ Security Note**: Your master password is never stored anywhere. Make sure to remember it or keep it in a secure backup location!
+
+## 🐛 Troubleshooting
+
+<details>
+<summary><strong>Application Issues</strong></summary>
+
+**App won't start**
+- Ensure Node.js 16+ is installed
+- Delete `node_modules` folder and run `npm install`
+- Check for conflicting antivirus software
+
+**Database won't open**  
+- Verify correct master password
+- Check file permissions
+- Try moving database to a different location
+
+**Performance is slow**
+- Keep database under 10MB
+- Restart the application
+- Clear unused database files
+
+</details>
+
+<details>
+<summary><strong>Development Issues</strong></summary>
+
+**Build fails**
+- Run `npm install electron-store` if missing
+- Clear build cache with `npm run build`
+- Check Node.js version compatibility
+
+**Electron won't start**
+- Kill any running electron processes
+- Delete `.electron` cache folder
+- Run `npm run react-dev` and `npm run electron-dev` separately
+
+</details>
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+1. **🐛 Report Bugs**: [Create an issue](https://github.com/jonax1337/simple-password-manager/issues)
+2. **💡 Suggest Features**: [Request a feature](https://github.com/jonax1337/simple-password-manager/issues)
+3. **🔧 Submit PRs**: Fork, develop, and submit a pull request
+4. **📖 Improve Docs**: Help make the documentation better
+
+### Development Setup
+```bash
+git clone https://github.com/jonax1337/simple-password-manager.git
+cd simple-password-manager
+npm install
+npm run dev
+```
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ```
-src/
-├── components/
-│   ├── LoginScreen.js      # Master password login
-│   ├── MainInterface.js    # Main application interface
-│   ├── Sidebar.js          # Sidebar with folder tree
-│   ├── FolderTree.js       # Hierarchical folder navigation
-│   ├── EntryList.js        # Password entries display
-│   ├── EntryForm.js        # Add/edit password form
-│   ├── PasswordGenerator.js # Password generation tool
-│   ├── IconPicker.js       # Brand icons and emoji picker
-│   ├── IconRenderer.js     # Icon rendering component
-│   └── Titlebar.js         # Custom titlebar with menus
-├── contexts/
-│   └── ThemeContext.js     # Theme management
-├── utils/
-│   └── crypto.js           # Encryption and password utilities
-├── App.js                  # Main application component
-├── App.css                 # Application styles with theme support
-└── index.js                # Application entry point
+MIT License - Feel free to use this project for personal or commercial purposes.
 ```
 
-## Security Notes
+## 📞 Support & Community
 
-- Your master password is never stored - make sure to remember it!
-- Database files are encrypted and can only be opened with the correct master password
-- The application uses industry-standard AES encryption
-- All password operations happen locally on your device
+- **🐛 Bug Reports**: [GitHub Issues](https://github.com/jonax1337/simple-password-manager/issues)
+- **💬 Discussions**: [GitHub Discussions](https://github.com/jonax1337/simple-password-manager/discussions)
+- **📧 Contact**: [jonas.laux@hotmail.com](mailto:jonas.laux@hotmail.com)
 
-## Keyboard Shortcuts
+---
 
-- `Ctrl+N`: New Database
-- `Ctrl+O`: Open Database
-- `Ctrl+S`: Save Database
-- `Ctrl+Shift+S`: Save Database As
-- `Ctrl+Alt+Win+N`: Add Entry
-- `Ctrl+G`: Generate Password
-- `Ctrl+Q`: Quit Application
+<div align="center">
 
-## Contributing
+**⭐ Star this project if you find it useful!**
 
-This is a personal project, but contributions are welcome! Please feel free to submit issues or pull requests.
+Made with ❤️ by [Jonas Laux](https://github.com/jonax1337)
 
-## License
-
-MIT License - feel free to use this project for personal or commercial purposes.
-
-## Troubleshooting
-
-### Application Won't Start
-
-1. Make sure you have Node.js installed
-2. Delete `node_modules` and run `npm install` again
-3. Try running `npm run react-dev` and `npm run electron-dev` separately
-
-### Database Won't Open
-
-1. Make sure you're entering the correct master password
-2. Check that the database file isn't corrupted
-3. Try creating a new database if the issue persists
-
-### Performance Issues
-
-1. Keep your database file size reasonable (under 10MB)
-2. Close the application completely and restart it
-3. Clear any old database files you no longer need
-
-## Support
-
-For issues or questions, please create an issue in the project repository.
+</div>

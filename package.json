@@ -1,6 +1,6 @@
 {
   "name": "simple-password-manager",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A simple password manager inspired by KeePass",
   "main": "build/electron.js",
   "scripts": {
@@ -33,6 +33,7 @@
   "dependencies": {
     "autoprefixer": "^10.4.16",
     "crypto-js": "^4.2.0",
+    "electron-store": "^8.1.0",
     "lucide-react": "^0.294.0",
     "postcss": "^8.4.31",
     "react": "^18.2.0",
@@ -72,12 +73,14 @@
     ],
     "mac": {
       "category": "public.app-category.productivity",
+      "icon": "assets/icon.icns",
       "target": {
         "target": "dmg",
         "arch": ["x64", "arm64"]
       }
     },
     "win": {
+      "icon": "assets/icon.ico",
       "target": {
         "target": "nsis",
         "arch": ["x64"]
@@ -86,6 +89,7 @@
       "verifyUpdateCodeSignature": false
     },
     "linux": {
+      "icon": "assets/icon.png",
       "target": {
         "target": "AppImage",
         "arch": ["x64"]
@@ -98,6 +102,15 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Simple Password Manager"
-    }
+    },
+    "fileAssociations": [
+      {
+        "ext": "pmdb",
+        "name": "Password Manager Database",
+        "description": "Simple Password Manager Database File",
+        "role": "Editor",
+        "icon": "assets/icon.ico"
+      }
+    ]
   }
 }

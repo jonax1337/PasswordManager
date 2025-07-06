@@ -1,5 +1,5 @@
 import React from 'react';
-import { Lock, Plus, FolderOpen, Shield } from 'lucide-react';
+import { Plus, FolderOpen, Shield, ShieldCheck } from 'lucide-react';
 import Titlebar from './Titlebar';
 
 const WelcomeScreen = ({ onCreateNew, onOpenExisting }) => {
@@ -21,7 +21,7 @@ const WelcomeScreen = ({ onCreateNew, onOpenExisting }) => {
       <div className="w-full max-w-sm sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl">
         <div className="text-center mb-8 sm:mb-10 lg:mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4 sm:mb-6">
-            <Shield className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+            <ShieldCheck className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold theme-text mb-3 sm:mb-4">Simple Password Manager</h1>
           <p className="text-base sm:text-lg lg:text-xl theme-text-secondary max-w-xs sm:max-w-lg lg:max-w-2xl mx-auto px-2">
