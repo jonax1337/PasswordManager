@@ -2,12 +2,12 @@
   "name": "simple-password-manager",
   "version": "1.0.0",
   "description": "A simple password manager inspired by KeePass",
-  "main": "public/electron.js",
+  "main": "build/electron.js",
   "scripts": {
     "dev": "concurrently \"npm run react-dev\" \"npm run electron-dev\"",
     "react-dev": "react-scripts start",
     "electron-dev": "wait-on http://localhost:3000 && electron .",
-    "build": "react-scripts build",
+    "build": "react-scripts build && copy public\\electron.js build\\ && copy public\\preload.js build\\",
     "electron-build": "electron-builder",
     "dist": "npm run build && npm run electron-build",
     "start": "electron ."
@@ -54,24 +54,50 @@
     ]
   },
   "build": {
-    "appId": "media.laux.simplepasswordmanager.app",
+    "appId": "com.simplepasswordmanager.app",
     "productName": "Simple Password Manager",
     "directories": {
-      "output": "dist"
+      "output": "release",
+      "buildResources": "assets"
     },
     "files": [
-      "build/**/*",
-      "public/electron.js",
-      "node_modules/**/*"
+      "build/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "assets/",
+        "to": "assets/",
+        "filter": ["**/*"]
+      }
     ],
     "mac": {
-      "category": "public.app-category.productivity"
+      "category": "public.app-category.productivity",
+      "target": {
+        "target": "dmg",
+        "arch": ["x64", "arm64"]
+      }
     },
     "win": {
-      "target": "nsis"
+      "target": {
+        "target": "nsis",
+        "arch": ["x64"]
+      },
+      "publisherName": "Simple Password Manager",
+      "verifyUpdateCodeSignature": false
     },
     "linux": {
-      "target": "AppImage"
+      "target": {
+        "target": "AppImage",
+        "arch": ["x64"]
+      },
+      "category": "Security"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Simple Password Manager"
     }
   }
 }

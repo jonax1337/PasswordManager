@@ -198,7 +198,7 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
               )}
             </div>
 
-            <div className="bg-red-600 theme-border rounded-lg p-4">
+            <div className="border border-red-400 rounded-lg p-4">
               <div className="flex items-start">
                 <div className="text-sm theme-text">
                   <strong>Important:</strong> Your master password cannot be recovered if forgotten. 

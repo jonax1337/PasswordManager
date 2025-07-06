@@ -1,7 +1,9 @@
-const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const isDev = require('electron-is-dev');
+
+// Check if we're in development mode - FORCE PRODUCTION MODE
+const isDev = false;
 
 let mainWindow;
 
@@ -21,11 +23,11 @@ function createWindow() {
     show: false
   });
 
-  mainWindow.loadURL(
-    isDev
-      ? 'http://localhost:3000'
-      : `file://${path.join(__dirname, '../build/index.html')}`
-  );
+  const startUrl = isDev 
+    ? 'http://localhost:3000' 
+    : `file://${path.join(__dirname, 'index.html')}`;
+  
+  mainWindow.loadURL(startUrl);
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
@@ -33,6 +35,12 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+  });
+
+  // Security: Prevent new window creation
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
   });
 
   if (isDev) {
@@ -122,6 +130,11 @@ ipcMain.handle('close-window', () => {
   if (mainWindow) {
     mainWindow.close();
   }
+});
+
+// Handle external URL opening
+ipcMain.handle('open-external', async (event, url) => {
+  await shell.openExternal(url);
 });
 
 const template = [
