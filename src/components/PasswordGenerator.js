@@ -118,7 +118,7 @@ const PasswordGenerator = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 sm:p-4 z-50">
-      <div className="theme-surface rounded-xl shadow-2xl w-full max-w-sm sm:max-w-md max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+      <div className="theme-surface rounded-xl shadow-2xl w-full max-w-sm sm:max-w-md max-h-[95vh] sm:max-h-[90vh] overflow-y-auto password-generator-modal">
         <div className="flex items-center justify-between p-4 sm:p-6 theme-border border-b">
           <h2 className="text-lg sm:text-xl font-semibold theme-text">Password Generator</h2>
           <button

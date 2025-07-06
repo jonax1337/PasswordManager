@@ -141,7 +141,10 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
       if (!e.target.closest('.folder-dropdown') && !e.target.closest('.folder-dropdown-toggle')) {
         setFolderDropdownOpen(false);
       }
-      setIsGeneratorOpen(false);
+      // Schließe Password Generator nur wenn nicht auf ihn geklickt wurde
+      if (!e.target.closest('.password-generator-modal') && !e.target.closest('.password-generator-button')) {
+        setIsGeneratorOpen(false);
+      }
     };
 
     document.addEventListener('click', handleDocumentClick);
@@ -235,7 +238,7 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
               
               <button
                 onClick={() => setIsGeneratorOpen(true)}
-                className="p-3 theme-button rounded-lg transition-colors"
+                className="p-3 theme-button rounded-lg transition-colors password-generator-button"
                 title="Generate password"
               >
                 <Key className="w-5 h-5" />

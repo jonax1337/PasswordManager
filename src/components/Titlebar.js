@@ -247,7 +247,7 @@ const Titlebar = ({
           )}
           {onGeneratePassword && (
             <button
-              className="menu-item"
+              className="menu-item password-generator-button"
               onClick={() => handleEditMenuClick(onGeneratePassword)}
             >
               <Key className="w-4 h-4" />
