@@ -1,11 +1,11 @@
 # Simple Password Manager
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-0.0.1--beta-orange.svg)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Electron](https://img.shields.io/badge/Electron-47848F?style=flat&logo=Electron&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)
+![Electron](https://img.shields.io/badge/Electron-47848F?style=for-the-badge&logo=Electron&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-0.0.1--beta-orange?style=for-the-badge)
 
 A secure and modern password manager built with Electron and React, inspired by KeePass but with a fresh, intuitive interface.
 
@@ -195,17 +195,13 @@ Built applications will be in the `release/` folder.
 
 ## 🔒 Security & Privacy
 
-<div align="center">
-
 | Feature | Implementation |
 |---------|----------------|
-| **Encryption** | AES-256 industry standard |
-| **Storage** | Local files only, never cloud |
-| **Master Password** | Never stored, memory-only |
-| **File Format** | Encrypted .pmdb files |
-| **Zero Knowledge** | Your data stays on your device |
-
-</div>
+| Encryption | AES-256 industry standard |
+| Storage | Local files only, never cloud |
+| Master Password | Never stored, memory-only |
+| File Format | Encrypted .pmdb files |
+| Zero Knowledge | Your data stays on your device |
 
 > **🛡️ Security Note**: Your master password is never stored anywhere. Make sure to remember it or keep it in a secure backup location!
 
@@ -267,18 +263,7 @@ npm run dev
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-```
-MIT License - Feel free to use this project for personal or commercial purposes.
-```
-
-## 📞 Support & Community
-
-- **🐛 Bug Reports**: [GitHub Issues](https://github.com/jonax1337/simple-password-manager/issues)
-- **💬 Discussions**: [GitHub Discussions](https://github.com/jonax1337/simple-password-manager/discussions)
-- **📧 Contact**: [jonas.laux@hotmail.com](mailto:jonas.laux@hotmail.com)
 
 ---
 
-**⭐ Star this project if you find it useful!**
-
-Made with ❤️ by [Jonas Laux](https://github.com/jonax1337)
+⭐ Star this project if you find it useful!
