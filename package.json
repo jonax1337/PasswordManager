@@ -99,11 +99,8 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": "always ask",
-      "createStartMenuShortcut": "always ask",
-      "shortcutName": "Simple Password Manager",
-      "shortcutComment": "Simple Password Manager",
-      "shortcutIcon": "assets/icon.ico"
+      "deleteAppDataOnUninstall": true,
+      "shortcutName": "Simple Password Manager"
     },
     "fileAssociations": [
       {
