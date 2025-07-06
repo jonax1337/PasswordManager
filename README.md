@@ -3,18 +3,16 @@
 # Simple Password Manager
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-0.0.1-green.svg)
+![Version](https://img.shields.io/badge/version-0.0.1--beta-orange.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 
-![Electron](https://img.shields.io/badge/Electron-191970?style=for-the-badge&logo=Electron&logoColor=white)
-![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
-![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![Electron](https://img.shields.io/badge/Electron-47848F?style=for-the-badge&logo=Electron&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-A secure and stylish password manager application built with Electron and React, inspired by KeePass but with a modern, fresh UI.
+**A secure and modern password manager built with Electron and React**
 
-[Download Latest Release](https://github.com/jonax1337/simple-password-manager/releases) · [Report Bug](https://github.com/jonax1337/simple-password-manager/issues) · [Request Feature](https://github.com/jonax1337/simple-password-manager/issues)
+[📥 Download](https://github.com/jonax1337/simple-password-manager/releases) • [🐛 Report Bug](https://github.com/jonax1337/simple-password-manager/issues) • [💡 Request Feature](https://github.com/jonax1337/simple-password-manager/issues)
 
 </div>
 
@@ -59,7 +57,7 @@ A secure and stylish password manager application built with Electron and React,
 
 ### For End Users
 
-1. **Download** the latest installer from [Releases](https://github.com/your-username/simple-password-manager/releases)
+1. **Download** the latest installer from [Releases](https://github.com/jonax1337/simple-password-manager/releases)
 2. **Install** the application
 3. **Create** your first database or **open** an existing one
 4. **Start** managing your passwords securely!
@@ -74,7 +72,7 @@ A secure and stylish password manager application built with Electron and React,
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/simple-password-manager.git
+git clone https://github.com/jonax1337/simple-password-manager.git
 cd simple-password-manager
 
 # Install dependencies
