@@ -192,83 +192,85 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
         currentFile={currentFile}
       />
       <div className="flex flex-1 overflow-hidden">
-      {/* Sidebar - responsive */}
+      {/* Sidebar - responsive with custom scrollbar */}
       <div className="hidden lg:block lg:w-64 xl:w-72 flex-shrink-0">
-        <Sidebar
-          folders={database.folders}
-          selectedFolder={selectedFolder}
-          onFolderSelect={setSelectedFolder}
-          onAddFolder={onAddFolder}
-          onRenameFolder={onRenameFolder}
-          onDeleteFolder={onDeleteFolder}
-          entryCount={database.entries.length}
-        />
+        <div className="h-full smooth-scroll scrollbar-cool">
+          <Sidebar
+            folders={database.folders}
+            selectedFolder={selectedFolder}
+            onFolderSelect={setSelectedFolder}
+            onAddFolder={onAddFolder}
+            onRenameFolder={onRenameFolder}
+            onDeleteFolder={onDeleteFolder}
+            entryCount={database.entries.length}
+          />
+        </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header - responsive */}
-        <header className="theme-surface shadow-sm theme-border border-b px-3 sm:px-4 lg:px-6 py-3 lg:py-4 flex-shrink-0">
-          <div className="flex items-center justify-between gap-2 lg:gap-4">
+        <header className="theme-surface shadow-sm theme-border border-b px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 flex-shrink-0">
+          <div className="flex items-center justify-between gap-1 sm:gap-2 lg:gap-4">
             {/* Left side - Title */}
             <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold theme-text truncate">
+              <h1 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold theme-text truncate">
                 {currentFile ? currentFile.replace(/^.*[\\\/]/, '') : 'New Database'}
                 {hasUnsavedChanges && <span className="text-orange-500 ml-1 lg:ml-2">•</span>}
               </h1>
             </div>
 
-            {/* Right side - Action buttons (icon only) */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Right side - Action buttons (responsive sizing) */}
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               <button 
-                className="p-3 theme-text-secondary hover:opacity-80 theme-button-secondary rounded-lg transition-colors"
+                className="p-2 sm:p-3 theme-text-secondary hover:opacity-80 theme-button-secondary rounded-lg transition-colors"
                 onClick={() => setIsSearchOpen(true)}
                 title="Search entries"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
               <button
                 onClick={handleAddEntry}
-                className="p-3 theme-button rounded-lg"
+                className="p-2 sm:p-3 theme-button rounded-lg"
                 title="Add new entry"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               
               <button
                 onClick={() => setIsGeneratorOpen(true)}
-                className="p-3 theme-button rounded-lg transition-colors password-generator-button"
+                className="p-2 sm:p-3 theme-button rounded-lg transition-colors password-generator-button"
                 title="Generate password"
               >
-                <Key className="w-5 h-5" />
+                <Key className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               
               <button
                 onClick={onSave}
-                className={`p-3 rounded-lg transition-colors ${
+                className={`p-2 sm:p-3 rounded-lg transition-colors ${
                   hasUnsavedChanges 
                     ? 'bg-orange-500 text-white hover:bg-orange-600' 
                     : 'theme-button'
                 }`}
                 title={hasUnsavedChanges ? 'Save changes' : 'Save database'}
               >
-                <Save className="w-5 h-5" />
+                <Save className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
               <button
                 onClick={onClose}
-                className="p-3 bg-red-500 text-white hover:bg-red-600 rounded-lg transition-colors"
+                className="p-2 sm:p-3 bg-red-500 text-white hover:bg-red-600 rounded-lg transition-colors"
                 title="Close database"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>
 
-          {/* Mobile sidebar toggle - show folders on small screens */}
+          {/* Mobile sidebar toggle - show folders on small screens with custom scrollbar */}
           <div className="lg:hidden mt-3">
-            <div className="flex gap-2 overflow-x-auto pb-2">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
               <button
                 onClick={() => setSelectedFolder('')}
                 className={`px-3 py-1 rounded-full text-sm whitespace-nowrap flex-shrink-0 flex items-center gap-1 ${
@@ -311,8 +313,8 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
           </div>
         </header>
 
-        {/* Main content area - scrollable */}
-        <main className="flex-1 overflow-auto">
+        {/* Main content area - scrollable with cool custom scrollbar */}
+        <main className="flex-1 overflow-auto smooth-scroll scrollbar-cool">
           <EntryList
             entries={filteredEntries}
             onEditEntry={handleEditEntry}
@@ -363,9 +365,9 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
               </button>
             </div>
             
-            {/* Quick search results preview */}
+            {/* Quick search results preview with custom scrollbar */}
             {searchTerm && (
-              <div className="p-6 max-h-96 overflow-auto">
+              <div className="p-6 max-h-96 overflow-auto smooth-scroll scrollbar-cool">
                 <h3 className="text-sm font-medium theme-text mb-3">
                   Search Results ({filteredEntries.length})
                 </h3>

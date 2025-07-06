@@ -84,12 +84,12 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolder, search
 
   return (
     <>
-      <div className="flex-1 overflow-auto p-3 sm:p-4 lg:p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6">
+      <div className="flex-1 p-3 sm:p-4 lg:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 auto-rows-fr">
           {entries.map(entry => (
             <div
               key={entry.id}
-              className="entry-card theme-card rounded-xl shadow-sm p-4 lg:p-5 hover:shadow-md transition-all group cursor-pointer"
+              className="entry-card theme-card rounded-xl shadow-sm p-3 sm:p-4 lg:p-5 hover:shadow-md transition-all group cursor-pointer flex flex-col h-60 sm:h-64 md:h-72 lg:h-80"
               onDoubleClick={() => onEditEntry(entry)}
             >
               {/* Header with icon, title and actions */}
@@ -121,74 +121,89 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolder, search
                 </div>
               </div>
 
-              {/* URL if present */}
-              {entry.url && (
-                <div className="flex items-center gap-2 text-xs theme-text-secondary mb-3 truncate">
-                  <Globe className="w-3 h-3 flex-shrink-0" />
-                  <button 
-                    onClick={() => openInExternalBrowser(entry.url)} 
-                    className="theme-primary hover:opacity-80 hover:underline truncate text-left"
-                    title={entry.url}
-                  >
-                    {entry.url}
-                  </button>
-                </div>
-              )}
+              {/* URL - always present but conditionally visible */}
+              <div className="flex items-center gap-2 text-xs theme-text-secondary mb-3 min-h-[16px]">
+                {entry.url ? (
+                  <>
+                    <Globe className="w-3 h-3 flex-shrink-0" />
+                    <button 
+                      onClick={() => openInExternalBrowser(entry.url)} 
+                      className="theme-primary hover:opacity-80 hover:underline truncate text-left"
+                      title={entry.url}
+                    >
+                      {entry.url}
+                    </button>
+                  </>
+                ) : (
+                  <span className="opacity-50">No URL</span>
+                )}
+              </div>
 
-            {/* Username field */}
-            <div className="space-y-1 mb-3">
-              <label className="text-xs font-medium theme-text-secondary">Username</label>
-              <div className="flex items-center gap-1">
-                <input
-                  type="text"
-                  value={entry.username || ''}
-                  readOnly
-                  className="flex-1 px-2 py-1.5 theme-input rounded-md text-xs min-w-0"
-                  placeholder="No username"
-                />
-                {entry.username && (
-                  <CopyButton
-                    textToCopy={entry.username}
-                    label="Copy username"
-                    size={3}
-                    className="flex-shrink-0"
-                    onCopied={(text) => handleCopySuccess(text, 'username')}
+            {/* Main content area - flex grow to fill available space */}
+            <div className="flex-1 flex flex-col space-y-3">
+              {/* Username field */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium theme-text-secondary">Username</label>
+                <div className="flex items-center gap-1">
+                  <input
+                    type="text"
+                    value={entry.username || ''}
+                    readOnly
+                    className="flex-1 px-2 py-1.5 theme-input rounded-md text-xs min-w-0"
+                    placeholder="No username"
                   />
-                )}
-              </div>
-            </div>
-
-            {/* Password field */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium theme-text-secondary">Password</label>
-              <div className="flex items-center gap-1">
-                <input
-                  type={showPasswords[entry.id] ? 'text' : 'password'}
-                  value={entry.password || ''}
-                  readOnly
-                  className="flex-1 px-2 py-1.5 theme-input rounded-md text-xs min-w-0"
-                  placeholder="No password"
-                />
-                {entry.password && (
-                  <div className="flex gap-0.5 flex-shrink-0">
+                  {entry.username && (
                     <CopyButton
-                      textToCopy={entry.password}
-                      label="Copy password"
+                      textToCopy={entry.username}
+                      label="Copy username"
                       size={3}
-                      onCopied={(text) => handleCopySuccess(text, 'password')}
+                      className="flex-shrink-0"
+                      onCopied={(text) => handleCopySuccess(text, 'username')}
                     />
-                  </div>
-                )}
+                  )}
+                </div>
+              </div>
+
+              {/* Password field */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium theme-text-secondary">Password</label>
+                <div className="flex items-center gap-1">
+                  <input
+                    type={showPasswords[entry.id] ? 'text' : 'password'}
+                    value={entry.password || ''}
+                    readOnly
+                    className="flex-1 px-2 py-1.5 theme-input rounded-md text-xs min-w-0"
+                    placeholder="No password"
+                  />
+                  {entry.password && (
+                    <div className="flex gap-0.5 flex-shrink-0">
+                      <CopyButton
+                        textToCopy={entry.password}
+                        label="Copy password"
+                        size={3}
+                        onCopied={(text) => handleCopySuccess(text, 'password')}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Notes section - takes remaining space */}
+              <div className="flex-1 flex flex-col min-h-0 mt-auto">
+                <label className="text-xs font-medium theme-text-secondary mb-1 flex-shrink-0">Notes</label>
+                <div className="flex-1 overflow-y-auto scrollbar-thin theme-input rounded-md p-2 min-h-[60px] max-h-[120px]">
+                  {entry.notes ? (
+                    <p className="text-xs theme-text-secondary whitespace-pre-wrap leading-relaxed" title={entry.notes}>
+                      {entry.notes}
+                    </p>
+                  ) : (
+                    <p className="text-xs theme-text-secondary opacity-50 italic flex items-center justify-center h-full">
+                      No notes
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-
-            {/* Notes if present */}
-            {entry.notes && (
-              <div className="mt-3 pt-3 theme-border border-t">
-                <label className="text-xs font-medium theme-text-secondary mb-1 block">Notes</label>
-                <p className="text-xs theme-text-secondary line-clamp-2" title={entry.notes}>{entry.notes}</p>
-              </div>
-            )}
             </div>
           ))}
         </div>

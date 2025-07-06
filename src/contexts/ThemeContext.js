@@ -103,6 +103,9 @@ export const ThemeProvider = ({ children }) => {
       
       // Update body class for additional styling
       document.body.className = `theme-${actualTheme}`;
+      
+      // Add data-theme attribute for CSS selectors
+      document.documentElement.setAttribute('data-theme', actualTheme);
     }
   }, [actualTheme]);
 

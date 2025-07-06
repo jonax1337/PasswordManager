@@ -62,37 +62,38 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
   };
 
   return (
-    <div className="min-h-screen theme-bg flex flex-col">
+    <div className="h-screen theme-bg flex flex-col overflow-hidden">
       <Titlebar 
         onClose={handleCloseApp}
         showMenus={true}
         onNewDatabase={onNewDatabase}
         onOpenDatabase={onOpenDatabase}
       />
-      <div className="flex-1 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="glass-effect-strong rounded-2xl p-8 shadow-2xl">
-          <div className="flex items-center mb-6">
-            <button
-              onClick={onBack}
-              className="p-2 theme-button-secondary rounded-lg transition-colors mr-3"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <h1 className="text-2xl font-bold theme-text">Unlock Database</h1>
-          </div>
+      <div className="flex-1 overflow-y-auto smooth-scroll scrollbar-cool">
+        <div className="min-h-full flex items-center justify-center p-4">
+          <div className="w-full max-w-md py-8 sm:py-12">
+            <div className="glass-effect-strong rounded-2xl p-8 shadow-2xl">
+              <div className="flex items-center mb-6">
+                <button
+                  onClick={onBack}
+                  className="p-2 theme-button-secondary rounded-lg transition-colors mr-3"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <h1 className="text-2xl font-bold theme-text">Unlock Database</h1>
+              </div>
 
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mb-4">
-              <Lock className="w-8 h-8 text-white" />
-            </div>
-            <p className="theme-text-secondary">Enter your master password to unlock your database</p>
-            {currentFile && (
-              <p className="text-sm theme-text mt-2 theme-surface rounded-lg px-3 py-2">
-                <strong>Database:</strong> {currentFile.split('/').pop()}
-              </p>
-            )}
-          </div>
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mb-4">
+                  <Lock className="w-8 h-8 text-white" />
+                </div>
+                <p className="theme-text-secondary">Enter your master password to unlock your database</p>
+                {currentFile && (
+                  <p className="text-sm theme-text mt-2 theme-surface rounded-lg px-3 py-2">
+                    <strong>Database:</strong> {currentFile.split('/').pop()}
+                  </p>
+                )}
+              </div>
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -168,9 +169,10 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
               Wrong database? <button onClick={onBack} className="text-blue-600 hover:opacity-80 underline">Go back</button> to select a different one.
             </p>
           </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };

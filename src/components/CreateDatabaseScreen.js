@@ -74,34 +74,35 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
   };
 
   return (
-    <div className="min-h-screen theme-bg flex flex-col">
+    <div className="h-screen theme-bg flex flex-col overflow-hidden">
       <Titlebar 
         onClose={handleCloseApp}
         showMenus={true}
         onNewDatabase={onNewDatabase}
         onOpenDatabase={onOpenDatabase}
       />
-      <div className="flex-1 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="glass-effect-strong rounded-2xl p-8 shadow-2xl">
-          <div className="flex items-center mb-6">
-            <button
-              onClick={onBack}
-              className="p-2 theme-button-secondary rounded-lg transition-colors mr-3"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <h1 className="text-2xl font-bold theme-text">Create New Database</h1>
-          </div>
+      <div className="flex-1 overflow-y-auto smooth-scroll scrollbar-cool">
+        <div className="min-h-full flex items-center justify-center p-4">
+          <div className="w-full max-w-md py-8 sm:py-12">
+            <div className="glass-effect-strong rounded-2xl p-8 shadow-2xl">
+              <div className="flex items-center mb-6">
+                <button
+                  onClick={onBack}
+                  className="p-2 theme-button-secondary rounded-lg transition-colors mr-3"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <h1 className="text-2xl font-bold theme-text">Create New Database</h1>
+              </div>
 
-          <div className="mb-6 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-full mb-4 mx-auto">
-              <Lock className="w-8 h-8 text-white" />
-            </div>
-            <p className="theme-text-secondary">
-              Set up your master password to secure your new password database. This password will be used to encrypt and decrypt all your stored passwords.
-            </p>
-          </div>
+              <div className="mb-6 text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-full mb-4 mx-auto">
+                  <Lock className="w-8 h-8 text-white" />
+                </div>
+                <p className="theme-text-secondary">
+                  Set up your master password to secure your new password database. This password will be used to encrypt and decrypt all your stored passwords.
+                </p>
+              </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -215,9 +216,10 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
               Create Database
             </button>
           </form>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };
