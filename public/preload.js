@@ -28,5 +28,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getPendingFile: () => ipcRenderer.invoke('get-pending-file'),
   onOpenFile: (callback) => ipcRenderer.on('open-file', callback),
   
+  // Multi-window support
+  createNewWindow: (options) => ipcRenderer.invoke('create-new-window', options),
+  createNewDatabaseWindow: () => ipcRenderer.invoke('create-new-database-window'),
+  openDatabaseInNewWindow: () => ipcRenderer.invoke('open-database-in-new-window'),
+  
   removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel)
 });

@@ -6,11 +6,12 @@ const fs = require('fs');
 const isDev = process.env.NODE_ENV === 'development' || 
              !app.isPackaged;
 
-let mainWindow;
+let mainWindow = null; // Keep track of the first window for backwards compatibility
 let pendingFileToOpen = null;
+let allWindows = new Set();
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  const newWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 800,
@@ -29,25 +30,39 @@ function createWindow() {
     ? 'http://localhost:3000' 
     : `file://${path.join(__dirname, 'index.html')}`;
   
-  mainWindow.loadURL(startUrl);
+  newWindow.loadURL(startUrl);
 
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
+  newWindow.once('ready-to-show', () => {
+    newWindow.show();
   });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
+  // Track this window
+  allWindows.add(newWindow);
+  
+  // Set as main window if it's the first one
+  if (!mainWindow) {
+    mainWindow = newWindow;
+  }
+
+  newWindow.on('closed', () => {
+    allWindows.delete(newWindow);
+    // If this was the main window, clear the reference
+    if (newWindow === mainWindow) {
+      mainWindow = null;
+    }
   });
 
   // Security: Prevent new window creation
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+  newWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };
   });
 
   if (isDev) {
-    mainWindow.webContents.openDevTools();
+    newWindow.webContents.openDevTools();
   }
+  
+  return newWindow;
 }
 
 app.whenReady().then(() => {
@@ -66,6 +81,8 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+  // Clear the windows set
+  allWindows.clear();
 });
 
 app.on('activate', () => {
@@ -86,7 +103,8 @@ ipcMain.handle('save-database', async (event, data, existingPath = null) => {
   }
 
   // Otherwise, show save dialog
-  const result = await dialog.showSaveDialog(mainWindow, {
+  const parentWindow = BrowserWindow.fromWebContents(event.sender);
+  const result = await dialog.showSaveDialog(parentWindow, {
     filters: [
       { name: 'Password Database', extensions: ['pmdb'] }
     ]
@@ -104,7 +122,8 @@ ipcMain.handle('save-database', async (event, data, existingPath = null) => {
 });
 
 ipcMain.handle('load-database', async (event) => {
-  const result = await dialog.showOpenDialog(mainWindow, {
+  const parentWindow = BrowserWindow.fromWebContents(event.sender);
+  const result = await dialog.showOpenDialog(parentWindow, {
     filters: [
       { name: 'Password Database', extensions: ['pmdb'] }
     ]
@@ -131,26 +150,29 @@ ipcMain.handle('load-database-file', async (event, filePath) => {
   }
 });
 
-// Window control handlers
-ipcMain.handle('minimize-window', () => {
-  if (mainWindow) {
-    mainWindow.minimize();
+// Window control handlers - now work with the sending window
+ipcMain.handle('minimize-window', (event) => {
+  const window = BrowserWindow.fromWebContents(event.sender);
+  if (window) {
+    window.minimize();
   }
 });
 
-ipcMain.handle('maximize-window', () => {
-  if (mainWindow) {
-    if (mainWindow.isMaximized()) {
-      mainWindow.unmaximize();
+ipcMain.handle('maximize-window', (event) => {
+  const window = BrowserWindow.fromWebContents(event.sender);
+  if (window) {
+    if (window.isMaximized()) {
+      window.unmaximize();
     } else {
-      mainWindow.maximize();
+      window.maximize();
     }
   }
 });
 
-ipcMain.handle('close-window', () => {
-  if (mainWindow) {
-    mainWindow.close();
+ipcMain.handle('close-window', (event) => {
+  const window = BrowserWindow.fromWebContents(event.sender);
+  if (window) {
+    window.close();
   }
 });
 
@@ -182,15 +204,122 @@ ipcMain.handle('get-pending-file', () => {
   return file;
 });
 
+// Multi-window support
+function createNewWindow(filePath = null) {
+  const newWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    minWidth: 800,
+    minHeight: 600,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
+    },
+    titleBarStyle: 'hidden',
+    frame: false,
+    show: false
+  });
+
+  const startUrl = isDev 
+    ? 'http://localhost:3000' 
+    : `file://${path.join(__dirname, 'index.html')}`;
+  
+  newWindow.loadURL(startUrl);
+
+  newWindow.once('ready-to-show', () => {
+    newWindow.show();
+    
+    // If we have a file to open, send it to the new window once it's ready
+    if (filePath) {
+      setTimeout(() => {
+        newWindow.webContents.send('open-file', filePath);
+      }, 1000); // Small delay to ensure the app is fully loaded
+    }
+  });
+
+  // Security: Prevent new window creation from renderer
+  newWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
+  // Track window
+  allWindows.add(newWindow);
+
+  newWindow.on('closed', () => {
+    allWindows.delete(newWindow);
+  });
+
+  if (isDev) {
+    newWindow.webContents.openDevTools();
+  }
+
+  return newWindow;
+}
+
+// IPC handler for creating new windows
+ipcMain.handle('create-new-window', async (event, options = {}) => {
+  try {
+    const newWindow = createNewWindow(options.filePath);
+    return { success: true, windowId: newWindow.id };
+  } catch (error) {
+    console.error('Error creating new window:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Handle new database in new window
+ipcMain.handle('create-new-database-window', async (event) => {
+  try {
+    const newWindow = createNewWindow();
+    // Send a message to create a new database once the window is ready
+    newWindow.webContents.once('did-finish-load', () => {
+      setTimeout(() => {
+        newWindow.webContents.send('menu-new-database');
+      }, 500);
+    });
+    return { success: true, windowId: newWindow.id };
+  } catch (error) {
+    console.error('Error creating new database window:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Handle open database in new window
+ipcMain.handle('open-database-in-new-window', async (event) => {
+  try {
+    const newWindow = createNewWindow();
+    // Send a message to open database dialog once the window is ready
+    newWindow.webContents.once('did-finish-load', () => {
+      setTimeout(() => {
+        newWindow.webContents.send('menu-open-database');
+      }, 500);
+    });
+    return { success: true, windowId: newWindow.id };
+  } catch (error) {
+    console.error('Error creating open database window:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // Handle opening files when app is already running
 app.on('open-file', (event, filePath) => {
   event.preventDefault();
-  if (mainWindow) {
-    mainWindow.webContents.send('open-file', filePath);
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (focusedWindow) {
+    focusedWindow.webContents.send('open-file', filePath);
   } else {
-    pendingFileToOpen = filePath;
+    // If no focused window, get any available window or use main window as fallback
+    const allBrowserWindows = BrowserWindow.getAllWindows();
+    if (allBrowserWindows.length > 0) {
+      allBrowserWindows[0].webContents.send('open-file', filePath);
+    } else {
+      pendingFileToOpen = filePath;
+    }
   }
 });
+
 
 const template = [
   {
@@ -200,21 +329,30 @@ const template = [
         label: 'New Database',
         accelerator: 'CmdOrCtrl+N',
         click: () => {
-          mainWindow.webContents.send('menu-new-database');
+          const focusedWindow = BrowserWindow.getFocusedWindow();
+          if (focusedWindow) {
+            focusedWindow.webContents.send('menu-new-database');
+          }
         }
       },
       {
         label: 'Open Database',
         accelerator: 'CmdOrCtrl+O',
         click: () => {
-          mainWindow.webContents.send('menu-open-database');
+          const focusedWindow = BrowserWindow.getFocusedWindow();
+          if (focusedWindow) {
+            focusedWindow.webContents.send('menu-open-database');
+          }
         }
       },
       {
         label: 'Save Database',
         accelerator: 'CmdOrCtrl+S',
         click: () => {
-          mainWindow.webContents.send('menu-save-database');
+          const focusedWindow = BrowserWindow.getFocusedWindow();
+          if (focusedWindow) {
+            focusedWindow.webContents.send('menu-save-database');
+          }
         }
       },
       { type: 'separator' },
@@ -234,14 +372,20 @@ const template = [
         label: 'Add Entry',
         accelerator: 'CmdOrCtrl+A',
         click: () => {
-          mainWindow.webContents.send('menu-add-entry');
+          const focusedWindow = BrowserWindow.getFocusedWindow();
+          if (focusedWindow) {
+            focusedWindow.webContents.send('menu-add-entry');
+          }
         }
       },
       {
         label: 'Generate Password',
         accelerator: 'CmdOrCtrl+G',
         click: () => {
-          mainWindow.webContents.send('menu-generate-password');
+          const focusedWindow = BrowserWindow.getFocusedWindow();
+          if (focusedWindow) {
+            focusedWindow.webContents.send('menu-generate-password');
+          }
         }
       }
     ]

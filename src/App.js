@@ -4,6 +4,7 @@ import LoginScreen from './components/LoginScreen';
 import CreateDatabaseScreen from './components/CreateDatabaseScreen';
 import MainInterface from './components/MainInterface';
 import UnsavedChangesDialog from './components/UnsavedChangesDialog';
+import MultiWindowDialog from './components/MultiWindowDialog';
 import LockAnimation from './components/LockAnimation';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { encryptData, decryptData } from './utils/crypto';
@@ -40,6 +41,8 @@ function App() {
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
   const [pendingActionResolve, setPendingActionResolve] = useState(null);
+  const [showMultiWindowDialog, setShowMultiWindowDialog] = useState(false);
+  const [pendingMultiWindowAction, setPendingMultiWindowAction] = useState(null);
 
   // Track unsaved changes
   useEffect(() => {
@@ -249,7 +252,9 @@ function App() {
 
     // Check if we have an active database (authenticated) or are in the process of opening one (login, create states)
     if (appState === 'authenticated') {
-      await checkUnsavedChanges(doCreateNew);
+      // Show multi-window dialog for authenticated state
+      setPendingMultiWindowAction('new-database');
+      setShowMultiWindowDialog(true);
     } else if (appState === 'login' || appState === 'create' || currentFile || pendingDatabaseData) {
       // Ask for confirmation if we're switching from another database
       return new Promise((resolve) => {
@@ -282,7 +287,9 @@ function App() {
 
     // Check if we have an active database (authenticated) or are in the process of opening one (login, create states)
     if (appState === 'authenticated') {
-      await checkUnsavedChanges(doOpenExisting);
+      // Show multi-window dialog for authenticated state
+      setPendingMultiWindowAction('open-database');
+      setShowMultiWindowDialog(true);
     } else if (appState === 'login' || appState === 'create' || currentFile || pendingDatabaseData) {
       // Ask for confirmation if we're switching from another database
       return new Promise((resolve) => {
@@ -577,6 +584,65 @@ function App() {
     });
   };
 
+  // Multi-window dialog handlers
+  const handleMultiWindowOpenInNewWindow = async () => {
+    try {
+      if (pendingMultiWindowAction === 'new-database') {
+        await window.electronAPI.createNewDatabaseWindow();
+      } else if (pendingMultiWindowAction === 'open-database') {
+        await window.electronAPI.openDatabaseInNewWindow();
+      }
+    } catch (error) {
+      console.error('Error opening in new window:', error);
+    }
+    setShowMultiWindowDialog(false);
+    setPendingMultiWindowAction(null);
+  };
+
+  const handleMultiWindowReplaceCurrentDatabase = async () => {
+    // First check for unsaved changes if we're replacing
+    const doReplace = async () => {
+      if (pendingMultiWindowAction === 'new-database') {
+        // Reset to create new database
+        setAppState('create');
+        setCurrentFile(null);
+        setPendingDatabaseData(null);
+        setMasterPassword('');
+        setHasUnsavedChanges(false);
+        setLastSavedDatabase(null);
+        setIsAutoLoaded(false);
+      } else if (pendingMultiWindowAction === 'open-database') {
+        // Trigger open database dialog
+        if (window.electronAPI) {
+          const result = await window.electronAPI.loadDatabase();
+          if (result.success && !result.canceled) {
+            setPendingDatabaseData(result);
+            setCurrentFile(result.filePath);
+            setIsAutoLoaded(false);
+            await window.electronAPI.setRecentDatabase(result.filePath);
+            setAppState('login');
+          }
+        }
+      }
+      setShowMultiWindowDialog(false);
+      setPendingMultiWindowAction(null);
+    };
+
+    if (hasUnsavedChanges) {
+      // Show unsaved changes dialog first
+      setPendingAction(doReplace);
+      setShowUnsavedDialog(true);
+      setShowMultiWindowDialog(false);
+    } else {
+      await doReplace();
+    }
+  };
+
+  const handleMultiWindowCancel = () => {
+    setShowMultiWindowDialog(false);
+    setPendingMultiWindowAction(null);
+  };
+
   // Render different screens based on app state
   const renderMainContent = () => {
     switch (appState) {
@@ -647,6 +713,13 @@ function App() {
         onSave={handleUnsavedDialogSave}
         onDiscard={handleUnsavedDialogDiscard}
         onCancel={handleUnsavedDialogCancel}
+      />
+      <MultiWindowDialog
+        isOpen={showMultiWindowDialog}
+        onOpenInNewWindow={handleMultiWindowOpenInNewWindow}
+        onReplaceCurrentDatabase={handleMultiWindowReplaceCurrentDatabase}
+        onCancel={handleMultiWindowCancel}
+        action={pendingMultiWindowAction}
         hasUnsavedChanges={hasUnsavedChanges}
       />
     </ThemeProvider>
