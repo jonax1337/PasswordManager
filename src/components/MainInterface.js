@@ -247,7 +247,9 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
               </button>
               
               <button
-                onClick={onSave}
+                onClick={() => {
+                  onSave();
+                }}
                 className={`p-2 sm:p-3 rounded-lg transition-colors ${
                   hasUnsavedChanges 
                     ? 'bg-orange-500 text-white hover:bg-orange-600' 

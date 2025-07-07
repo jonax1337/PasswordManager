@@ -1,8 +1,10 @@
 import React from 'react';
 import { AlertTriangle, Save, X } from 'lucide-react';
 
-const UnsavedChangesDialog = ({ isOpen, onSave, onDiscard, onCancel }) => {
+const UnsavedChangesDialog = ({ isOpen, onSave, onDiscard, onCancel, hasUnsavedChanges = true }) => {
   if (!isOpen) return null;
+
+  const isUnsavedChanges = hasUnsavedChanges;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -13,13 +15,23 @@ const UnsavedChangesDialog = ({ isOpen, onSave, onDiscard, onCancel }) => {
               <AlertTriangle className="w-6 h-6 text-orange-600" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold theme-text">Unsaved Changes</h3>
-              <p className="text-sm theme-text-secondary">You have unsaved changes in your database.</p>
+              <h3 className="text-lg font-semibold theme-text">
+                {isUnsavedChanges ? 'Unsaved Changes' : 'Switch Database'}
+              </h3>
+              <p className="text-sm theme-text-secondary">
+                {isUnsavedChanges 
+                  ? 'You have unsaved changes in your database.'
+                  : 'You are about to switch to a different database.'
+                }
+              </p>
             </div>
           </div>
 
           <p className="theme-text-secondary mb-6">
-            Do you want to save your changes before continuing?
+            {isUnsavedChanges 
+              ? 'Do you want to save your changes before continuing?'
+              : 'Do you want to continue and close the current database?'
+            }
           </p>
 
           <div className="flex items-center justify-end space-x-3">
@@ -34,15 +46,17 @@ const UnsavedChangesDialog = ({ isOpen, onSave, onDiscard, onCancel }) => {
               className="px-4 py-2 bg-red-600 text-white hover:opacity-80 rounded-lg transition-colors flex items-center"
             >
               <X className="w-4 h-4 inline mr-1" />
-              Don't Save
+              {isUnsavedChanges ? "Don't Save" : "Continue"}
             </button>
-            <button
-              onClick={onSave}
-              className="px-6 py-2 theme-button rounded-lg flex items-center"
-            >
-              <Save className="w-4 h-4 mr-1" />
-              Save
-            </button>
+            {isUnsavedChanges && (
+              <button
+                onClick={onSave}
+                className="px-6 py-2 theme-button rounded-lg flex items-center"
+              >
+                <Save className="w-4 h-4 mr-1" />
+                Save
+              </button>
+            )}
           </div>
         </div>
       </div>

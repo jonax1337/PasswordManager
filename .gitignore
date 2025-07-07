@@ -26,6 +26,9 @@ release/
 # Claude files
 .claude/
 
+# CLAUDE.md
+CLAUDE.md
+
 # OS generated files
 .DS_Store
 .DS_Store?

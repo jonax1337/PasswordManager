@@ -118,17 +118,30 @@ function App() {
 
       // Handle file opening when app is already running
       window.electronAPI.onOpenFile(async (event, filePath) => {
-        try {
-          const result = await window.electronAPI.loadDatabaseFile(filePath);
-          if (result.success) {
-            setPendingDatabaseData(result);
-            setCurrentFile(filePath);
-            setIsAutoLoaded(false);
-            await window.electronAPI.setRecentDatabase(filePath);
-            setAppState('login');
+        const doOpenFile = async () => {
+          try {
+            const result = await window.electronAPI.loadDatabaseFile(filePath);
+            if (result.success) {
+              setPendingDatabaseData(result);
+              setCurrentFile(filePath);
+              setIsAutoLoaded(false);
+              await window.electronAPI.setRecentDatabase(filePath);
+              setAppState('login');
+            }
+          } catch (error) {
+            console.error('Error opening file:', error);
           }
-        } catch (error) {
-          console.error('Error opening file:', error);
+        };
+
+        // Check if we have an active database or are in the process of opening one
+        if (appState === 'authenticated') {
+          await checkUnsavedChanges(doOpenFile);
+        } else if (appState === 'login' || appState === 'create' || currentFile || pendingDatabaseData) {
+          // Ask for confirmation if we're switching from another database
+          setPendingAction(() => doOpenFile);
+          setShowUnsavedDialog(true);
+        } else {
+          await doOpenFile();
         }
       });
 
@@ -226,10 +239,27 @@ function App() {
   const handleCreateNewDatabase = async () => {
     const doCreateNew = () => {
       setAppState('create');
+      setCurrentFile(null);
+      setPendingDatabaseData(null);
+      setMasterPassword('');
+      setHasUnsavedChanges(false);
+      setLastSavedDatabase(null);
+      setIsAutoLoaded(false);
     };
 
+    // Check if we have an active database (authenticated) or are in the process of opening one (login, create states)
     if (appState === 'authenticated') {
       await checkUnsavedChanges(doCreateNew);
+    } else if (appState === 'login' || appState === 'create' || currentFile || pendingDatabaseData) {
+      // Ask for confirmation if we're switching from another database
+      return new Promise((resolve) => {
+        setPendingAction(() => () => {
+          resolve(true);
+          doCreateNew();
+        });
+        setPendingActionResolve(() => resolve);
+        setShowUnsavedDialog(true);
+      });
     } else {
       doCreateNew();
     }
@@ -250,8 +280,19 @@ function App() {
       }
     };
 
+    // Check if we have an active database (authenticated) or are in the process of opening one (login, create states)
     if (appState === 'authenticated') {
       await checkUnsavedChanges(doOpenExisting);
+    } else if (appState === 'login' || appState === 'create' || currentFile || pendingDatabaseData) {
+      // Ask for confirmation if we're switching from another database
+      return new Promise((resolve) => {
+        setPendingAction(() => () => {
+          resolve(true);
+          doOpenExisting();
+        });
+        setPendingActionResolve(() => resolve);
+        setShowUnsavedDialog(true);
+      });
     } else {
       await doOpenExisting();
     }
@@ -606,6 +647,7 @@ function App() {
         onSave={handleUnsavedDialogSave}
         onDiscard={handleUnsavedDialogDiscard}
         onCancel={handleUnsavedDialogCancel}
+        hasUnsavedChanges={hasUnsavedChanges}
       />
     </ThemeProvider>
   );
