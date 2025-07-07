@@ -13,8 +13,8 @@ let allWindows = new Set();
 function createWindow() {
   const newWindow = new BrowserWindow({
     width: 1200,
-    height: 800,
-    minWidth: 800,
+    height: 600,
+    minWidth: 1000,
     minHeight: 600,
     webPreferences: {
       nodeIntegration: false,
@@ -195,6 +195,15 @@ ipcMain.handle('set-recent-database', (event, filePath) => {
 
 ipcMain.handle('clear-recent-database', () => {
   store.delete('recentDatabase');
+});
+
+// Settings management
+ipcMain.handle('get-setting', (event, key, defaultValue = null) => {
+  return store.get(key, defaultValue);
+});
+
+ipcMain.handle('set-setting', (event, key, value) => {
+  store.set(key, value);
 });
 
 // Handle file opening from command line

@@ -17,6 +17,83 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
   const [folderDropdownOpen, setFolderDropdownOpen] = useState(false);
   const [filteredEntries, setFilteredEntries] = useState(database.entries);
   
+  // Resizable sidebar state
+  const [sidebarWidth, setSidebarWidth] = useState(256); // Default 256px (equivalent to w-64)
+  const [isResizing, setIsResizing] = useState(false);
+  
+  // Load sidebar width from settings on mount
+  useEffect(() => {
+    const loadSidebarWidth = async () => {
+      if (window.electronAPI) {
+        try {
+          const savedWidth = await window.electronAPI.getSetting('sidebarWidth', 256);
+          setSidebarWidth(savedWidth);
+        } catch (error) {
+          console.error('Error loading sidebar width:', error);
+        }
+      }
+    };
+    loadSidebarWidth();
+  }, []);
+
+  // Save sidebar width when it changes
+  const saveSidebarWidth = async (width) => {
+    if (window.electronAPI) {
+      try {
+        await window.electronAPI.setSetting('sidebarWidth', width);
+      } catch (error) {
+        console.error('Error saving sidebar width:', error);
+      }
+    }
+  };
+
+  // Handle sidebar resizing
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    setIsResizing(true);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isResizing) return;
+    
+    const newWidth = e.clientX;
+    const minWidth = 200;
+    const maxWidth = 500;
+    
+    if (newWidth >= minWidth && newWidth <= maxWidth) {
+      setSidebarWidth(newWidth);
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (isResizing) {
+      setIsResizing(false);
+      saveSidebarWidth(sidebarWidth);
+    }
+  };
+
+  // Add global mouse event listeners for resizing
+  useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    } else {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing, sidebarWidth]);
+  
   // Flache Liste aller Ordner erstellen (rekursiv)
   const getAllFolders = () => {
     const result = [];
@@ -192,8 +269,11 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
         currentFile={currentFile}
       />
       <div className="flex flex-1 overflow-hidden">
-      {/* Sidebar - always visible */}
-      <div className="block w-64 xl:w-72 flex-shrink-0">
+      {/* Sidebar - resizable */}
+      <div 
+        className="block flex-shrink-0 relative"
+        style={{ width: `${sidebarWidth}px` }}
+      >
         <div className="h-full smooth-scroll scrollbar-cool">
           <Sidebar
             folders={database.folders}
@@ -204,6 +284,23 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
             onDeleteFolder={onDeleteFolder}
             entryCount={database.entries.length}
           />
+        </div>
+        
+        {/* Resize handle */}
+        <div 
+          className={`absolute top-0 right-0 w-1 h-full cursor-col-resize transition-colors ${
+            isResizing 
+              ? 'bg-blue-500 bg-opacity-70' 
+              : 'bg-transparent hover:bg-gray-300 hover:bg-opacity-50'
+          }`}
+          onMouseDown={handleMouseDown}
+          title="Drag to resize sidebar"
+        >
+          <div className={`absolute top-1/2 right-0 transform -translate-y-1/2 w-1 h-8 rounded-l transition-colors ${
+            isResizing 
+              ? 'bg-blue-500' 
+              : 'bg-gray-400 opacity-30'
+          }`}></div>
         </div>
       </div>
 

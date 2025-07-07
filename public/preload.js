@@ -33,5 +33,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   createNewDatabaseWindow: () => ipcRenderer.invoke('create-new-database-window'),
   openDatabaseInNewWindow: () => ipcRenderer.invoke('open-database-in-new-window'),
   
+  // Settings management
+  getSetting: (key, defaultValue) => ipcRenderer.invoke('get-setting', key, defaultValue),
+  setSetting: (key, value) => ipcRenderer.invoke('set-setting', key, value),
+  
   removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel)
 });
