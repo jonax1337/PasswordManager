@@ -51,7 +51,7 @@ const Sidebar = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRenam
       </div>
 
       <div 
-        className="flex-1 overflow-auto p-3 lg:p-4 smooth-scroll"
+        className="flex-1 overflow-auto p-3 lg:p-4 smooth-scroll scrollbar-cool"
         onContextMenu={handleRightClick}
       >
         <FolderTree

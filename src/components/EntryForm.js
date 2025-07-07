@@ -174,37 +174,22 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
             </div>
           </div>
 
-          {/* Username and URL - Responsive Grid */}
-          <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-4">
-            <div>
-              <label className="block text-sm font-medium theme-text mb-2">
-                Username/Email
-              </label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="w-full theme-input px-3 py-2 rounded-lg"
-                placeholder="Enter username or email"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium theme-text mb-2">
-                URL
-              </label>
-              <input
-                type="url"
-                name="url"
-                value={formData.url}
-                onChange={handleChange}
-                className="w-full theme-input px-3 py-2 rounded-lg"
-                placeholder="https://example.com"
-              />
-            </div>
+          {/* Username - Full Width */}
+          <div>
+            <label className="block text-sm font-medium theme-text mb-2">
+              Username/Email
+            </label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full theme-input px-3 py-2 rounded-lg"
+              placeholder="Enter username or email"
+            />
           </div>
 
+          {/* Password - Full Width */}
           <div>
             <label className="block text-sm font-medium theme-text mb-2">
               Password *
@@ -272,15 +257,23 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
                     }}
                   />
                 </div>
-                {passwordStrength.feedback.length > 0 && (
-                  <ul className="text-xs theme-text-secondary list-disc list-inside">
-                    {passwordStrength.feedback.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                )}
               </div>
             )}
+          </div>
+
+          {/* URL - Full Width */}
+          <div>
+            <label className="block text-sm font-medium theme-text mb-2">
+              URL
+            </label>
+            <input
+              type="url"
+              name="url"
+              value={formData.url}
+              onChange={handleChange}
+              className="w-full theme-input px-3 py-2 rounded-lg"
+              placeholder="https://example.com"
+            />
           </div>
 
           <div>

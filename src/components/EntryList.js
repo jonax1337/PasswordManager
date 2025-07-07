@@ -198,7 +198,7 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolder, search
                     </span>
                   }
                 </div>
-                <div className="overflow-y-auto scrollbar-thin theme-input rounded-md p-2 flex-1 min-h-[60px] max-h-[120px] sm:max-h-[100px] md:max-h-[120px] lg:max-h-[140px]">
+                <div className="overflow-y-auto smooth-scroll scrollbar-thin theme-input rounded-md p-2 flex-1 min-h-[60px] max-h-[120px] sm:max-h-[100px] md:max-h-[120px] lg:max-h-[140px]">
                   {entry.notes ? (
                     <p className="text-[11px] theme-text-secondary whitespace-pre-wrap leading-relaxed break-words" title={entry.notes}>
                       {entry.notes}

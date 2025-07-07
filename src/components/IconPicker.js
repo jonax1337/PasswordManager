@@ -176,7 +176,7 @@ const IconPicker = ({ selectedIcon, onIconSelect, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="p-4 overflow-y-auto max-h-96">
+        <div className="p-4 overflow-y-auto max-h-96 smooth-scroll scrollbar-cool">
           {activeTab === 'emojis' ? (
             <div className="space-y-4">
               {Object.entries(emojiCategories).map(([category, emojis]) => (

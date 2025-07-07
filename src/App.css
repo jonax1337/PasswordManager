@@ -445,3 +445,106 @@ body.theme-cute .theme-input:focus {
 .theme-surface {
   background: var(--color-surface);
 }
+
+/* Smooth scrolling behavior */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Cool custom scrollbars - ultra-slim and modern */
+.scrollbar-cool {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.scrollbar-cool::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.scrollbar-cool::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 2px;
+}
+
+.scrollbar-cool::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.4);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.scrollbar-cool::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+.scrollbar-cool::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Dark theme scrollbar */
+body.theme-dark .scrollbar-cool {
+  scrollbar-color: rgba(75, 85, 99, 0.6) transparent;
+}
+
+body.theme-dark .scrollbar-cool::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+body.theme-dark .scrollbar-cool::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.8);
+}
+
+/* Cute theme scrollbar */
+body.theme-cute .scrollbar-cool {
+  scrollbar-color: rgba(236, 72, 153, 0.4) transparent;
+}
+
+body.theme-cute .scrollbar-cool::-webkit-scrollbar-thumb {
+  background: rgba(236, 72, 153, 0.3);
+}
+
+body.theme-cute .scrollbar-cool::-webkit-scrollbar-thumb:hover {
+  background: rgba(236, 72, 153, 0.6);
+}
+
+/* Ultra-thin scrollbar variant for compact areas */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 1px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+/* Dark theme for thin scrollbar */
+body.theme-dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.4);
+}
+
+body.theme-dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.6);
+}
+
+/* Cute theme for thin scrollbar */
+body.theme-cute .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(236, 72, 153, 0.2);
+}
+
+body.theme-cute .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(236, 72, 153, 0.4);
+}
