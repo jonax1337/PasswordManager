@@ -85,11 +85,11 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolder, search
   return (
     <>
       <div className="flex-1 p-3 sm:p-4 lg:p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 auto-rows-fr">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
           {entries.map(entry => (
             <div
               key={entry.id}
-              className="entry-card theme-card rounded-xl shadow-sm p-3 sm:p-4 lg:p-5 hover:shadow-md transition-all group cursor-pointer flex flex-col h-60 sm:h-64 md:h-72 lg:h-80"
+              className="entry-card theme-card rounded-xl shadow-sm p-3 sm:p-4 lg:p-5 hover:shadow-md transition-all group cursor-pointer flex flex-col min-h-[280px] sm:min-h-[300px] md:min-h-[320px] lg:min-h-[340px]"
               onDoubleClick={() => onEditEntry(entry)}
             >
               {/* Header with icon, title and actions */}
@@ -140,16 +140,16 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolder, search
               </div>
 
             {/* Main content area - flex grow to fill available space */}
-            <div className="flex-1 flex flex-col space-y-3">
+            <div className="flex-1 flex flex-col space-y-2 min-h-0">
               {/* Username field */}
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 <label className="text-xs font-medium theme-text-secondary">Username</label>
                 <div className="flex items-center gap-1">
                   <input
                     type="text"
                     value={entry.username || ''}
                     readOnly
-                    className="flex-1 px-2 py-1.5 theme-input rounded-md text-xs min-w-0"
+                    className="flex-1 px-2 py-1 theme-input rounded-md text-xs min-w-0"
                     placeholder="No username"
                   />
                   {entry.username && (
@@ -165,14 +165,14 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolder, search
               </div>
 
               {/* Password field */}
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 <label className="text-xs font-medium theme-text-secondary">Password</label>
                 <div className="flex items-center gap-1">
                   <input
                     type={showPasswords[entry.id] ? 'text' : 'password'}
                     value={entry.password || ''}
                     readOnly
-                    className="flex-1 px-2 py-1.5 theme-input rounded-md text-xs min-w-0"
+                    className="flex-1 px-2 py-1 theme-input rounded-md text-xs min-w-0"
                     placeholder="No password"
                   />
                   {entry.password && (
@@ -188,9 +188,9 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolder, search
                 </div>
               </div>
 
-              {/* Notes section - always visible, compact design */}
-              <div className="flex flex-col min-h-0 mt-1">
-                <div className="flex items-center justify-between">
+              {/* Notes section - responsive design */}
+              <div className="flex flex-col min-h-0 flex-1 mt-2">
+                <div className="flex items-center justify-between mb-1">
                   <label className="text-xs font-medium theme-text-secondary flex-shrink-0">Notes</label>
                   {entry.notes && 
                     <span className="text-[10px] theme-text-tertiary">
@@ -198,9 +198,9 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolder, search
                     </span>
                   }
                 </div>
-                <div className="overflow-y-auto scrollbar-thin theme-input rounded-md p-1.5 min-h-[40px] max-h-[80px] mt-0.5">
+                <div className="overflow-y-auto scrollbar-thin theme-input rounded-md p-2 flex-1 min-h-[60px] max-h-[120px] sm:max-h-[100px] md:max-h-[120px] lg:max-h-[140px]">
                   {entry.notes ? (
-                    <p className="text-[11px] theme-text-secondary whitespace-pre-wrap leading-tight" title={entry.notes}>
+                    <p className="text-[11px] theme-text-secondary whitespace-pre-wrap leading-relaxed break-words" title={entry.notes}>
                       {entry.notes}
                     </p>
                   ) : (

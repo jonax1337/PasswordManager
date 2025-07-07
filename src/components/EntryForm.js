@@ -124,8 +124,10 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
+          {/* Header Fields - Responsive Grid Layout */}
+          <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-4">
+            {/* Title and Icon - Takes 2 columns on large screens */}
+            <div className="lg:col-span-2">
               <label className="block text-sm font-medium theme-text mb-2">
                 Title *
               </label>
@@ -154,7 +156,8 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
               </div>
             </div>
 
-            <div>
+            {/* Folder - Takes 1 column on large screens */}
+            <div className="lg:col-span-1">
               <label className="block text-sm font-medium theme-text mb-2">
                 Folder
               </label>
@@ -171,18 +174,35 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium theme-text mb-2">
-              Username/Email
-            </label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              className="w-full theme-input px-3 py-2 rounded-lg"
-              placeholder="Enter username or email"
-            />
+          {/* Username and URL - Responsive Grid */}
+          <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-4">
+            <div>
+              <label className="block text-sm font-medium theme-text mb-2">
+                Username/Email
+              </label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                className="w-full theme-input px-3 py-2 rounded-lg"
+                placeholder="Enter username or email"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium theme-text mb-2">
+                URL
+              </label>
+              <input
+                type="url"
+                name="url"
+                value={formData.url}
+                onChange={handleChange}
+                className="w-full theme-input px-3 py-2 rounded-lg"
+                placeholder="https://example.com"
+              />
+            </div>
           </div>
 
           <div>
@@ -261,21 +281,6 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
                 )}
               </div>
             )}
-            
-            {/* URL als letztes Feld für bessere Tab-Reihenfolge */}
-            <div className="mt-4">
-              <label className="block text-sm font-medium theme-text mb-2">
-                URL
-              </label>
-              <input
-                type="url"
-                name="url"
-                value={formData.url}
-                onChange={handleChange}
-                className="w-full theme-input px-3 py-2 rounded-lg"
-                placeholder="https://example.com"
-              />
-            </div>
           </div>
 
           <div>
