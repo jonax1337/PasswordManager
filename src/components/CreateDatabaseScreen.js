@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, FileKey, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import { checkPasswordStrength } from '../utils/crypto';
 import Titlebar from './Titlebar';
 
@@ -97,7 +97,7 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
 
               <div className="mb-6 text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-full mb-4 mx-auto">
-                  <Lock className="w-8 h-8 text-white" />
+                  <FileKey className="w-8 h-8 text-white" />
                 </div>
                 <p className="theme-text-secondary">
                   Set up your master password to secure your new password database. This password will be used to encrypt and decrypt all your stored passwords.

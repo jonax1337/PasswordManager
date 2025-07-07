@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Lock, Key, ArrowLeft, AlertCircle, Eye } from 'lucide-react';
+import { Lock, Key, ArrowLeft, AlertCircle, Eye, Unlock } from 'lucide-react';
 import Titlebar from './Titlebar';
 
 const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpenDatabase }) => {
@@ -85,7 +85,7 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
 
               <div className="text-center mb-8">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mb-4">
-                  <Lock className="w-8 h-8 text-white" />
+                  <Unlock className="w-8 h-8 text-white" />
                 </div>
                 <p className="theme-text-secondary">Enter your master password to unlock your database</p>
                 {currentFile && (
