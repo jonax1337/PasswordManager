@@ -108,7 +108,7 @@
         "name": "Password Manager Database",
         "description": "Simple Password Manager Database File",
         "role": "Editor",
-        "icon": "assets/icon.ico"
+        "icon": "assets/file.ico"
       }
     ]
   }
