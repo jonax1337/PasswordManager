@@ -27,7 +27,20 @@ module.exports = {
         }),
       ];
 
+      // Suppress source map warnings for kdbxweb
+      webpackConfig.ignoreWarnings = [
+        /Failed to parse source map/,
+      ];
+
       return webpackConfig;
+    },
+  },
+  devServer: {
+    setupMiddlewares: (middlewares, devServer) => {
+      return middlewares;
+    },
+    client: {
+      logging: 'warn',
     },
   },
 };

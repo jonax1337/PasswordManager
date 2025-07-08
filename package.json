@@ -4,10 +4,10 @@
   "description": "A simple password manager inspired by KeePass",
   "main": "build/electron.js",
   "scripts": {
-    "dev": "concurrently \"npm run react-dev\" \"npm run electron-dev\"",
-    "react-dev": "npx craco start",
-    "electron-dev": "wait-on http://localhost:3000 && electron .",
-    "build": "npx craco build && copy public\\electron.js build\\ && copy public\\preload.js build\\",
+    "dev": "cross-env NODE_OPTIONS=\"--no-deprecation\" concurrently --kill-others-on-fail \"npm run react-dev\" \"npm run electron-dev\"",
+    "react-dev": "cross-env GENERATE_SOURCEMAP=false npx craco start",
+    "electron-dev": "wait-on http://localhost:3000 && cross-env NODE_OPTIONS=\"--no-deprecation\" electron .",
+    "build": "cross-env GENERATE_SOURCEMAP=false npx craco build && copy public\\electron.js build\\ && copy public\\preload.js build\\",
     "electron-build": "electron-builder",
     "dist": "npm run build && npm run electron-build",
     "start": "electron ."
@@ -23,6 +23,7 @@
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
     "electron": "^37.2.0",
     "electron-builder": "^24.6.4",
     "electron-is-dev": "^2.0.0",

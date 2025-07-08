@@ -54,14 +54,27 @@ function App() {
   const [pendingSaveResolve, setPendingSaveResolve] = useState(null);
   const [multiWindowActionCompleted, setMultiWindowActionCompleted] = useState(false);
 
+  // Check if database is in default state (no real changes)
+  const isDefaultDatabase = (db) => {
+    return db.entries.length === 0 && 
+           db.folders.length === 1 && 
+           db.folders[0].id === 'root' && 
+           db.folders[0].children.length === 1 && 
+           db.folders[0].children[0].id === 'general' &&
+           db.folders[0].children[0].icon === null;
+  };
+
   // Track unsaved changes
   useEffect(() => {
     if (lastSavedDatabase) {
       const hasChanges = JSON.stringify(database) !== JSON.stringify(lastSavedDatabase);
       setHasUnsavedChanges(hasChanges);
-    } else if (database.entries.length > 0 || (database.folders && database.folders.length > 1)) {
+    } else if (!isDefaultDatabase(database)) {
       // If no saved state but we have data (e.g., after import), mark as unsaved
       setHasUnsavedChanges(true);
+    } else {
+      // Default database should not be considered as having unsaved changes
+      setHasUnsavedChanges(false);
     }
   }, [database, lastSavedDatabase]);
 
@@ -215,7 +228,8 @@ function App() {
   }, [appState]);
 
   const checkUnsavedChanges = async (action) => {
-    if (hasUnsavedChanges) {
+    // Never show unsaved changes dialog unless we're in an authenticated database
+    if (hasUnsavedChanges && appState === 'authenticated') {
       return new Promise((resolve) => {
         setPendingAction(() => () => {
           resolve(true); // Resolve with true when action should proceed
@@ -226,7 +240,7 @@ function App() {
         setShowUnsavedDialog(true);
       });
     }
-    action(); // Execute immediately if no unsaved changes
+    action(); // Execute immediately if no unsaved changes or not in authenticated state
     return true;
   };
 

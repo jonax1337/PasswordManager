@@ -11,7 +11,6 @@ const FolderNameDialog = ({ isOpen, title, confirmText = 'Create', initialValue 
 
   useEffect(() => {
     if (isOpen) {
-      console.log('FolderNameDialog useEffect - initialIcon:', initialIcon);
       setFolderName(initialValue);
       setSelectedIcon(initialIcon);
       setError('');
@@ -87,8 +86,6 @@ const FolderNameDialog = ({ isOpen, title, confirmText = 'Create', initialValue 
                 ) : (
                   <Smile className="w-5 h-5 theme-text-secondary" />
                 )}
-                {/* Debug info */}
-                {console.log('Render - selectedIcon:', selectedIcon)}
               </button>
               <input
                 id="folderName"
