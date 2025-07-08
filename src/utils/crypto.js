@@ -48,27 +48,66 @@ export const generatePassword = (options = {}) => {
     excludeSimilar = false
   } = options;
 
-  let charset = '';
+  // Define character sets
+  let uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
+  let numberChars = '0123456789';
+  let symbolChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
   
-  if (includeUppercase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  if (includeLowercase) charset += 'abcdefghijklmnopqrstuvwxyz';
-  if (includeNumbers) charset += '0123456789';
-  if (includeSymbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
-  
+  // Apply similar character exclusion
   if (excludeSimilar) {
-    charset = charset.replace(/[il1Lo0O]/g, '');
+    uppercaseChars = uppercaseChars.replace(/[LO]/g, '');
+    lowercaseChars = lowercaseChars.replace(/[il]/g, '');
+    numberChars = numberChars.replace(/[10]/g, '');
   }
 
-  if (charset === '') {
+  // Build required characters array and full charset
+  const requiredChars = [];
+  let fullCharset = '';
+  
+  if (includeUppercase) {
+    requiredChars.push(uppercaseChars.charAt(Math.floor(Math.random() * uppercaseChars.length)));
+    fullCharset += uppercaseChars;
+  }
+  if (includeLowercase) {
+    requiredChars.push(lowercaseChars.charAt(Math.floor(Math.random() * lowercaseChars.length)));
+    fullCharset += lowercaseChars;
+  }
+  if (includeNumbers) {
+    requiredChars.push(numberChars.charAt(Math.floor(Math.random() * numberChars.length)));
+    fullCharset += numberChars;
+  }
+  if (includeSymbols) {
+    requiredChars.push(symbolChars.charAt(Math.floor(Math.random() * symbolChars.length)));
+    fullCharset += symbolChars;
+  }
+
+  if (fullCharset === '') {
     throw new Error('At least one character type must be selected');
   }
 
-  let password = '';
-  for (let i = 0; i < length; i++) {
-    password += charset.charAt(Math.floor(Math.random() * charset.length));
+  // Ensure we have enough length for required characters
+  if (length < requiredChars.length) {
+    throw new Error('Password length must be at least as long as the number of character types selected');
   }
 
-  return password;
+  // Fill remaining positions with random characters
+  const remainingLength = length - requiredChars.length;
+  const randomChars = [];
+  for (let i = 0; i < remainingLength; i++) {
+    randomChars.push(fullCharset.charAt(Math.floor(Math.random() * fullCharset.length)));
+  }
+
+  // Combine required and random characters, then shuffle
+  const allChars = [...requiredChars, ...randomChars];
+  
+  // Fisher-Yates shuffle to randomize the order
+  for (let i = allChars.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allChars[i], allChars[j]] = [allChars[j], allChars[i]];
+  }
+
+  return allChars.join('');
 };
 
 export const checkPasswordStrength = (password) => {

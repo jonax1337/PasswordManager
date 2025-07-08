@@ -18,7 +18,7 @@ const FolderNameDialog = ({ isOpen, title, confirmText = 'Create', initialValue 
   }, [initialValue, initialIcon, isOpen]);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const trimmedName = folderName.trim();
     
     if (!trimmedName) {
@@ -70,8 +70,9 @@ const FolderNameDialog = ({ isOpen, title, confirmText = 'Create', initialValue 
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="mb-4">
+        <div className="p-6">
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
             <label htmlFor="folderName" className="block text-xs sm:text-sm font-medium theme-text mb-2">
               Folder Name
             </label>
@@ -115,25 +116,27 @@ const FolderNameDialog = ({ isOpen, title, confirmText = 'Create', initialValue 
             {error && (
               <p className="mt-2 text-xs sm:text-sm text-red-600">{error}</p>
             )}
-          </div>
+            </div>
+          </form>
+        </div>
 
-          <div className="flex items-center justify-end space-x-3">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:p-6 theme-border border-t">
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-2 hover:opacity-80 rounded-lg text-xs sm:text-sm font-medium"
+              className="px-3 sm:px-4 py-2 theme-button-secondary rounded-lg font-medium transition-colors text-sm sm:text-base"
             >
               Cancel
             </button>
             <button
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               disabled={!folderName.trim()}
-              className="px-6 py-2 theme-button rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm font-medium"
+              className="px-3 sm:px-4 py-2 theme-button rounded-lg font-medium transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-sm sm:text-base"
             >
               {confirmText}
             </button>
-          </div>
-        </form>
+        </div>
       </div>
 
       {showIconPicker && (

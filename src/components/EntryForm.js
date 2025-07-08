@@ -64,7 +64,9 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
     if (formData.title && formData.password) {
       onSubmit(formData);
     }
@@ -123,7 +125,8 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div className="p-4 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Header Fields - Responsive Grid Layout */}
           <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-4">
             {/* Title and Icon - Takes 2 columns on large screens */}
@@ -289,23 +292,25 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
               placeholder="Additional notes or information..."
             />
           </div>
+          </form>
+        </div>
 
-          <div className="flex items-center justify-end space-x-3 pt-4 theme-border border-t">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 theme-text-secondary hover:opacity-80 theme-button-secondary rounded-lg transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-6 py-2 theme-button rounded-lg"
-            >
-              {entry ? 'Update Entry' : 'Add Entry'}
-            </button>
-          </div>
-        </form>
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:p-6 theme-border border-t">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-3 sm:px-4 py-2 theme-button-secondary rounded-lg font-medium transition-colors text-sm sm:text-base"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="px-3 sm:px-4 py-2 theme-button rounded-lg font-medium transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-sm sm:text-base"
+          >
+            {entry ? 'Update Entry' : 'Add Entry'}
+          </button>
+        </div>
       </div>
 
       {/* Icon Picker Modal */}

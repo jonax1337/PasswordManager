@@ -298,21 +298,21 @@ const PasswordGenerator = ({ onClose }) => {
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center justify-end space-x-3 pt-4 theme-border border-t">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 theme-text-secondary hover:opacity-80 theme-button-secondary rounded-lg transition-colors"
-            >
-              Close
-            </button>
-            <button
-              onClick={copyToClipboard}
-              className="px-6 py-2 theme-button rounded-lg transition-colors"
-            >
-              {copied ? 'Copied!' : 'Copy Password'}
-            </button>
-          </div>
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:p-6 theme-border border-t">
+          <button
+            onClick={onClose}
+            className="px-3 sm:px-4 py-2 theme-button-secondary rounded-lg font-medium transition-colors text-sm sm:text-base"
+          >
+            Close
+          </button>
+          <button
+            onClick={copyToClipboard}
+            className="px-3 sm:px-4 py-2 theme-button rounded-lg font-medium transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-sm sm:text-base"
+          >
+            {copied ? 'Copied!' : 'Copy Password'}
+          </button>
         </div>
       </div>
     </div>
