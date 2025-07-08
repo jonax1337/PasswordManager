@@ -71,27 +71,27 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
         onImportKeePass={onImportKeePass}
       />
       <div className="flex-1 overflow-y-auto smooth-scroll scrollbar-cool">
-        <div className="min-h-full flex items-center justify-center p-4">
-          <div className="w-full max-w-md py-8 sm:py-12">
-            <div className="glass-effect-strong rounded-2xl p-8 shadow-2xl animate-slide-up">
-              <div className="flex items-center mb-6 animate-slide-up-delay-1">
+        <div className="min-h-full flex items-center justify-center p-3 sm:p-4">
+          <div className="w-full max-w-sm sm:max-w-md py-2 sm:py-4">
+            <div className="glass-effect-strong rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl animate-slide-up">
+              <div className="relative flex items-center mb-3 sm:mb-4 animate-slide-up-delay-1">
                 <button
                   onClick={onBack}
-                  className="p-2 theme-button-secondary rounded-lg transition-colors mr-3"
+                  className="absolute left-0 p-2 theme-button-secondary rounded-lg transition-colors"
                 >
-                  <ArrowLeft className="w-5 h-5" />
+                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
-                <h1 className="text-2xl font-bold theme-text">Unlock Database</h1>
+                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold theme-text text-center flex-1">Unlock Database</h1>
               </div>
 
-              <div className="text-center mb-8 animate-slide-up-delay-2">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mb-4">
-                  <Unlock className="w-8 h-8 text-white" />
+              <div className="text-center mb-4 sm:mb-6 animate-slide-up-delay-2">
+                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mb-2 sm:mb-3">
+                  <Unlock className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <p className="theme-text-secondary">Enter your master password to unlock your database</p>
+                <p className="text-sm sm:text-base theme-text-secondary">Enter your master password to unlock your database</p>
                 {currentFile && (
-                  <p className="text-sm theme-text mt-2 theme-surface rounded-lg px-3 py-2">
-                    <strong>Database:</strong> {currentFile.split('/').pop()}
+                  <p className="text-xs sm:text-sm theme-text mt-2 theme-surface rounded-lg px-2 sm:px-3 py-1 sm:py-2">
+                    {currentFile.split('/').pop()}
                   </p>
                 )}
               </div>
@@ -107,7 +107,7 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
 
           <form onSubmit={handleSubmit} className="space-y-6 animate-slide-up-delay-3">
             <div className="relative">
-              <label htmlFor="password" className="block text-sm font-medium theme-text mb-2">
+              <label htmlFor="password" className="block text-xs sm:text-sm font-medium theme-text mb-2">
                 Master Password
               </label>
               <div className="relative">
@@ -165,8 +165,8 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
             </button>
           </form>
 
-          <div className="mt-6 text-center animate-slide-up-delay-4">
-            <p className="text-sm theme-text-secondary">
+          <div className="mt-4 sm:mt-6 text-center animate-slide-up-delay-4">
+            <p className="text-xs sm:text-sm theme-text-secondary">
               Wrong database? <button onClick={onBack} className="text-blue-600 hover:opacity-80 underline">Go back</button> to select a different one.
             </p>
           </div>

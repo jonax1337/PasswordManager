@@ -30,6 +30,7 @@ function App() {
             id: 'general',
             name: 'General',
             path: 'General',
+            icon: null,
             children: []
           }
         ]
@@ -51,6 +52,7 @@ function App() {
   const [importStats, setImportStats] = useState(null);
   const [showMasterPasswordDialog, setShowMasterPasswordDialog] = useState(false);
   const [pendingSaveResolve, setPendingSaveResolve] = useState(null);
+  const [multiWindowActionCompleted, setMultiWindowActionCompleted] = useState(false);
 
   // Track unsaved changes
   useEffect(() => {
@@ -277,6 +279,12 @@ function App() {
       setIsAutoLoaded(false);
     };
 
+    // Check if this action was already completed via MultiWindow dialog
+    if (multiWindowActionCompleted) {
+      setMultiWindowActionCompleted(false);
+      return;
+    }
+
     // Check if we have an active database (authenticated) or are in the process of opening one (login, create states)
     if (appState === 'authenticated') {
       // Show multi-window dialog for authenticated state
@@ -311,6 +319,12 @@ function App() {
         }
       }
     };
+
+    // Check if this action was already completed via MultiWindow dialog
+    if (multiWindowActionCompleted) {
+      setMultiWindowActionCompleted(false);
+      return;
+    }
 
     // Check if we have an active database (authenticated) or are in the process of opening one (login, create states)
     if (appState === 'authenticated') {
@@ -361,6 +375,7 @@ function App() {
               id: 'general',
               name: 'General',
               path: 'General',
+              icon: null,
               children: []
             }
           ]
@@ -550,11 +565,12 @@ function App() {
     return null;
   };
 
-  const addFolder = (parentId, folderName) => {
+  const addFolder = (parentId, folderName, icon = null) => {
     const newFolder = {
       id: Date.now().toString(),
       name: folderName,
       path: parentId === 'root' ? folderName : '', // Will be updated properly
+      icon: icon,
       children: []
     };
 
@@ -583,17 +599,22 @@ function App() {
     });
   };
 
-  const renameFolder = (folderId, newName) => {
+  const renameFolder = (folderId, newName, icon = undefined) => {
     setDatabase(prev => {
       const updateFolders = (folders, parentPath = '') => {
         return folders.map(folder => {
           if (folder.id === folderId) {
             const newPath = parentPath ? `${parentPath}/${newName}` : newName;
-            return {
+            const updatedFolder = {
               ...folder,
               name: newName,
               path: newPath
             };
+            // Only update icon if it's provided (undefined means keep existing)
+            if (icon !== undefined) {
+              updatedFolder.icon = icon;
+            }
+            return updatedFolder;
           }
           const currentPath = folder.path || folder.name;
           return {
@@ -676,45 +697,36 @@ function App() {
   };
 
   const handleMultiWindowReplaceCurrentDatabase = async () => {
-    // First check for unsaved changes if we're replacing
-    const doReplace = async () => {
-      if (pendingMultiWindowAction === 'new-database') {
-        // Reset to create new database
-        setAppState('create');
-        setCurrentFile(null);
-        setPendingDatabaseData(null);
-        setMasterPassword('');
-        setHasUnsavedChanges(false);
-        setLastSavedDatabase(null);
-        setIsAutoLoaded(false);
-      } else if (pendingMultiWindowAction === 'open-database') {
-        // Trigger open database dialog
-        if (window.electronAPI) {
-          const result = await window.electronAPI.loadDatabase();
-          if (result.success && !result.canceled) {
-            setPendingDatabaseData(result);
-            setCurrentFile(result.filePath);
-            setIsAutoLoaded(false);
-            await window.electronAPI.setRecentDatabase(result.filePath);
-            setAppState('login');
-          }
+    // User already chose "Replace Current Database" - execute directly without additional confirmation
+    if (pendingMultiWindowAction === 'new-database') {
+      // Reset to create new database
+      setAppState('create');
+      setCurrentFile(null);
+      setPendingDatabaseData(null);
+      setMasterPassword('');
+      setHasUnsavedChanges(false);
+      setLastSavedDatabase(null);
+      setIsAutoLoaded(false);
+      setMultiWindowActionCompleted(true); // Mark as completed to prevent double UnsavedChanges dialog
+    } else if (pendingMultiWindowAction === 'open-database') {
+      // Trigger open database dialog
+      if (window.electronAPI) {
+        const result = await window.electronAPI.loadDatabase();
+        if (result.success && !result.canceled) {
+          setPendingDatabaseData(result);
+          setCurrentFile(result.filePath);
+          setIsAutoLoaded(false);
+          await window.electronAPI.setRecentDatabase(result.filePath);
+          setAppState('login');
+          setMultiWindowActionCompleted(true); // Mark as completed to prevent double UnsavedChanges dialog
         }
-      } else if (pendingMultiWindowAction === 'import-keepass') {
-        // Show KeePass import dialog
-        setShowKeePassImportDialog(true);
       }
-      setShowMultiWindowDialog(false);
-      setPendingMultiWindowAction(null);
-    };
-
-    if (hasUnsavedChanges) {
-      // Show unsaved changes dialog first
-      setPendingAction(doReplace);
-      setShowUnsavedDialog(true);
-      setShowMultiWindowDialog(false);
-    } else {
-      await doReplace();
+    } else if (pendingMultiWindowAction === 'import-keepass') {
+      // Show KeePass import dialog
+      setShowKeePassImportDialog(true);
     }
+    setShowMultiWindowDialog(false);
+    setPendingMultiWindowAction(null);
   };
 
   const handleMultiWindowCancel = () => {

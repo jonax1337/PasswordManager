@@ -4,7 +4,24 @@ import {
   Home, Building, Car, Gamepad2, Music, Camera, ShoppingCart,
   Heart, Star, Coffee, Briefcase, GraduationCap, MapPin,
   Monitor, Smartphone, Tablet, Wifi, Cloud, Download,
-  Upload, Link, Hash, AtSign, Send, Bookmark, X
+  Upload, Link, Hash, AtSign, Send, Bookmark, X,
+  Server, Database, HardDrive, Cpu, Network, Router,
+  Settings, Cog, Wrench, Bug, Code, Terminal,
+  FileText, Folder, Archive, Package, Layers, Activity,
+  BarChart, TrendingUp, DollarSign, CreditCard as CreditCardIcon,
+  Users, UserCheck, UserX, Crown, Award, Medal,
+  Calendar, Clock, Timer, Bell, Flag, Tag,
+  Search, Filter, SortAsc, SortDesc, List, Grid,
+  Eye, EyeOff, Edit, Trash2, Plus, Minus,
+  Save, Copy, Paste, Undo, Redo,
+  ZoomIn, ZoomOut, Maximize, Minimize, RotateCcw,
+  Play, Pause, Stop, SkipBack, SkipForward, Volume2,
+  Image, Video, Music2, Headphones, Mic, Speaker,
+  Printer, Fax, Phone as PhoneIcon,
+  MessageCircle, MessageSquare, Mail as MailIcon, Send as SendIcon,
+  Facebook, Instagram, Twitter, Linkedin, Youtube,
+  Github, Slack, Chrome,
+  Smartphone as Mobile
 } from 'lucide-react';
 
 // Brand icons from react-icons
@@ -13,119 +30,185 @@ import {
   FaSpotify, FaApple, FaMicrosoft, FaAmazon, FaFilm, FaDropbox,
   FaGithub, FaSlack, FaDiscord, FaTelegram, FaWhatsapp, FaTiktok,
   FaSnapchat, FaPinterest, FaReddit, FaTwitch, FaUber, FaAirbnb,
-  FaPaypal, FaSkype, FaVideo, FaFileImage
+  FaPaypal, FaVideo, FaFileImage, FaDocker, FaAws,
+  FaDigitalOcean, FaGitlab, FaBitbucket,
+  FaTrello, FaWordpress, FaShopify,
+  FaNodeJs, FaReact, FaVuejs, FaAngular, FaPython, FaJava,
+  FaPhp, FaLaravel, FaBootstrap, FaSass, FaNpm,
+  FaYarn, FaGulp
 } from 'react-icons/fa';
 
-import {
-  SiAdobe, SiApple, SiGoogle, SiAmazon, SiNetflix,
-  SiSpotify, SiDropbox, SiGithub, SiSlack, SiDiscord, SiTelegram,
-  SiWhatsapp, SiInstagram, SiLinkedin, SiYoutube,
-  SiFacebook, SiTiktok, SiSnapchat, SiPinterest, SiReddit,
-  SiTwitch, SiUber, SiAirbnb, SiPaypal, SiZoom,
-  SiNotion, SiTrello, SiAsana, SiJira, SiConfluence, SiCanva, SiMicrosoft
-} from 'react-icons/si';
-
 const IconPicker = ({ selectedIcon, onIconSelect, onClose }) => {
-  const [activeTab, setActiveTab] = useState('emojis');
 
-  // Popular emojis for different categories
-  const emojiCategories = {
-    popular: ['🔐', '🌐', '📧', '💳', '🏦', '🛒', '🎮', '📱', '💻', '🏠', '🚗', '✈️', '🏢', '📊', '💼', '🎵', '📷', '☕', '💖', '⭐'],
-    social: ['📘', '📷', '🐦', '💼', '📺', '🎵', '📱', '💬', '📞', '📧', '👥', '🌐', '📝', '📋', '🔗', '📢', '🎯', '📺', '🎬', '🎪'],
-    work: ['💼', '📊', '📈', '💻', '🖥️', '📧', '📁', '📋', '📝', '🏢', '💳', '🏦', '📞', '📠', '🖨️', '💾', '📤', '📥', '🗂️', '📎'],
-    entertainment: ['🎮', '🎵', '🎬', '📺', '🎯', '🎲', '🃏', '🎪', '🎨', '📚', '📖', '🎭', '🎤', '🎸', '🎹', '🥁', '🎺', '🎻', '🎧', '📻']
-  };
 
-  // Icon categories with brands and general icons
+  // Icon categories with comprehensive tech and IT icons
   const iconCategories = {
-    general: [
-      { icon: Lock, name: 'Lock' },
-      { icon: Mail, name: 'Mail' },
-      { icon: User, name: 'User' },
-      { icon: CreditCard, name: 'CreditCard' },
+    security: [
       { icon: Shield, name: 'Shield' },
+      { icon: Lock, name: 'Lock' },
       { icon: Key, name: 'Key' },
+      { icon: Eye, name: 'Eye' },
+      { icon: EyeOff, name: 'EyeOff' },
+      { icon: UserCheck, name: 'UserCheck' },
+      { icon: UserX, name: 'UserX' },
+      { icon: Crown, name: 'Crown' },
+      { icon: Award, name: 'Award' },
+      { icon: Bug, name: 'Bug' },
+      { icon: Settings, name: 'Settings' },
+      { icon: Cog, name: 'Cog' }
+    ],
+    servers: [
+      { icon: Server, name: 'Server' },
+      { icon: Database, name: 'Database' },
+      { icon: HardDrive, name: 'HardDrive' },
+      { icon: Cpu, name: 'Cpu' },
+      { icon: Network, name: 'Network' },
+      { icon: Router, name: 'Router' },
+      { icon: Monitor, name: 'Monitor' },
+      { icon: Terminal, name: 'Terminal' },
+      { icon: Activity, name: 'Activity' },
+      { icon: BarChart, name: 'BarChart' },
+      { icon: TrendingUp, name: 'TrendingUp' },
+      { icon: Layers, name: 'Layers' }
+    ],
+    cloud: [
+      { icon: Cloud, name: 'Cloud' },
+      { icon: Upload, name: 'Upload' },
+      { icon: Download, name: 'Download' },
+      { icon: Archive, name: 'Archive' },
+      { icon: Package, name: 'Package' },
+      { icon: Folder, name: 'Folder' },
+      { icon: FileText, name: 'FileText' },
+      { icon: Save, name: 'Save' },
+      { icon: Copy, name: 'Copy' },
+      { icon: FaAws, name: 'AWS' },
+      { icon: FaDigitalOcean, name: 'DigitalOcean' },
+      { icon: FaDocker, name: 'Docker' }
+    ],
+    development: [
+      { icon: Code, name: 'Code' },
+      { icon: Terminal, name: 'Terminal' },
+      { icon: FaGithub, name: 'GitHub' },
+      { icon: FaGitlab, name: 'GitLab' },
+      { icon: FaBitbucket, name: 'Bitbucket' },
+      { icon: FaTrello, name: 'Trello' },
+      { icon: FaSlack, name: 'Slack' },
+      { icon: FaNodeJs, name: 'NodeJS' },
+      { icon: FaReact, name: 'React' }
+    ],
+    hardware: [
+      { icon: Cpu, name: 'Processor' },
+      { icon: HardDrive, name: 'Storage' },
+      { icon: Monitor, name: 'Monitor' },
+      { icon: Smartphone, name: 'Mobile' },
+      { icon: Tablet, name: 'Tablet' },
+      { icon: Printer, name: 'Printer' },
+      { icon: Headphones, name: 'Headphones' },
+      { icon: Mic, name: 'Microphone' },
+      { icon: Speaker, name: 'Speaker' },
+      { icon: Camera, name: 'Camera' },
+      { icon: Video, name: 'Video' }
+    ],
+    general: [
+      { icon: User, name: 'User' },
+      { icon: Users, name: 'Users' },
+      { icon: Mail, name: 'Mail' },
       { icon: Phone, name: 'Phone' },
-      { icon: Globe, name: 'Globe' }
+      { icon: Globe, name: 'Globe' },
+      { icon: Home, name: 'Home' },
+      { icon: Building, name: 'Building' },
+      { icon: Car, name: 'Car' },
+      { icon: Heart, name: 'Heart' },
+      { icon: Star, name: 'Star' },
+      { icon: Coffee, name: 'Coffee' },
+      { icon: Briefcase, name: 'Briefcase' }
     ],
     categories: [
-      { icon: Home, name: 'Home' },
-      { icon: Building, name: 'Work' },
-      { icon: Car, name: 'Transportation' },
-      { icon: Briefcase, name: 'Business' },
       { icon: GraduationCap, name: 'Education' },
       { icon: ShoppingCart, name: 'Shopping' },
       { icon: Gamepad2, name: 'Gaming' },
       { icon: Music, name: 'Music' },
       { icon: Camera, name: 'Photography' },
-      { icon: Heart, name: 'Health' },
-      { icon: Star, name: 'Favorites' },
-      { icon: Coffee, name: 'Food' }
+      { icon: MapPin, name: 'Location' },
+      { icon: Calendar, name: 'Calendar' },
+      { icon: Clock, name: 'Clock' },
+      { icon: Timer, name: 'Timer' },
+      { icon: Bell, name: 'Bell' },
+      { icon: Flag, name: 'Flag' },
+      { icon: Tag, name: 'Tag' }
     ],
-    tech: [
-      { icon: Monitor, name: 'Desktop' },
-      { icon: Smartphone, name: 'Mobile' },
-      { icon: Tablet, name: 'Tablet' },
-      { icon: Wifi, name: 'Network' },
+    infrastructure: [
+      { icon: Server, name: 'Server' },
+      { icon: Database, name: 'Database' },
+      { icon: Network, name: 'Network' },
+      { icon: Router, name: 'Router' },
+      { icon: Wifi, name: 'WiFi' },
       { icon: Cloud, name: 'Cloud' },
-      { icon: Download, name: 'Download' },
-      { icon: Upload, name: 'Upload' },
-      { icon: Link, name: 'Website' },
-      { icon: Hash, name: 'Social' },
-      { icon: AtSign, name: 'Email' },
-      { icon: Send, name: 'Messages' },
-      { icon: Bookmark, name: 'Bookmarks' }
+      { icon: Shield, name: 'Security' },
+      { icon: Lock, name: 'Encryption' },
+      { icon: Activity, name: 'Monitoring' },
+      { icon: BarChart, name: 'Analytics' },
+      { icon: Settings, name: 'Configuration' },
     ],
-    brands: [
-      // Tech Giants
-      { icon: FaGoogle, name: 'Google' },
-      { icon: FaApple, name: 'Apple' },
-      { icon: FaMicrosoft, name: 'Microsoft' },
-      { icon: FaAmazon, name: 'Amazon' },
-      { icon: SiAdobe, name: 'Adobe' },
-      
-      // Social Media
+    programming: [
+      { icon: FaNodeJs, name: 'NodeJS' },
+      { icon: FaReact, name: 'React' },
+      { icon: FaVuejs, name: 'Vue' },
+      { icon: FaAngular, name: 'Angular' },
+      { icon: FaPython, name: 'Python' },
+      { icon: FaJava, name: 'Java' },
+      { icon: FaPhp, name: 'PHP' },
+      { icon: FaLaravel, name: 'Laravel' },
+      { icon: FaBootstrap, name: 'Bootstrap' },
+      { icon: FaSass, name: 'Sass' },
+      { icon: FaNpm, name: 'NPM' },
+      { icon: FaYarn, name: 'Yarn' }
+    ],
+    operatingsystems: [
+      { icon: Mobile, name: 'iOS' },
+      { icon: Chrome, name: 'ChromeOS' },
+      { icon: Terminal, name: 'Terminal' },
+      { icon: Code, name: 'Shell' },
+      { icon: Settings, name: 'System' },
+      { icon: Cog, name: 'Config' },
+      { icon: Monitor, name: 'Desktop' },
+      { icon: Smartphone, name: 'Mobile' }
+    ],
+    devtools: [
+      { icon: FaGithub, name: 'GitHub' },
+      { icon: FaGitlab, name: 'GitLab' },
+      { icon: FaDocker, name: 'Docker' },
+      { icon: FaGulp, name: 'Gulp' },
+      { icon: Terminal, name: 'Terminal' },
+      { icon: Code, name: 'IDE' },
+      { icon: Bug, name: 'Debug' }
+    ],
+    socialbrands: [
       { icon: FaFacebook, name: 'Facebook' },
       { icon: FaInstagram, name: 'Instagram' },
       { icon: FaTwitter, name: 'Twitter' },
       { icon: FaLinkedin, name: 'LinkedIn' },
+      { icon: FaYoutube, name: 'YouTube' },
       { icon: FaTiktok, name: 'TikTok' },
       { icon: FaSnapchat, name: 'Snapchat' },
       { icon: FaPinterest, name: 'Pinterest' },
-      { icon: SiReddit, name: 'Reddit' },
-      
-      // Entertainment
-      { icon: FaYoutube, name: 'YouTube' },
-      { icon: SiNetflix, name: 'Netflix' },
-      { icon: SiSpotify, name: 'Spotify' },
-      { icon: SiTwitch, name: 'Twitch' },
-      
-      // Communication
+      { icon: FaReddit, name: 'Reddit' },
+      { icon: FaTwitch, name: 'Twitch' },
       { icon: FaWhatsapp, name: 'WhatsApp' },
       { icon: FaTelegram, name: 'Telegram' },
       { icon: FaDiscord, name: 'Discord' },
       { icon: FaSlack, name: 'Slack' },
-      { icon: FaSkype, name: 'Skype' },
       { icon: FaVideo, name: 'Zoom' },
-      
-      // Productivity
-      { icon: FaGithub, name: 'GitHub' },
+      { icon: FaSpotify, name: 'Spotify' },
       { icon: FaDropbox, name: 'Dropbox' },
-      { icon: SiNotion, name: 'Notion' },
-      { icon: SiTrello, name: 'Trello' },
-      { icon: SiJira, name: 'Jira' },
-      { icon: SiCanva, name: 'Canva' },
-      
-      // Services
       { icon: FaPaypal, name: 'PayPal' },
-      { icon: SiUber, name: 'Uber' },
-      { icon: SiAirbnb, name: 'Airbnb' }
+      { icon: FaUber, name: 'Uber' },
+      { icon: FaAirbnb, name: 'Airbnb' },
+      { icon: FaGoogle, name: 'Google' },
+      { icon: FaApple, name: 'Apple' },
+      { icon: FaMicrosoft, name: 'Microsoft' },
+      { icon: FaAmazon, name: 'Amazon' }
     ]
-  };
-
-  const handleEmojiClick = (emoji) => {
-    onIconSelect({ type: 'emoji', value: emoji });
-    onClose();
   };
 
   const handleIconClick = (iconName) => {
@@ -136,6 +219,7 @@ const IconPicker = ({ selectedIcon, onIconSelect, onClose }) => {
   const isSelected = (type, value) => {
     return selectedIcon?.type === type && selectedIcon?.value === value;
   };
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -151,80 +235,35 @@ const IconPicker = ({ selectedIcon, onIconSelect, onClose }) => {
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex theme-border border-b">
-          <button
-            className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
-              activeTab === 'emojis'
-                ? 'theme-primary border-b-2 theme-surface'
-                : 'theme-text-secondary hover:opacity-80'
-            }`}
-            onClick={() => setActiveTab('emojis')}
-          >
-            😀 Emojis
-          </button>
-          <button
-            className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
-              activeTab === 'icons'
-                ? 'theme-primary border-b-2 theme-surface'
-                : 'theme-text-secondary hover:opacity-80'
-            }`}
-            onClick={() => setActiveTab('icons')}
-          >
-            🎨 Icons
-          </button>
-        </div>
 
         {/* Content */}
         <div className="p-4 overflow-y-auto max-h-96 smooth-scroll scrollbar-cool">
-          {activeTab === 'emojis' ? (
-            <div className="space-y-4">
-              {Object.entries(emojiCategories).map(([category, emojis]) => (
-                <div key={category}>
-                  <h4 className="text-sm font-medium theme-text mb-2 capitalize">
-                    {category}
-                  </h4>
-                  <div className="grid grid-cols-8 gap-2">
-                    {emojis.map((emoji, index) => (
-                      <button
-                        key={index}
-                        className={`p-2 text-xl hover:opacity-80 theme-button-secondary rounded-lg transition-colors ${
-                          isSelected('emoji', emoji) ? 'theme-surface ring-2 ring-blue-500' : ''
-                        }`}
-                        onClick={() => handleEmojiClick(emoji)}
-                      >
-                        {emoji}
-                      </button>
-                    ))}
-                  </div>
+          <div className="space-y-6">
+            {Object.entries(iconCategories).map(([category, icons]) => (
+              <div key={category}>
+                <h4 className="text-sm font-medium theme-text mb-3 capitalize border-b theme-border pb-1">
+                  {category === 'socialbrands' ? 'Social & Brands' : 
+                   category === 'operatingsystems' ? 'Operating Systems' :
+                   category === 'devtools' ? 'Development Tools' :
+                   category}
+                </h4>
+                <div className="grid grid-cols-6 gap-2">
+                  {icons.map(({ icon: IconComponent, name }) => (
+                    <button
+                      key={name}
+                      className={`p-3 hover:opacity-80 theme-button-secondary rounded-lg transition-colors flex items-center justify-center ${
+                        isSelected('icon', name) ? 'theme-surface ring-2 ring-blue-500' : ''
+                      }`}
+                      onClick={() => handleIconClick(name)}
+                      title={name}
+                    >
+                      <IconComponent className="w-5 h-5 theme-text-secondary" />
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {Object.entries(iconCategories).map(([category, icons]) => (
-                <div key={category}>
-                  <h4 className="text-sm font-medium theme-text mb-2 capitalize">
-                    {category}
-                  </h4>
-                  <div className="grid grid-cols-6 gap-2">
-                    {icons.map(({ icon: IconComponent, name }) => (
-                      <button
-                        key={name}
-                        className={`p-3 hover:opacity-80 theme-button-secondary rounded-lg transition-colors flex items-center justify-center ${
-                          isSelected('icon', name) ? 'theme-surface ring-2 ring-blue-500' : ''
-                        }`}
-                        onClick={() => handleIconClick(name)}
-                        title={name}
-                      >
-                        <IconComponent className="w-5 h-5 theme-text-secondary" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Footer */}

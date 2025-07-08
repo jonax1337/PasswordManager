@@ -83,31 +83,31 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
         onImportKeePass={onImportKeePass}
       />
       <div className="flex-1 overflow-y-auto smooth-scroll scrollbar-cool">
-        <div className="min-h-full flex items-center justify-center p-4">
-          <div className="w-full max-w-md py-8 sm:py-12">
-            <div className="glass-effect-strong rounded-2xl p-8 shadow-2xl animate-slide-up">
-              <div className="flex items-center mb-6 animate-slide-up-delay-1">
+        <div className="min-h-full flex items-center justify-center p-3 sm:p-4">
+          <div className="w-full max-w-sm sm:max-w-md py-2 sm:py-4">
+            <div className="glass-effect-strong rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl animate-slide-up">
+              <div className="relative flex items-center mb-3 sm:mb-4 animate-slide-up-delay-1">
                 <button
                   onClick={onBack}
-                  className="p-2 theme-button-secondary rounded-lg transition-colors mr-3"
+                  className="absolute left-0 p-2 theme-button-secondary rounded-lg transition-colors"
                 >
-                  <ArrowLeft className="w-5 h-5" />
+                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
-                <h1 className="text-2xl font-bold theme-text">Create New Database</h1>
+                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold theme-text text-center flex-1">Create New Database</h1>
               </div>
 
-              <div className="mb-6 text-center animate-slide-up-delay-2">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-full mb-4 mx-auto">
-                  <FileKey className="w-8 h-8 text-white" />
+              <div className="mb-3 sm:mb-4 text-center animate-slide-up-delay-2">
+                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-full mb-2 sm:mb-3 mx-auto">
+                  <FileKey className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <p className="theme-text-secondary">
+                <p className="text-sm sm:text-base theme-text-secondary">
                   Set up your master password to secure your new password database. This password will be used to encrypt and decrypt all your stored passwords.
                 </p>
               </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6 animate-slide-up-delay-3">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 animate-slide-up-delay-3">
             <div>
-              <label htmlFor="password" className="block text-sm font-medium theme-text mb-2">
+              <label htmlFor="password" className="block text-xs sm:text-sm font-medium theme-text mb-2">
                 Master Password
               </label>
               <div className="relative">
@@ -140,8 +140,8 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
               {passwordStrength && (
                 <div className="mt-3 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm theme-text-secondary">Password strength:</span>
-                    <span className={`text-sm px-2 py-1 rounded-full ${getStrengthColor(passwordStrength.strength)}`}>
+                    <span className="text-xs sm:text-sm theme-text-secondary">Password strength:</span>
+                    <span className={`text-xs sm:text-sm px-2 py-1 rounded-full ${getStrengthColor(passwordStrength.strength)}`}>
                       {passwordStrength.strength.toUpperCase()}
                     </span>
                   </div>
@@ -163,7 +163,7 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium theme-text mb-2">
+              <label htmlFor="confirmPassword" className="block text-xs sm:text-sm font-medium theme-text mb-2">
                 Confirm Master Password
               </label>
               <div className="relative">
@@ -200,9 +200,9 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
               )}
             </div>
 
-            <div className="border border-red-400 rounded-lg p-4">
+            <div className="border border-red-400 rounded-lg p-3">
               <div className="flex items-start">
-                <div className="text-sm theme-text">
+                <div className="text-xs sm:text-sm theme-text">
                   <strong>Important:</strong> Your master password cannot be recovered if forgotten. 
                   Make sure to choose a strong password that you will remember.
                 </div>
@@ -218,16 +218,16 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t theme-border animate-slide-up-delay-4">
+          <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t theme-border animate-slide-up-delay-4">
             <div className="text-center">
-              <p className="text-sm theme-text-secondary mb-4">
+              <p className="text-xs sm:text-sm theme-text-secondary mb-2 sm:mb-3">
                 Already have a KeePass database?
               </p>
               <button
                 onClick={onImportKeePass}
-                className="w-full theme-button-secondary py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
+                className="w-full theme-button-secondary py-2 sm:py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
               >
-                <Upload className="w-5 h-5" />
+                <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
                 Import from KeePass
               </button>
             </div>

@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import { Folder, FolderOpen, FolderPlus, ChevronRight, ChevronDown, MoreHorizontal } from 'lucide-react';
 import FolderNameDialog from './FolderNameDialog';
 import DeleteConfirmDialog from './DeleteConfirmDialog';
+import IconRenderer from './IconRenderer';
 
-const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRenameFolder, onDeleteFolder, entryCount }) => {
+const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onEditFolder, onRenameFolder, onDeleteFolder, entryCount }) => {
+  // For backward compatibility, use onRenameFolder if onEditFolder is not provided
+  const handleEditFolder = onEditFolder || onRenameFolder;
   const [expandedFolders, setExpandedFolders] = useState(new Set(['root']));
   const [showContextMenu, setShowContextMenu] = useState(null);
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
-  const [renamingFolder, setRenamingFolder] = useState(null);
-  const [renameValue, setRenameValue] = useState('');
+  const [editingFolder, setEditingFolder] = useState(null);
+  const [editValue, setEditValue] = useState('');
   const [showFolderDialog, setShowFolderDialog] = useState(false);
-  const [folderDialogType, setFolderDialogType] = useState('create'); // 'create' or 'rename'
+  const [folderDialogType, setFolderDialogType] = useState('create'); // 'create' or 'edit'
   const [pendingParentId, setPendingParentId] = useState(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState(null);
@@ -45,13 +48,13 @@ const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRe
     setShowContextMenu(null);
   };
 
-  const handleFolderDialogConfirm = (folderName) => {
+  const handleFolderDialogConfirm = (folderName, folderIcon) => {
     if (folderDialogType === 'create' && pendingParentId) {
-      onAddFolder(pendingParentId, folderName);
+      onAddFolder(pendingParentId, folderName, folderIcon);
       setExpandedFolders(prev => new Set([...prev, pendingParentId])); // Expand parent
-    } else if (folderDialogType === 'rename' && renamingFolder) {
-      onRenameFolder(renamingFolder, folderName);
-      setRenamingFolder(null);
+    } else if (folderDialogType === 'edit' && editingFolder) {
+      handleEditFolder(editingFolder, folderName, folderIcon);
+      setEditingFolder(null);
     }
     setShowFolderDialog(false);
     setPendingParentId(null);
@@ -60,28 +63,28 @@ const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRe
   const handleFolderDialogCancel = () => {
     setShowFolderDialog(false);
     setPendingParentId(null);
-    setRenamingFolder(null);
+    setEditingFolder(null);
   };
 
-  const handleRename = (folder) => {
-    setRenamingFolder(folder.id);
-    setRenameValue(folder.name);
-    setFolderDialogType('rename');
+  const handleEdit = (folder) => {
+    setEditingFolder(folder.id);
+    setEditValue(folder.name);
+    setFolderDialogType('edit');
     setShowFolderDialog(true);
     setShowContextMenu(null);
   };
 
-  const handleRenameSubmit = (folderId) => {
-    if (renameValue.trim() && renameValue.trim() !== '') {
-      onRenameFolder(folderId, renameValue.trim());
+  const handleEditSubmit = (folderId) => {
+    if (editValue.trim() && editValue.trim() !== '') {
+      handleEditFolder(folderId, editValue.trim());
     }
-    setRenamingFolder(null);
-    setRenameValue('');
+    setEditingFolder(null);
+    setEditValue('');
   };
 
-  const handleRenameCancel = () => {
-    setRenamingFolder(null);
-    setRenameValue('');
+  const handleEditCancel = () => {
+    setEditingFolder(null);
+    setEditValue('');
   };
 
   const handleDelete = (folder) => {
@@ -126,10 +129,14 @@ const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRe
             className="flex items-center gap-2 flex-1 min-w-0"
             onClick={() => onFolderSelect(folder.path)}
           >
-            {isSelected || isExpanded ? (
-              <FolderOpen className="w-4 h-4 flex-shrink-0" />
+            {folder.icon ? (
+              <IconRenderer icon={folder.icon} className="w-4 h-4 flex-shrink-0" />
             ) : (
-              <Folder className="w-4 h-4 flex-shrink-0" />
+              isSelected || isExpanded ? (
+                <FolderOpen className="w-4 h-4 flex-shrink-0" />
+              ) : (
+                <Folder className="w-4 h-4 flex-shrink-0" />
+              )
             )}
             
             <span className="group-hover:font-bold truncate text-sm theme-text transition-all">{folder.name}</span>
@@ -174,8 +181,8 @@ const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRe
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         setShowContextMenu(null);
-        if (renamingFolder) {
-          handleRenameCancel();
+        if (editingFolder) {
+          handleEditCancel();
         }
       }
     };
@@ -187,7 +194,7 @@ const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRe
       document.removeEventListener('click', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [renamingFolder]);
+  }, [editingFolder]);
 
   // Get current folder for context menu
   const getCurrentFolder = () => {
@@ -231,9 +238,9 @@ const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRe
             <>
               <button
                 className="w-full px-3 py-1.5 text-left text-sm theme-text hover:opacity-80"
-                onClick={() => handleRename(currentFolder)}
+                onClick={() => handleEdit(currentFolder)}
               >
-                Rename
+                Edit
               </button>
               <button
                 className="w-full px-3 py-1.5 text-left text-sm text-red-600 hover:opacity-80"
@@ -250,9 +257,10 @@ const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRe
         isOpen={showFolderDialog}
         onConfirm={handleFolderDialogConfirm}
         onCancel={handleFolderDialogCancel}
-        title={folderDialogType === 'create' ? 'Create Folder' : 'Rename Folder'}
-        confirmText={folderDialogType === 'create' ? 'Create' : 'Rename'}
-        initialValue={folderDialogType === 'rename' ? renameValue : ''}
+        title={folderDialogType === 'create' ? 'Create Folder' : 'Edit Folder'}
+        confirmText={folderDialogType === 'create' ? 'Create' : 'Update'}
+        initialValue={folderDialogType === 'edit' ? editValue : ''}
+        initialIcon={folderDialogType === 'edit' && currentFolder ? currentFolder.icon : null}
       />
 
       <DeleteConfirmDialog
