@@ -278,7 +278,6 @@ const Titlebar = ({
               className={`menu-item ${currentTheme === key ? 'theme-surface theme-primary' : ''}`}
               onClick={() => handleStyleMenuClick(key)}
             >
-              {key === 'cute' && <Heart className="w-4 h-4" />}
               {key === 'dark' && <Moon className="w-4 h-4" />}
               {key === 'light' && <Sun className="w-4 h-4" />}
               {key === 'system' && <Palette className="w-4 h-4" />}

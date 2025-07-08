@@ -37,19 +37,6 @@ const themes = {
       accent: '#34d399'
     }
   },
-  cute: {
-    name: 'Cute',
-    colors: {
-      primary: '#ec4899',
-      secondary: '#f97316',
-      background: '#fef7ff',
-      surface: '#fdf2f8',
-      text: '#831843',
-      textSecondary: '#be185d',
-      border: '#f9a8d4',
-      accent: '#f472b6'
-    }
-  },
   system: {
     name: 'System',
     colors: null // Will use system detection

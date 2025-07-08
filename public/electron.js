@@ -14,9 +14,9 @@ let windowStartupActions = new Map(); // Track startup actions for each window
 function createWindow() {
   const newWindow = new BrowserWindow({
     width: 1200,
-    height: 600,
+    height: 800,
     minWidth: 1000,
-    minHeight: 600,
+    minHeight: 800,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

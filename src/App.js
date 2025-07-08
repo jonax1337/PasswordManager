@@ -334,8 +334,23 @@ function App() {
 
   const handleDatabaseCreated = (password) => {
     setMasterPassword(password);
+    
+    // Create a sample entry to demonstrate the app and ensure unsaved changes
+    const sampleEntry = {
+      id: Date.now().toString(),
+      title: 'Welcome to Simple Password Manager',
+      username: 'your-username@example.com',
+      password: 'SamplePassword123!',
+      url: 'https://example.com',
+      folder: 'General',
+      notes: 'This is a sample entry to get you started. You can edit or delete this entry and add your own passwords. Don\'t forget to save your database!',
+      icon: null,
+      createdAt: new Date(),
+      modifiedAt: new Date()
+    };
+
     const newDatabase = {
-      entries: [],
+      entries: [sampleEntry], // Include the sample entry
       folders: [
         {
           id: 'root',
@@ -352,10 +367,11 @@ function App() {
         }
       ]
     };
+    
     setDatabase(newDatabase);
-    setLastSavedDatabase(newDatabase);
+    setLastSavedDatabase(null); // Set to null so it's marked as unsaved (like import)
     setCurrentFile(null);
-    setHasUnsavedChanges(false);
+    setHasUnsavedChanges(false); // Will be set to true by useEffect due to lastSavedDatabase being null
     setAppState('authenticated');
   };
 
@@ -734,8 +750,31 @@ function App() {
   };
 
   const handleKeePassImportSuccess = (importedDatabase, stats) => {
-    // Set the imported database as current
-    setDatabase(importedDatabase);
+    // Convert imported database to our standard format with "All Entries" root
+    const standardDatabase = {
+      entries: importedDatabase.entries || [],
+      folders: [
+        {
+          id: 'root',
+          name: 'All Entries',
+          path: '',
+          children: [
+            // Only add imported folders as children of root, no forced "General" folder
+            ...(importedDatabase.folders || []).map(folder => ({
+              ...folder,
+              // Ensure imported folders are nested under the root structure
+              path: folder.path || folder.name
+            }))
+          ]
+        }
+      ]
+    };
+
+    // Keep entry folder paths as they are from the import
+    // Don't force entries into "General" - let them keep their original folder structure
+
+    // Set the converted database as current
+    setDatabase(standardDatabase);
     setLastSavedDatabase(null); // No saved state yet - this is a new import
     setCurrentFile(null); // No file yet, needs to be saved
     setMasterPassword(''); // Will need to set new master password when saving
