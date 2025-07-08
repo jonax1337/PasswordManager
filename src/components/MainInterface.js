@@ -5,7 +5,7 @@ import EntryForm from './EntryForm';
 import PasswordGenerator from './PasswordGenerator';
 import Titlebar from './Titlebar';
 import IconRenderer from './IconRenderer';
-import { Search, Plus, Save, Key, X, ChevronDown, Folder, FolderClosed } from 'lucide-react';
+import { Search, Plus, Save, Key, X, ChevronDown, Folder, FolderClosed, PlusCircle } from 'lucide-react';
 
 const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onSave, onSaveAs, currentFile, hasUnsavedChanges, onClose, onCloseApp, onAddFolder, onRenameFolder, onDeleteFolder, onNewDatabase, onOpenDatabase }) => {
   const [selectedFolder, setSelectedFolder] = useState('');
@@ -332,7 +332,7 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
                 className="p-2 sm:p-3 theme-button rounded-lg"
                 title="Add new entry"
               >
-                <Plus className="w-4 h-4 sm:w-4 sm:h-4" />
+                <PlusCircle className="w-4 h-4 sm:w-4 sm:h-4" />
               </button>
               
               <button

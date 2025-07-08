@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { Minus, Square, X, FileText, FolderOpen, Save, Plus, Key, Sun, Moon, Palette, Heart, Upload } from 'lucide-react';
+import { Minus, Square, X, FileText, FolderOpen, Save, Plus, Key, Sun, Moon, Palette, Heart, Upload, FilePlus2, Circle, PlusCircle } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
 const Titlebar = ({ 
@@ -167,21 +167,21 @@ const Titlebar = ({
           onClick={handleMinimize}
           title="Minimize"
         >
-          <Minus className="window-control-icon" />
+          <Minus strokeWidth={3} className="window-control-icon" />
         </button>
         <button 
           className="window-control maximize" 
           onClick={handleMaximize}
           title="Maximize"
         >
-          <Square className="window-control-icon" />
+          <Square strokeWidth={3} className="window-control-icon" />
         </button>
         <button 
           className="window-control close" 
           onClick={handleClose}
           title="Close"
         >
-          <X className="window-control-icon" />
+          <X strokeWidth={3} className="window-control-icon" />
         </button>
       </div>
 
@@ -193,7 +193,7 @@ const Titlebar = ({
               className="menu-item"
               onClick={() => handleFileMenuClick(onNewDatabase)}
             >
-              <FileText className="w-4 h-4" />
+              <FilePlus2 className="w-4 h-4" />
               New Database
               <span className="menu-shortcut">Ctrl+N</span>
             </button>
@@ -250,7 +250,7 @@ const Titlebar = ({
               className="menu-item"
               onClick={() => handleEditMenuClick(onAddEntry)}
             >
-              <Plus className="w-4 h-4" />
+              <PlusCircle className="w-4 h-4" />
               Add Entry
               <span className="menu-shortcut">Strg+Alt+Win+N</span>
             </button>

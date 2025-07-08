@@ -211,7 +211,22 @@ const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onEd
     return showContextMenu ? findFolder(folders, showContextMenu) : null;
   };
 
+  const getEditingFolder = () => {
+    const findFolder = (folderList, id) => {
+      for (const folder of folderList) {
+        if (folder.id === id) return folder;
+        if (folder.children) {
+          const found = findFolder(folder.children, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    return editingFolder ? findFolder(folders, editingFolder) : null;
+  };
+
   const currentFolder = getCurrentFolder();
+  const editingFolderObject = getEditingFolder();
 
   return (
     <div className="relative">
@@ -260,7 +275,7 @@ const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onEd
         title={folderDialogType === 'create' ? 'Create Folder' : 'Edit Folder'}
         confirmText={folderDialogType === 'create' ? 'Create' : 'Update'}
         initialValue={folderDialogType === 'edit' ? editValue : ''}
-        initialIcon={folderDialogType === 'edit' && currentFolder ? currentFolder.icon : null}
+        initialIcon={folderDialogType === 'edit' && editingFolderObject ? editingFolderObject.icon : null}
       />
 
       <DeleteConfirmDialog

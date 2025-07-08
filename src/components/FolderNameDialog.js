@@ -10,12 +10,12 @@ const FolderNameDialog = ({ isOpen, title, confirmText = 'Create', initialValue 
   const [error, setError] = useState('');
 
   useEffect(() => {
-    setFolderName(initialValue);
-    // Only update the icon if we have a valid icon structure or null
-    if (!initialIcon || (initialIcon && typeof initialIcon === 'object' && initialIcon.type)) {
+    if (isOpen) {
+      console.log('FolderNameDialog useEffect - initialIcon:', initialIcon);
+      setFolderName(initialValue);
       setSelectedIcon(initialIcon);
+      setError('');
     }
-    setError('');
   }, [initialValue, initialIcon, isOpen]);
 
   const handleSubmit = (e) => {
@@ -82,11 +82,13 @@ const FolderNameDialog = ({ isOpen, title, confirmText = 'Create', initialValue 
                 onClick={() => setShowIconPicker(true)}
                 className="flex items-center justify-center w-10 h-10 theme-surface theme-border border rounded-lg hover:opacity-80 transition-colors flex-shrink-0"
               >
-                {selectedIcon && selectedIcon.type ? (
+                {selectedIcon ? (
                   <IconRenderer icon={selectedIcon} className="w-5 h-5" />
                 ) : (
                   <Smile className="w-5 h-5 theme-text-secondary" />
                 )}
+                {/* Debug info */}
+                {console.log('Render - selectedIcon:', selectedIcon)}
               </button>
               <input
                 id="folderName"

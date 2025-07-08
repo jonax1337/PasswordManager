@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, FolderOpen, Shield, ShieldCheck, Upload } from 'lucide-react';
+import { Plus, FolderOpen, Shield, ShieldCheck, Upload, FilePlus2 } from 'lucide-react';
 import Titlebar from './Titlebar';
 
 const WelcomeScreen = ({ onCreateNew, onOpenExisting, onImportKeePass }) => {
@@ -37,7 +37,7 @@ const WelcomeScreen = ({ onCreateNew, onOpenExisting, onImportKeePass }) => {
                 className="glass-effect-strong rounded-lg sm:rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 text-center hover:scale-105 transition-all duration-300 cursor-pointer group hover:shadow-xl animate-slide-up-delay-3"
               >
                 <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-full mb-2 sm:mb-3 lg:mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <Plus className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white" />
+                  <FilePlus2 className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white" />
                 </div>
                 <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold theme-text mb-2 sm:mb-3 lg:mb-4 group-hover:text-green-600 transition-colors duration-300">Create New Database</h2>
                 <p className="text-xs sm:text-sm lg:text-base theme-text-secondary px-1 sm:px-2 group-hover:theme-text transition-colors duration-300">
