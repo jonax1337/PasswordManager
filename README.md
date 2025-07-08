@@ -17,18 +17,22 @@ A secure and modern password manager built with Electron and React, inspired by 
 
 ## ✨ Features
 
-- 🔐 **AES Encryption** - Military-grade encryption for all data
+- 🔐 **AES-256 Encryption** - Military-grade encryption for all data
 - 💾 **Local Storage** - Your passwords never leave your device  
 - 🔑 **Master Password** - Single password to rule them all
-- 🎨 **Multiple Themes** - Light, dark, cute, and system themes
-- 🎯 **Smart Icons** - 30+ brand logos (Google, Facebook, etc.) and emojis
-- 📁 **Hierarchical Folders** - Organize with nested folder structure
-- 🔍 **Smart Search** - Find entries instantly
-- 🔧 **Password Generator** - Create strong passwords with custom rules
+- 🎨 **Multiple Themes** - Light, dark, and system themes with beautiful gradients
+- 🎯 **Smart Icons** - 100+ brand logos, security icons, and custom folder icons
+- 📁 **Hierarchical Folders** - Organize with nested folder structure and custom icons
+- 🔍 **Global Search** - Find entries across all folders with instant results
+- 🔧 **Advanced Password Generator** - Guaranteed character types with custom rules
 - 📂 **Recent Files** - Quick access to last used database
 - 🖱️ **File Association** - Double-click .pmdb files to open directly
 - ⌨️ **Keyboard Shortcuts** - Work faster with hotkeys
+- 📱 **Responsive Design** - Optimized for all screen sizes
+- 📥 **KeePass Import** - Import your existing KeePass databases
+- 🎛️ **Resizable Interface** - Customize sidebar width to your preference
 - 💻 **Cross-Platform** - Works on Windows, macOS, and Linux
+- 🚫 **No Network Access** - Completely offline for maximum security
 
 ## 🚀 Quick Start
 
@@ -128,9 +132,11 @@ Built applications will be in the `release/` folder.
 1. Click **Generate** in the password field or press `Ctrl+G`
 2. Customize options:
    - **Length**: 4-128 characters
-   - **Character types**: Letters, numbers, symbols
+   - **Character types**: Uppercase, lowercase, numbers, symbols
    - **Exclude similar**: Avoid confusing characters (i, l, 1, L, o, 0, O)
-3. Copy and use the generated password
+   - **Guaranteed inclusion**: Every selected character type is guaranteed to appear
+3. **Copy and use** the generated password with confidence
+4. **Real-time strength**: See password strength analysis as you generate
 
 </details>
 
@@ -144,9 +150,33 @@ Built applications will be in the `release/` folder.
 - **Folder icons**: Automatic icons based on content
 
 ### Finding Entries
-- **Search bar**: Type to find entries by title, username, or URL
+- **Global Search**: Type to find entries across all folders by title, username, URL, notes, and folder name
+- **Search Results**: Click any search result to instantly edit that entry
+- **Smart Navigation**: Return to search after editing with the back button
 - **Folder filtering**: Click folders to show only those entries
 - **Recent files**: Last opened database loads automatically
+
+</details>
+
+<details>
+<summary><strong>📥 KeePass Database Import</strong></summary>
+
+### Importing from KeePass
+1. Click **File** → **Import from KeePass** or use `Ctrl+I`
+2. **Select your .kdbx file** from KeePass
+3. **Enter the KeePass database password**
+4. **Choose import location** for your new database
+5. **Set a new master password** for the imported database
+6. All entries, folders, and icons are automatically converted
+
+### What Gets Imported
+- ✅ **All password entries** with titles, usernames, passwords, URLs, and notes
+- ✅ **Folder structure** maintaining your organization
+- ✅ **Entry icons** converted to our icon system
+- ✅ **Custom entry icons** preserved where possible
+- ✅ **Nested folders** with full hierarchy
+
+> **💡 Note**: After import, you'll have a new `.pmdb` file that works independently from your original KeePass database.
 
 </details>
 
@@ -154,10 +184,9 @@ Built applications will be in the `release/` folder.
 <summary><strong>🎨 Themes & Customization</strong></summary>
 
 ### Available Themes
-- **Light**: Clean and bright interface
-- **Dark**: Easy on the eyes for night use  
-- **Cute**: Playful pink-themed design
-- **System**: Automatically matches your OS theme
+- **Light**: Clean and bright interface with modern gradients
+- **Dark**: Easy on the eyes for night use with beautiful dark gradients
+- **System**: Automatically matches your OS theme preference
 
 ### Changing Themes
 1. Click **Style** in the menu bar
@@ -176,6 +205,9 @@ Built applications will be in the `release/` folder.
 | `Ctrl+Shift+S` | Save Database As |
 | `Ctrl+Alt+Win+N` | Add New Entry |
 | `Ctrl+G` | Generate Password |
+| `Ctrl+I` | Import from KeePass |
+| `Ctrl+F` | Search Entries |
+| `Escape` | Close Dialog/Search |
 | `Ctrl+Q` | Quit Application |
 
 ## 🏗️ Technical Stack
