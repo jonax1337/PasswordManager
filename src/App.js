@@ -299,12 +299,12 @@ function App() {
       return;
     }
 
-    // Check if we have an active database (authenticated) or are in the process of opening one (login, create states)
+    // Check if we have an active database (authenticated) or are in the process of opening one
     if (appState === 'authenticated') {
       // Show multi-window dialog for authenticated state
       setPendingMultiWindowAction('new-database');
       setShowMultiWindowDialog(true);
-    } else if (appState === 'login' || appState === 'create' || currentFile || pendingDatabaseData) {
+    } else if (appState === 'login' || currentFile || pendingDatabaseData) {
       // Ask for confirmation if we're switching from another database
       return new Promise((resolve) => {
         setPendingAction(() => () => {
@@ -315,6 +315,7 @@ function App() {
         setShowUnsavedDialog(true);
       });
     } else {
+      // For create state or welcome state, just create new directly
       doCreateNew();
     }
   };
@@ -340,12 +341,12 @@ function App() {
       return;
     }
 
-    // Check if we have an active database (authenticated) or are in the process of opening one (login, create states)
+    // Check if we have an active database (authenticated) or are in the process of opening one
     if (appState === 'authenticated') {
       // Show multi-window dialog for authenticated state
       setPendingMultiWindowAction('open-database');
       setShowMultiWindowDialog(true);
-    } else if (appState === 'login' || appState === 'create' || currentFile || pendingDatabaseData) {
+    } else if (appState === 'login' || currentFile || pendingDatabaseData) {
       // Ask for confirmation if we're switching from another database
       return new Promise((resolve) => {
         setPendingAction(() => () => {
@@ -356,6 +357,7 @@ function App() {
         setShowUnsavedDialog(true);
       });
     } else {
+      // For create state or welcome state, just open directly
       await doOpenExisting();
     }
   };

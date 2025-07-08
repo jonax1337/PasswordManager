@@ -16,6 +16,7 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [folderDropdownOpen, setFolderDropdownOpen] = useState(false);
   const [filteredEntries, setFilteredEntries] = useState(database.entries);
+  const [openedFromSearch, setOpenedFromSearch] = useState(false);
   
   // Resizable sidebar state
   const [sidebarWidth, setSidebarWidth] = useState(256); // Default 256px (equivalent to w-64)
@@ -122,16 +123,18 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
   useEffect(() => {
     let filtered = database.entries;
 
-    if (selectedFolder !== '') {
-      filtered = filtered.filter(entry => entry.folder === selectedFolder);
-    }
-
     if (searchTerm) {
+      // Global search - search across ALL entries, ignore folder selection
       filtered = filtered.filter(entry =>
         entry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         entry.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        entry.url.toLowerCase().includes(searchTerm.toLowerCase())
+        entry.url.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (entry.notes && entry.notes.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        entry.folder.toLowerCase().includes(searchTerm.toLowerCase())
       );
+    } else if (selectedFolder !== '') {
+      // Only filter by folder if NOT searching
+      filtered = filtered.filter(entry => entry.folder === selectedFolder);
     }
 
     setFilteredEntries(filtered);
@@ -233,9 +236,11 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
     setIsFormOpen(true);
   };
 
-  const handleEditEntry = (entry) => {
+  const handleEditEntry = (entry, fromSearch = false) => {
     setSelectedEntry(entry);
     setIsFormOpen(true);
+    // Set openedFromSearch flag based on the source
+    setOpenedFromSearch(fromSearch);
   };
 
   const handleFormSubmit = (entryData) => {
@@ -251,6 +256,12 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
   const handleFormClose = () => {
     setIsFormOpen(false);
     setSelectedEntry(null);
+    
+    // If opened from search, go back to search
+    if (openedFromSearch) {
+      setIsSearchOpen(true);
+      setOpenedFromSearch(false);
+    }
   };
 
   return (
@@ -312,8 +323,23 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
             {/* Left side - Title */}
             <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               <h1 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold theme-text truncate">
-                {currentFile ? currentFile.replace(/^.*[\\\/]/, '') : 'New Database'}
-                {hasUnsavedChanges && <span className="text-orange-500 ml-1 lg:ml-2">•</span>}
+                {searchTerm ? (
+                  <span className="flex items-center gap-2">
+                    Search: "{searchTerm}" ({filteredEntries.length} results)
+                    <button
+                      onClick={() => setSearchTerm('')}
+                      className="ml-2 p-1 hover:opacity-80 theme-button-secondary rounded transition-colors"
+                      title="Clear search"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </span>
+                ) : (
+                  <>
+                    {currentFile ? currentFile.replace(/^.*[\\\/]/, '') : 'New Database'}
+                    {hasUnsavedChanges && <span className="text-orange-500 ml-1 lg:ml-2">•</span>}
+                  </>
+                )}
               </h1>
             </div>
 
@@ -427,8 +453,9 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
                         key={entry.id}
                         className="flex items-center space-x-3 p-3 hover:opacity-80 theme-button-secondary rounded-lg cursor-pointer"
                         onClick={() => {
-                          setIsSearchOpen(false);
-                          // Could scroll to entry or open it
+                          setOpenedFromSearch(true);
+                          setIsSearchOpen(false); // Close search when opening entry
+                          handleEditEntry(entry);
                         }}
                       >
                         <div className="w-10 h-10 theme-surface rounded-lg flex items-center justify-center">
