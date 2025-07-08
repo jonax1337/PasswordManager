@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, FileKey, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, FileKey, Eye, EyeOff, AlertCircle, CheckCircle, Upload } from 'lucide-react';
 import { checkPasswordStrength } from '../utils/crypto';
 import Titlebar from './Titlebar';
 
-const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpenDatabase }) => {
+const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpenDatabase, onImportKeePass }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -80,12 +80,13 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
         showMenus={true}
         onNewDatabase={onNewDatabase}
         onOpenDatabase={onOpenDatabase}
+        onImportKeePass={onImportKeePass}
       />
       <div className="flex-1 overflow-y-auto smooth-scroll scrollbar-cool">
         <div className="min-h-full flex items-center justify-center p-4">
           <div className="w-full max-w-md py-8 sm:py-12">
-            <div className="glass-effect-strong rounded-2xl p-8 shadow-2xl">
-              <div className="flex items-center mb-6">
+            <div className="glass-effect-strong rounded-2xl p-8 shadow-2xl animate-slide-up">
+              <div className="flex items-center mb-6 animate-slide-up-delay-1">
                 <button
                   onClick={onBack}
                   className="p-2 theme-button-secondary rounded-lg transition-colors mr-3"
@@ -95,7 +96,7 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
                 <h1 className="text-2xl font-bold theme-text">Create New Database</h1>
               </div>
 
-              <div className="mb-6 text-center">
+              <div className="mb-6 text-center animate-slide-up-delay-2">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-full mb-4 mx-auto">
                   <FileKey className="w-8 h-8 text-white" />
                 </div>
@@ -104,7 +105,7 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
                 </p>
               </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 animate-slide-up-delay-3">
             <div>
               <label htmlFor="password" className="block text-sm font-medium theme-text mb-2">
                 Master Password
@@ -216,6 +217,21 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
               Create Database
             </button>
           </form>
+
+          <div className="mt-6 pt-6 border-t theme-border animate-slide-up-delay-4">
+            <div className="text-center">
+              <p className="text-sm theme-text-secondary mb-4">
+                Already have a KeePass database?
+              </p>
+              <button
+                onClick={onImportKeePass}
+                className="w-full theme-button-secondary py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
+              >
+                <Upload className="w-5 h-5" />
+                Import from KeePass
+              </button>
+            </div>
+          </div>
             </div>
           </div>
         </div>

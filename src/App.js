@@ -6,6 +6,9 @@ import MainInterface from './components/MainInterface';
 import UnsavedChangesDialog from './components/UnsavedChangesDialog';
 import MultiWindowDialog from './components/MultiWindowDialog';
 import LockAnimation from './components/LockAnimation';
+import KeePassImportDialog from './components/KeePassImportDialog';
+import KeePassImportSuccessDialog from './components/KeePassImportSuccessDialog';
+import MasterPasswordDialog from './components/MasterPasswordDialog';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { encryptData, decryptData } from './utils/crypto';
 import './App.css';
@@ -43,12 +46,20 @@ function App() {
   const [pendingActionResolve, setPendingActionResolve] = useState(null);
   const [showMultiWindowDialog, setShowMultiWindowDialog] = useState(false);
   const [pendingMultiWindowAction, setPendingMultiWindowAction] = useState(null);
+  const [showKeePassImportDialog, setShowKeePassImportDialog] = useState(false);
+  const [showKeePassSuccessDialog, setShowKeePassSuccessDialog] = useState(false);
+  const [importStats, setImportStats] = useState(null);
+  const [showMasterPasswordDialog, setShowMasterPasswordDialog] = useState(false);
+  const [pendingSaveResolve, setPendingSaveResolve] = useState(null);
 
   // Track unsaved changes
   useEffect(() => {
     if (lastSavedDatabase) {
       const hasChanges = JSON.stringify(database) !== JSON.stringify(lastSavedDatabase);
       setHasUnsavedChanges(hasChanges);
+    } else if (database.entries.length > 0 || (database.folders && database.folders.length > 1)) {
+      // If no saved state but we have data (e.g., after import), mark as unsaved
+      setHasUnsavedChanges(true);
     }
   }, [database, lastSavedDatabase]);
 
@@ -58,7 +69,18 @@ function App() {
       if (window.electronAPI && !hasInitialLoad) {
         setHasInitialLoad(true);
         try {
-          // First check for command line file
+          // First check for startup action (e.g., import-keepass)
+          const startupAction = await window.electronAPI.getStartupAction();
+          if (startupAction) {
+            // If we have any startup action, skip recent file loading and handle the action
+            if (startupAction === 'import-keepass') {
+              setShowKeePassImportDialog(true);
+            }
+            // Add other startup actions here as needed
+            return; // Exit early - don't load recent files when we have a specific startup action
+          }
+          
+          // Then check for command line file
           const pendingFile = await window.electronAPI.getPendingFile();
           if (pendingFile) {
             try {
@@ -119,6 +141,10 @@ function App() {
         await handleSaveDatabase();
       });
 
+      window.electronAPI.onMenuImportKeePass(async () => {
+        await handleImportKeePass();
+      });
+
       // Handle file opening when app is already running
       window.electronAPI.onOpenFile(async (event, filePath) => {
         const doOpenFile = async () => {
@@ -152,6 +178,7 @@ function App() {
         window.electronAPI.removeAllListeners('menu-new-database');
         window.electronAPI.removeAllListeners('menu-open-database');
         window.electronAPI.removeAllListeners('menu-save-database');
+        window.electronAPI.removeAllListeners('menu-import-keepass');
         window.electronAPI.removeAllListeners('open-file');
       };
     }
@@ -203,7 +230,7 @@ function App() {
 
   const handleUnsavedDialogSave = async () => {
     try {
-      const success = await handleSaveDatabase();
+      const success = await handleSmartSave(); // Use smart save instead
       if (success) {
         // Only proceed if save was successful (not canceled)
         if (pendingAction) {
@@ -367,9 +394,30 @@ function App() {
   };
 
   const handleSaveDatabase = async (forceDialog = false) => {
-    if (window.electronAPI && masterPassword) {
+    let passwordToUse = masterPassword;
+    
+    // If no master password is set (e.g., after KeePass import), show dialog
+    if (!passwordToUse) {
+      return new Promise((resolve) => {
+        setPendingSaveResolve(() => (password) => {
+          if (password) {
+            setMasterPassword(password);
+            performSave(password, forceDialog).then(resolve);
+          } else {
+            resolve(false); // User canceled
+          }
+        });
+        setShowMasterPasswordDialog(true);
+      });
+    }
+
+    return await performSave(passwordToUse, forceDialog);
+  };
+
+  const performSave = async (passwordToUse, forceDialog = false) => {
+    if (window.electronAPI && passwordToUse) {
       try {
-        const encryptedData = encryptData(JSON.stringify(database), masterPassword);
+        const encryptedData = encryptData(JSON.stringify(database), passwordToUse);
         
         let result;
         // If we have a current file path and not forcing dialog, save directly
@@ -377,7 +425,7 @@ function App() {
           // Save to existing file path without dialog
           result = await window.electronAPI.saveDatabase(encryptedData, currentFile);
         } else {
-          // Show save dialog for new files or when forced
+          // Show save dialog for new files, after import, or when forced (Save As)
           result = await window.electronAPI.saveDatabase(encryptedData);
         }
         
@@ -403,6 +451,16 @@ function App() {
 
   const handleSaveAsDatabase = async () => {
     return await handleSaveDatabase(true); // Force dialog for "Save As"
+  };
+
+  // Smart save: automatically uses "Save As" for new databases
+  const handleSmartSave = async () => {
+    // If no current file (new database or after import), automatically use Save As
+    if (!currentFile) {
+      return await handleSaveDatabase(true); // Force Save As dialog
+    } else {
+      return await handleSaveDatabase(false); // Normal save
+    }
   };
 
   const handleBackToWelcome = async () => {
@@ -591,6 +649,8 @@ function App() {
         await window.electronAPI.createNewDatabaseWindow();
       } else if (pendingMultiWindowAction === 'open-database') {
         await window.electronAPI.openDatabaseInNewWindow();
+      } else if (pendingMultiWindowAction === 'import-keepass') {
+        await window.electronAPI.importKeePassInNewWindow();
       }
     } catch (error) {
       console.error('Error opening in new window:', error);
@@ -623,6 +683,9 @@ function App() {
             setAppState('login');
           }
         }
+      } else if (pendingMultiWindowAction === 'import-keepass') {
+        // Show KeePass import dialog
+        setShowKeePassImportDialog(true);
       }
       setShowMultiWindowDialog(false);
       setPendingMultiWindowAction(null);
@@ -643,6 +706,76 @@ function App() {
     setPendingMultiWindowAction(null);
   };
 
+  // KeePass Import handlers
+  const handleImportKeePass = async () => {
+    const doImportKeePass = () => {
+      setShowKeePassImportDialog(true);
+    };
+
+    if (appState === 'authenticated') {
+      // Show multi-window dialog for authenticated state
+      setPendingMultiWindowAction('import-keepass');
+      setShowMultiWindowDialog(true);
+    } else if ((appState === 'login' && (currentFile || pendingDatabaseData)) || 
+               (appState !== 'create' && (currentFile || pendingDatabaseData))) {
+      // Ask for confirmation if we're switching from another database (but not in create mode)
+      return new Promise((resolve) => {
+        setPendingAction(() => () => {
+          resolve(true);
+          doImportKeePass();
+        });
+        setPendingActionResolve(() => resolve);
+        setShowUnsavedDialog(true);
+      });
+    } else {
+      // Direct import - no database exists yet (create mode) or no database loaded
+      doImportKeePass();
+    }
+  };
+
+  const handleKeePassImportSuccess = (importedDatabase, stats) => {
+    // Set the imported database as current
+    setDatabase(importedDatabase);
+    setLastSavedDatabase(null); // No saved state yet - this is a new import
+    setCurrentFile(null); // No file yet, needs to be saved
+    setMasterPassword(''); // Will need to set new master password when saving
+    
+    // Show success dialog
+    setImportStats(stats);
+    setShowKeePassSuccessDialog(true);
+    
+    // Transition to authenticated state
+    setAppState('authenticated');
+    
+    // hasUnsavedChanges will be automatically set to true by the useEffect
+  };
+
+  const handleKeePassImportDialogClose = () => {
+    setShowKeePassImportDialog(false);
+  };
+
+  const handleKeePassSuccessDialogClose = () => {
+    setShowKeePassSuccessDialog(false);
+    setImportStats(null);
+  };
+
+  // Master Password Dialog handlers
+  const handleMasterPasswordConfirm = (password) => {
+    if (pendingSaveResolve) {
+      pendingSaveResolve(password);
+      setPendingSaveResolve(null);
+    }
+    setShowMasterPasswordDialog(false);
+  };
+
+  const handleMasterPasswordCancel = () => {
+    if (pendingSaveResolve) {
+      pendingSaveResolve(null);
+      setPendingSaveResolve(null);
+    }
+    setShowMasterPasswordDialog(false);
+  };
+
   // Render different screens based on app state
   const renderMainContent = () => {
     switch (appState) {
@@ -651,6 +784,7 @@ function App() {
           <WelcomeScreen
             onCreateNew={handleCreateNewDatabase}
             onOpenExisting={handleOpenExistingDatabase}
+            onImportKeePass={handleImportKeePass}
           />
         );
       
@@ -661,6 +795,7 @@ function App() {
             onBack={handleBackToWelcome}
             onNewDatabase={handleNewDatabase}
             onOpenDatabase={handleOpenDatabase}
+            onImportKeePass={handleImportKeePass}
           />
         );
       
@@ -672,6 +807,7 @@ function App() {
             currentFile={currentFile}
             onNewDatabase={handleNewDatabase}
             onOpenDatabase={handleOpenDatabase}
+            onImportKeePass={handleImportKeePass}
           />
         );
       
@@ -685,7 +821,7 @@ function App() {
             onAddEntry={addEntry}
             onUpdateEntry={updateEntry}
             onDeleteEntry={deleteEntry}
-            onSave={handleSaveDatabase}
+            onSave={handleSmartSave}
             onSaveAs={handleSaveAsDatabase}
             onClose={handleBackToWelcome}
             onCloseApp={handleCloseApp}
@@ -721,6 +857,22 @@ function App() {
         onCancel={handleMultiWindowCancel}
         action={pendingMultiWindowAction}
         hasUnsavedChanges={hasUnsavedChanges}
+      />
+      <KeePassImportDialog
+        isOpen={showKeePassImportDialog}
+        onClose={handleKeePassImportDialogClose}
+        onImportSuccess={handleKeePassImportSuccess}
+      />
+      <KeePassImportSuccessDialog
+        isOpen={showKeePassSuccessDialog}
+        onClose={handleKeePassSuccessDialogClose}
+        stats={importStats}
+      />
+      <MasterPasswordDialog
+        isOpen={showMasterPasswordDialog}
+        onClose={handleMasterPasswordCancel}
+        onConfirm={handleMasterPasswordConfirm}
+        title="Set Master Password"
       />
     </ThemeProvider>
   );

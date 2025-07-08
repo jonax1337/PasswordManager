@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { Minus, Square, X, FileText, FolderOpen, Save, Plus, Key, Sun, Moon, Palette, Heart } from 'lucide-react';
+import { Minus, Square, X, FileText, FolderOpen, Save, Plus, Key, Sun, Moon, Palette, Heart, Upload } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
 const Titlebar = ({ 
@@ -12,6 +12,7 @@ const Titlebar = ({
   onSaveAsDatabase,
   onAddEntry,
   onGeneratePassword,
+  onImportKeePass,
   onClose,
   hasUnsavedChanges = false,
   currentFile = null
@@ -207,13 +208,22 @@ const Titlebar = ({
               <span className="menu-shortcut">Ctrl+O</span>
             </button>
           )}
+          {onImportKeePass && (
+            <button
+              className="menu-item"
+              onClick={() => handleFileMenuClick(onImportKeePass)}
+            >
+              <Upload className="w-4 h-4" />
+              Import KeePass Database
+            </button>
+          )}
           {onSaveDatabase && (
             <button
               className="menu-item"
               onClick={() => handleFileMenuClick(onSaveDatabase)}
             >
               <Save className="w-4 h-4" />
-              {currentFile ? 'Save' : 'Save Database'}
+              {currentFile ? 'Save' : 'Save As...'}
               <span className="menu-shortcut">Ctrl+S</span>
               {hasUnsavedChanges && <span className="unsaved-indicator">•</span>}
             </button>

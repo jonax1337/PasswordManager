@@ -1,23 +1,50 @@
 import React from 'react';
-import { FileText, FolderOpen, ExternalLink, Replace } from 'lucide-react';
+import { FileText, FolderOpen, ExternalLink, Replace, Upload } from 'lucide-react';
 
 const MultiWindowDialog = ({ 
   isOpen, 
   onOpenInNewWindow, 
   onReplaceCurrentDatabase, 
   onCancel,
-  action, // 'new-database' or 'open-database'
+  action, // 'new-database', 'open-database', or 'import-keepass'
   hasUnsavedChanges = false
 }) => {
   if (!isOpen) return null;
 
-  const actionText = action === 'new-database' ? 'create a new database' : 'open a database';
-  const actionTitle = action === 'new-database' ? 'Create New Database' : 'Open Database';
-  const actionIcon = action === 'new-database' ? <FileText className="w-6 h-6 text-blue-600" /> : <FolderOpen className="w-6 h-6 text-green-600" />;
+  const getActionDetails = () => {
+    switch (action) {
+      case 'new-database':
+        return {
+          text: 'create a new database',
+          title: 'Create New Database',
+          icon: <FileText className="w-6 h-6 text-blue-600" />
+        };
+      case 'open-database':
+        return {
+          text: 'open a database',
+          title: 'Open Database',
+          icon: <FolderOpen className="w-6 h-6 text-green-600" />
+        };
+      case 'import-keepass':
+        return {
+          text: 'import from KeePass',
+          title: 'Import from KeePass',
+          icon: <Upload className="w-6 h-6 text-orange-600" />
+        };
+      default:
+        return {
+          text: 'perform this action',
+          title: 'Action',
+          icon: <FileText className="w-6 h-6 text-blue-600" />
+        };
+    }
+  };
+
+  const { text: actionText, title: actionTitle, icon: actionIcon } = getActionDetails();
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="theme-surface rounded-xl shadow-2xl w-full max-w-lg">
+      <div className="theme-surface rounded-xl shadow-2xl w-full max-w-lg animate-slide-down">
         <div className="p-6">
           <div className="flex items-center mb-4">
             <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mr-4">

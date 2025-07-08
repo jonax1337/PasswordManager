@@ -9,6 +9,7 @@ const isDev = process.env.NODE_ENV === 'development' ||
 let mainWindow = null; // Keep track of the first window for backwards compatibility
 let pendingFileToOpen = null;
 let allWindows = new Set();
+let windowStartupActions = new Map(); // Track startup actions for each window
 
 function createWindow() {
   const newWindow = new BrowserWindow({
@@ -214,7 +215,7 @@ ipcMain.handle('get-pending-file', () => {
 });
 
 // Multi-window support
-function createNewWindow(filePath = null) {
+function createNewWindow(filePath = null, startupAction = null) {
   const newWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -253,11 +254,15 @@ function createNewWindow(filePath = null) {
     return { action: 'deny' };
   });
 
-  // Track window
+  // Track window and startup action
   allWindows.add(newWindow);
+  if (startupAction) {
+    windowStartupActions.set(newWindow.id, startupAction);
+  }
 
   newWindow.on('closed', () => {
     allWindows.delete(newWindow);
+    windowStartupActions.delete(newWindow.id);
   });
 
   if (isDev) {
@@ -312,6 +317,31 @@ ipcMain.handle('open-database-in-new-window', async (event) => {
   }
 });
 
+// Handle KeePass import in new window
+ipcMain.handle('import-keepass-in-new-window', async (event) => {
+  try {
+    const newWindow = createNewWindow(null, 'import-keepass');
+    return { success: true, windowId: newWindow.id };
+  } catch (error) {
+    console.error('Error creating KeePass import window:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Handle getting startup action for a window
+ipcMain.handle('get-startup-action', async (event) => {
+  const window = BrowserWindow.fromWebContents(event.sender);
+  if (window) {
+    const startupAction = windowStartupActions.get(window.id);
+    // Clear the startup action after retrieving it
+    if (startupAction) {
+      windowStartupActions.delete(window.id);
+    }
+    return startupAction || null;
+  }
+  return null;
+});
+
 // Handle opening files when app is already running
 app.on('open-file', (event, filePath) => {
   event.preventDefault();
@@ -361,6 +391,16 @@ const template = [
           const focusedWindow = BrowserWindow.getFocusedWindow();
           if (focusedWindow) {
             focusedWindow.webContents.send('menu-save-database');
+          }
+        }
+      },
+      { type: 'separator' },
+      {
+        label: 'Import from KeePass',
+        click: () => {
+          const focusedWindow = BrowserWindow.getFocusedWindow();
+          if (focusedWindow) {
+            focusedWindow.webContents.send('menu-import-keepass');
           }
         }
       },

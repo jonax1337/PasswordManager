@@ -5,9 +5,9 @@
   "main": "build/electron.js",
   "scripts": {
     "dev": "concurrently \"npm run react-dev\" \"npm run electron-dev\"",
-    "react-dev": "react-scripts start",
+    "react-dev": "npx craco start",
     "electron-dev": "wait-on http://localhost:3000 && electron .",
-    "build": "react-scripts build && copy public\\electron.js build\\ && copy public\\preload.js build\\",
+    "build": "npx craco build && copy public\\electron.js build\\ && copy public\\preload.js build\\",
     "electron-build": "electron-builder",
     "dist": "npm run build && npm run electron-build",
     "start": "electron ."
@@ -31,15 +31,27 @@
     "wait-on": "^7.2.0"
   },
   "dependencies": {
+    "@craco/craco": "^7.1.0",
+    "assert": "^2.1.0",
     "autoprefixer": "^10.4.16",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
     "crypto-js": "^4.2.0",
     "electron-store": "^8.1.0",
+    "kdbxweb": "^2.1.1",
     "lucide-react": "^0.294.0",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
     "postcss": "^8.4.31",
+    "process": "^0.11.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.5.0",
-    "tailwindcss": "^3.3.6"
+    "stream-browserify": "^3.0.0",
+    "tailwindcss": "^3.3.6",
+    "url": "^0.11.4",
+    "util": "^0.12.5",
+    "vm-browserify": "^1.1.2"
   },
   "homepage": "./",
   "browserslist": {
@@ -68,7 +80,9 @@
       {
         "from": "assets/",
         "to": "assets/",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "mac": {
@@ -76,14 +90,19 @@
       "icon": "assets/icon.icns",
       "target": {
         "target": "dmg",
-        "arch": ["x64", "arm64"]
+        "arch": [
+          "x64",
+          "arm64"
+        ]
       }
     },
     "win": {
       "icon": "assets/icon.ico",
       "target": {
         "target": "nsis",
-        "arch": ["x64"]
+        "arch": [
+          "x64"
+        ]
       },
       "publisherName": "Simple Password Manager",
       "verifyUpdateCodeSignature": true
@@ -92,7 +111,9 @@
       "icon": "assets/icon.png",
       "target": {
         "target": "AppImage",
-        "arch": ["x64"]
+        "arch": [
+          "x64"
+        ]
       },
       "category": "Security"
     },

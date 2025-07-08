@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onMenuNewDatabase: (callback) => ipcRenderer.on('menu-new-database', callback),
   onMenuOpenDatabase: (callback) => ipcRenderer.on('menu-open-database', callback),
   onMenuSaveDatabase: (callback) => ipcRenderer.on('menu-save-database', callback),
+  onMenuImportKeePass: (callback) => ipcRenderer.on('menu-import-keepass', callback),
   onMenuAddEntry: (callback) => ipcRenderer.on('menu-add-entry', callback),
   onMenuGeneratePassword: (callback) => ipcRenderer.on('menu-generate-password', callback),
   
@@ -32,6 +33,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   createNewWindow: (options) => ipcRenderer.invoke('create-new-window', options),
   createNewDatabaseWindow: () => ipcRenderer.invoke('create-new-database-window'),
   openDatabaseInNewWindow: () => ipcRenderer.invoke('open-database-in-new-window'),
+  importKeePassInNewWindow: () => ipcRenderer.invoke('import-keepass-in-new-window'),
+  
+  // Get startup action for new windows
+  getStartupAction: () => ipcRenderer.invoke('get-startup-action'),
   
   // Settings management
   getSetting: (key, defaultValue) => ipcRenderer.invoke('get-setting', key, defaultValue),

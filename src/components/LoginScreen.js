@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Lock, Key, ArrowLeft, AlertCircle, Eye, Unlock } from 'lucide-react';
 import Titlebar from './Titlebar';
 
-const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpenDatabase }) => {
+const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpenDatabase, onImportKeePass }) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -68,12 +68,13 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
         showMenus={true}
         onNewDatabase={onNewDatabase}
         onOpenDatabase={onOpenDatabase}
+        onImportKeePass={onImportKeePass}
       />
       <div className="flex-1 overflow-y-auto smooth-scroll scrollbar-cool">
         <div className="min-h-full flex items-center justify-center p-4">
           <div className="w-full max-w-md py-8 sm:py-12">
-            <div className="glass-effect-strong rounded-2xl p-8 shadow-2xl">
-              <div className="flex items-center mb-6">
+            <div className="glass-effect-strong rounded-2xl p-8 shadow-2xl animate-slide-up">
+              <div className="flex items-center mb-6 animate-slide-up-delay-1">
                 <button
                   onClick={onBack}
                   className="p-2 theme-button-secondary rounded-lg transition-colors mr-3"
@@ -83,7 +84,7 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
                 <h1 className="text-2xl font-bold theme-text">Unlock Database</h1>
               </div>
 
-              <div className="text-center mb-8">
+              <div className="text-center mb-8 animate-slide-up-delay-2">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mb-4">
                   <Unlock className="w-8 h-8 text-white" />
                 </div>
@@ -104,7 +105,7 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 animate-slide-up-delay-3">
             <div className="relative">
               <label htmlFor="password" className="block text-sm font-medium theme-text mb-2">
                 Master Password
@@ -164,7 +165,7 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
             </button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center animate-slide-up-delay-4">
             <p className="text-sm theme-text-secondary">
               Wrong database? <button onClick={onBack} className="text-blue-600 hover:opacity-80 underline">Go back</button> to select a different one.
             </p>

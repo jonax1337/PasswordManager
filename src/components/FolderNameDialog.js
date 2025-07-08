@@ -39,7 +39,7 @@ const FolderNameDialog = ({ isOpen, title, initialValue = '', onConfirm, onCance
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="theme-surface rounded-xl shadow-2xl w-full max-w-md">
+      <div className="theme-surface rounded-xl shadow-2xl w-full max-w-md animate-slide-down">
         <div className="flex items-center justify-between p-6 theme-border border-b">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-opacity-20 theme-bg-primary rounded-lg">

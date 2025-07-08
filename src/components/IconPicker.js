@@ -139,7 +139,7 @@ const IconPicker = ({ selectedIcon, onIconSelect, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="theme-surface rounded-xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-hidden">
+      <div className="theme-surface rounded-xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-hidden animate-slide-down">
         {/* Header */}
         <div className="flex items-center justify-between p-4 theme-border border-b">
           <h3 className="text-lg font-semibold theme-text">Choose Icon</h3>
