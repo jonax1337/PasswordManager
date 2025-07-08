@@ -204,7 +204,6 @@ Built applications will be in the `release/` folder.
 | `Ctrl+Shift+S` | Save Database As |
 | `Ctrl+Alt+Win+N` | Add New Entry |
 | `Ctrl+G` | Generate Password |
-| `Ctrl+I` | Import from KeePass |
 | `Ctrl+F` | Search Entries |
 | `Escape` | Close Dialog/Search |
 | `Ctrl+Q` | Quit Application |
