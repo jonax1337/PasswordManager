@@ -15,21 +15,21 @@ A secure, modern password manager built with Electron and React
 
 Permission is hereby granted, **free of charge**, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to:
 
-### ✅ **What You Can Do**
-- ✅ **Use** the software for personal or commercial purposes
-- ✅ **Copy** and distribute the software
-- ✅ **Modify** the source code to fit your needs
-- ✅ **Publish** your modifications or derivatives
-- ✅ **Distribute** copies with or without modifications
-- ✅ **Sublicense** the software to others
-- ✅ **Sell** copies of the software
+### **What You Can Do**
+- **Use** the software for personal or commercial purposes
+- **Copy** and distribute the software
+- **Modify** the source code to fit your needs
+- **Publish** your modifications or derivatives
+- **Distribute** copies with or without modifications
+- **Sublicense** the software to others
+- **Sell** copies of the software
 
-### 📋 **Requirements**
+### **Requirements**
 The above copyright notice and this permission notice shall be **included in all copies** or substantial portions of the Software.
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 **THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.**
 
@@ -38,7 +38,7 @@ This includes but is not limited to warranties of:
 - **FITNESS FOR A PARTICULAR PURPOSE** - Suitability for intended use
 - **NONINFRINGEMENT** - Freedom from third-party claims
 
-### 🚫 **Limitation of Liability**
+### **Limitation of Liability**
 In no event shall the authors or copyright holders be liable for any:
 - **Claims** arising from the use of this software
 - **Damages** of any kind (direct, indirect, incidental, special, or consequential)
@@ -48,7 +48,7 @@ This limitation applies to all use, distribution, or other dealings in the Softw
 
 ---
 
-## 🔗 **Additional Information**
+## **Additional Information**
 
 - **Project Repository**: [https://github.com/jonax1337/simple-password-manager](https://github.com/jonax1337/simple-password-manager)
 - **Author**: Jonas Laux

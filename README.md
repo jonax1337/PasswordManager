@@ -13,28 +13,28 @@
 
 A secure and modern password manager built with Electron and React, inspired by KeePass but with a fresh, intuitive interface.
 
-[📥 Download](https://github.com/jonax1337/simple-password-manager/releases) • [🐛 Report Bug](https://github.com/jonax1337/simple-password-manager/issues) • [💡 Request Feature](https://github.com/jonax1337/simple-password-manager/issues)
+[Download](https://github.com/jonax1337/simple-password-manager/releases) • [Report Bug](https://github.com/jonax1337/simple-password-manager/issues) • [Request Feature](https://github.com/jonax1337/simple-password-manager/issues)
 
-## ✨ Features
+## Features
 
-- 🔐 **AES-256 Encryption** - Military-grade encryption for all data
-- 💾 **Local Storage** - Your passwords never leave your device  
-- 🔑 **Master Password** - Single password to rule them all
-- 🎨 **Multiple Themes** - Light, dark, and system themes with beautiful gradients
-- 🎯 **Smart Icons** - 100+ brand logos, security icons, and custom folder icons
-- 📁 **Hierarchical Folders** - Organize with nested folder structure and custom icons
-- 🔍 **Global Search** - Find entries across all folders with instant results
-- 🔧 **Advanced Password Generator** - Guaranteed character types with custom rules
-- 📂 **Recent Files** - Quick access to last used database
-- 🖱️ **File Association** - Double-click .pmdb files to open directly
-- ⌨️ **Keyboard Shortcuts** - Work faster with hotkeys
-- 📱 **Responsive Design** - Optimized for all screen sizes
-- 📥 **KeePass Import** - Import your existing KeePass databases
-- 🎛️ **Resizable Interface** - Customize sidebar width to your preference
-- 💻 **Cross-Platform** - Works on Windows, macOS, and Linux
-- 🚫 **No Network Access** - Completely offline for maximum security
+- **AES-256 Encryption** - Military-grade encryption for all data
+- **Local Storage** - Your passwords never leave your device  
+- **Master Password** - Single password to rule them all
+- **Multiple Themes** - Light, dark, and system themes with beautiful gradients
+- **Smart Icons** - 100+ brand logos, security icons, and custom folder icons
+- **Hierarchical Folders** - Organize with nested folder structure and custom icons
+- **Global Search** - Find entries across all folders with instant results
+- **Advanced Password Generator** - Guaranteed character types with custom rules
+- **Recent Files** - Quick access to last used database
+- **File Association** - Double-click .pmdb files to open directly
+- **Keyboard Shortcuts** - Work faster with hotkeys
+- **Responsive Design** - Optimized for all screen sizes
+- **KeePass Import** - Import your existing KeePass databases
+- **Resizable Interface** - Customize sidebar width to your preference
+- **Cross-Platform** - Works on Windows, macOS, and Linux
+- **No Network Access** - Completely offline for maximum security
 
-## 🚀 Quick Start
+## Quick Start
 
 ### For End Users
 
@@ -93,10 +93,10 @@ npm run dist
 
 Built applications will be in the `release/` folder.
 
-## 📖 Usage Guide
+## Usage Guide
 
 <details>
-<summary><strong>🗂️ Database Management</strong></summary>
+<summary><strong>Database Management</strong></summary>
 
 ### Creating a New Database
 1. Launch the application
@@ -110,12 +110,12 @@ Built applications will be in the `release/` folder.
 2. Select your `.pmdb` file (or double-click it in Explorer)
 3. Enter your master password to unlock
 
-> **💡 Tip**: Recently opened databases are automatically suggested on startup!
+> **Tip**: Recently opened databases are automatically suggested on startup!
 
 </details>
 
 <details>
-<summary><strong>🔑 Managing Password Entries</strong></summary>
+<summary><strong>Managing Password Entries</strong></summary>
 
 ### Adding New Entries
 1. Click **Add Entry** or press `Ctrl+Alt+Win+N`
@@ -141,7 +141,7 @@ Built applications will be in the `release/` folder.
 </details>
 
 <details>
-<summary><strong>📁 Organization & Search</strong></summary>
+<summary><strong>Organization & Search</strong></summary>
 
 ### Folder Management
 - **Create folders**: Right-click in the folder tree
@@ -159,29 +159,28 @@ Built applications will be in the `release/` folder.
 </details>
 
 <details>
-<summary><strong>📥 KeePass Database Import</strong></summary>
+<summary><strong>KeePass Database Import</strong></summary>
 
 ### Importing from KeePass
-1. Click **File** → **Import from KeePass** or use `Ctrl+I`
-2. **Select your .kdbx file** from KeePass
-3. **Enter the KeePass database password**
-4. **Choose import location** for your new database
-5. **Set a new master password** for the imported database
-6. All entries, folders, and icons are automatically converted
+1. Click **Create New Database** or `Ctrl+N`
+2. Click **Import from KeePass** at the bottom of the window
+3. **Select your .kdbx file** from KeePass
+4. **Enter the KeePass database password**
+5. All entries, folders, and icons are automatically converted
+6. **Save** the database
+7. **Set a new master password** for the imported database
 
 ### What Gets Imported
-- ✅ **All password entries** with titles, usernames, passwords, URLs, and notes
-- ✅ **Folder structure** maintaining your organization
-- ✅ **Entry icons** converted to our icon system
-- ✅ **Custom entry icons** preserved where possible
-- ✅ **Nested folders** with full hierarchy
+- **All password entries** with titles, usernames, passwords, URLs, and notes
+- **Folder structure** maintaining your organization
+- **Nested folders** with full hierarchy
 
-> **💡 Note**: After import, you'll have a new `.pmdb` file that works independently from your original KeePass database.
+> **Note**: After import, you'll have a new `.pmdb` file that works independently from your original KeePass database.
 
 </details>
 
 <details>
-<summary><strong>🎨 Themes & Customization</strong></summary>
+<summary><strong>Themes & Customization</strong></summary>
 
 ### Available Themes
 - **Light**: Clean and bright interface with modern gradients
@@ -195,7 +194,7 @@ Built applications will be in the `release/` folder.
 
 </details>
 
-## ⌨️ Keyboard Shortcuts
+## Keyboard Shortcuts
 
 | Shortcut | Action |
 |----------|--------|
@@ -210,7 +209,7 @@ Built applications will be in the `release/` folder.
 | `Escape` | Close Dialog/Search |
 | `Ctrl+Q` | Quit Application |
 
-## 🏗️ Technical Stack
+## Technical Stack
 
 ### Frontend
 - **React 18** - Modern React with hooks
@@ -229,7 +228,7 @@ Built applications will be in the `release/` folder.
 - **Electron Builder** - Application packaging
 - **Concurrently** - Development workflow
 
-## 🔒 Security & Privacy
+## Security & Privacy
 
 | Feature | Implementation |
 |---------|----------------|
@@ -239,24 +238,24 @@ Built applications will be in the `release/` folder.
 | File Format | Encrypted .pmdb files |
 | Zero Knowledge | Your data stays on your device |
 
-> **🛡️ Security Note**: Your master password is never stored anywhere. Make sure to remember it or keep it in a secure backup location!
+> **Security Note**: Your master password is never stored anywhere. Make sure to remember it or keep it in a secure backup location!
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 <details>
 <summary><strong>Application Issues</strong></summary>
 
-**App won't start**
+### App won't start
 - Ensure Node.js 16+ is installed
 - Delete `node_modules` folder and run `npm install`
 - Check for conflicting antivirus software
 
-**Database won't open**  
+### Database won't open
 - Verify correct master password
 - Check file permissions
 - Try moving database to a different location
 
-**Performance is slow**
+### Performance is slow
 - Keep database under 10MB
 - Restart the application
 - Clear unused database files
@@ -266,26 +265,26 @@ Built applications will be in the `release/` folder.
 <details>
 <summary><strong>Development Issues</strong></summary>
 
-**Build fails**
+### Build fails
 - Run `npm install electron-store` if missing
 - Clear build cache with `npm run build`
 - Check Node.js version compatibility
 
-**Electron won't start**
+### Electron won't start
 - Kill any running electron processes
 - Delete `.electron` cache folder
 - Run `npm run react-dev` and `npm run electron-dev` separately
 
 </details>
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Here's how you can help:
 
-1. **🐛 Report Bugs**: [Create an issue](https://github.com/jonax1337/simple-password-manager/issues)
-2. **💡 Suggest Features**: [Request a feature](https://github.com/jonax1337/simple-password-manager/issues)
-3. **🔧 Submit PRs**: Fork, develop, and submit a pull request
-4. **📖 Improve Docs**: Help make the documentation better
+1. **Report Bugs**: [Create an issue](https://github.com/jonax1337/simple-password-manager/issues)
+2. **Suggest Features**: [Request a feature](https://github.com/jonax1337/simple-password-manager/issues)
+3. **Submit PRs**: Fork, develop, and submit a pull request
+4. **Improve Docs**: Help make the documentation better
 
 ### Development Setup
 ```bash
@@ -295,6 +294,6 @@ npm install
 npm run dev
 ```
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
