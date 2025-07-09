@@ -167,6 +167,12 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
         return;
       }
 
+      // Don't handle shortcuts if focus is on input elements or if dialogs are open
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || 
+          isFormOpen || isGeneratorOpen) {
+        return;
+      }
+
       // Handle keyboard shortcuts with Ctrl/Cmd
       if (e.ctrlKey || e.metaKey) {
         switch (e.key.toLowerCase()) {
@@ -205,6 +211,10 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
             e.preventDefault();
             setIsGeneratorOpen(true);
             break;
+          case 'f':
+            e.preventDefault();
+            setIsSearchOpen(true);
+            break;
           default:
             break;
         }
@@ -213,7 +223,7 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isSearchOpen, onSave, onSaveAs, onNewDatabase, onOpenDatabase]);
+  }, [isSearchOpen, isFormOpen, isGeneratorOpen, onSave, onSaveAs, onNewDatabase, onOpenDatabase]);
 
   useEffect(() => {
     const handleDocumentClick = (e) => {
