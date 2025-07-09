@@ -4,7 +4,7 @@ import FolderNameDialog from '../dialogs/FolderNameDialog';
 import DeleteConfirmDialog from '../dialogs/DeleteConfirmDialog';
 import IconRenderer from './IconRenderer';
 
-const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onEditFolder, onRenameFolder, onDeleteFolder, entryCount }) => {
+const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, onEditFolder, onRenameFolder, onDeleteFolder, entryCount }) => {
   // For backward compatibility, use onRenameFolder if onEditFolder is not provided
   const handleEditFolder = onEditFolder || onRenameFolder;
   const [expandedFolders, setExpandedFolders] = useState(new Set(['root']));
@@ -95,7 +95,7 @@ const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onEd
 
   const renderFolder = (folder, level = 0) => {
     const isExpanded = expandedFolders.has(folder.id);
-    const isSelected = selectedFolder === folder.path;
+    const isSelected = selectedFolderId === folder.id;
     const hasChildren = folder.children && folder.children.length > 0;
     const folderEntryCount = getFolderEntryCount(folder.path);
 
@@ -127,7 +127,7 @@ const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onEd
 
           <div 
             className="flex items-center gap-2 flex-1 min-w-0"
-            onClick={() => onFolderSelect(folder.path)}
+            onClick={() => onFolderSelect(folder.id)}
           >
             {folder.icon ? (
               <IconRenderer icon={folder.icon} className="w-4 h-4 flex-shrink-0" />
@@ -139,7 +139,7 @@ const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onEd
               )
             )}
             
-            <span className="group-hover:font-bold truncate text-sm theme-text transition-all">{folder.name}</span>
+            <span className={`truncate text-sm theme-text transition-all ${isSelected ? 'font-bold' : 'group-hover:font-bold'}`}>{folder.name}</span>
             
             {folderEntryCount > 0 && (
               <span className="ml-auto text-xs theme-surface theme-text-secondary px-1.5 py-0.5 rounded-full flex-shrink-0">

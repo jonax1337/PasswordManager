@@ -5,7 +5,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import IconPicker from './IconPicker';
 import IconRenderer from '../ui/IconRenderer';
 
-const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
+const EntryForm = ({ entry, folders, currentFolderId, onSubmit, onClose }) => {
   const { themes, actualTheme } = useTheme();
   const themeColors = themes[actualTheme]?.colors || themes.light.colors;
   const [formData, setFormData] = useState({
@@ -13,7 +13,7 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
     username: '',
     password: '',
     url: '',
-    folder: (currentFolder && currentFolder !== '') ? currentFolder : 'General',
+    folderId: 'general', // Default folder ID
     notes: '',
     icon: null
   });
@@ -21,40 +21,58 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
 
-  // Extract all folder paths for the dropdown, excluding root "All Entries"
-  const getAllFolderPaths = (folders, paths = [], level = 0) => {
+  // Extract all folders for the dropdown, excluding root "All Entries"
+  const getAllFolders = (folders, result = [], level = 0) => {
     folders.forEach(folder => {
       // Skip the root "All Entries" folder (id: 'root')
-      if (folder.id !== 'root' && folder.path) {
-        paths.push({
-          path: folder.path,
-          name: folder.name,
-          level: level,
-          icon: folder.icon
+      if (folder.id !== 'root') {
+        result.push({
+          ...folder,
+          level: level
         });
       }
       if (folder.children) {
-        getAllFolderPaths(folder.children, paths, level + 1);
+        getAllFolders(folder.children, result, level + 1);
       }
     });
-    return paths;
+    return result;
   };
 
-  const folderOptions = getAllFolderPaths(folders);
+  const folderOptions = getAllFolders(folders);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(null);
+
+  // Helper function to get folder from ID
+  const getFolderFromId = (folderId) => {
+    if (!folderId || folderId === 'root') return { id: 'general', name: 'General', path: 'General' };
+    
+    const findFolder = (folders) => {
+      for (const folder of folders) {
+        if (folder.id === folderId) {
+          return folder;
+        }
+        if (folder.children) {
+          const found = findFolder(folder.children);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    
+    return findFolder(folders) || { id: 'general', name: 'General', path: 'General' };
+  };
 
   useEffect(() => {
     if (entry) {
       setFormData(entry);
-    } else if (currentFolder && currentFolder !== '' && !entry) {
+    } else if (currentFolderId && currentFolderId !== 'root' && !entry) {
       // Wenn ein neuer Eintrag erstellt wird, nutze den aktuellen Ordner (aber nicht Root)
       setFormData(prev => ({
         ...prev,
-        folder: currentFolder
+        folderId: currentFolderId
       }));
     }
-  }, [entry, currentFolder]);
+  }, [entry, currentFolderId, folders]);
 
   useEffect(() => {
     if (formData.password) {
@@ -193,7 +211,7 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
                 >
                   <span className="flex items-center gap-2">
                     {(() => {
-                      const selectedFolder = folderOptions.find(f => f.path === formData.folder);
+                      const selectedFolder = getFolderFromId(formData.folderId);
                       return (
                         <>
                           {selectedFolder?.icon ? (
@@ -201,7 +219,7 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
                           ) : (
                             <Folder className="w-4 h-4 theme-text-secondary" />
                           )}
-                          <span>{selectedFolder?.name || formData.folder}</span>
+                          <span>{selectedFolder?.name || 'General'}</span>
                         </>
                       );
                     })()}
@@ -213,21 +231,21 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
                   <div className="absolute top-full left-0 right-0 mt-1 theme-surface border theme-border rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto scrollbar-cool">
                     {folderOptions.map(folder => (
                       <button
-                        key={folder.path}
+                        key={folder.id}
                         type="button"
                         onClick={() => {
-                          setFormData(prev => ({ ...prev, folder: folder.path }));
+                          setFormData(prev => ({ ...prev, folderId: folder.id }));
                           setShowFolderDropdown(false);
                         }}
-                        className={`w-full text-left px-3 py-2 hover:opacity-80 theme-button-secondary transition-colors flex items-center gap-2 ${
-                          formData.folder === folder.path ? 'bg-blue-50 theme-primary' : ''
+                        className={`w-full text-left px-2 py-1.5 hover:opacity-80 theme-button-secondary transition-colors flex items-center gap-2 text-sm ${
+                          formData.folderId === folder.id ? 'bg-blue-50 theme-primary' : ''
                         }`}
-                        style={{ paddingLeft: `${folder.level * 16 + 12}px` }}
+                        style={{ paddingLeft: `${folder.level * 12 + 8}px` }}
                       >
                         {folder.icon ? (
-                          <IconRenderer icon={folder.icon} className="w-4 h-4" />
+                          <IconRenderer icon={folder.icon} className="w-3.5 h-3.5" />
                         ) : (
-                          <Folder className="w-4 h-4 theme-text-secondary" />
+                          <Folder className="w-3.5 h-3.5 theme-text-secondary" />
                         )}
                         <span className={folder.level === 0 ? 'font-medium' : 'font-normal'}>
                           {folder.name}

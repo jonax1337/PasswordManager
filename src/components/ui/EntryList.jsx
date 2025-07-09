@@ -4,7 +4,7 @@ import IconRenderer from './IconRenderer';
 import DeleteConfirmDialog from '../dialogs/DeleteConfirmDialog';
 import CopyButton from './CopyButton';
 
-const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolder, searchTerm }) => {
+const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolderId, searchTerm }) => {
   const [showPasswords, setShowPasswords] = React.useState({});
   const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
   const [entryToDelete, setEntryToDelete] = React.useState(null);

@@ -3,7 +3,7 @@ import { Hash, FolderPlus } from 'lucide-react';
 import FolderTree from './FolderTree';
 import FolderNameDialog from '../dialogs/FolderNameDialog';
 
-const Sidebar = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRenameFolder, onDeleteFolder, entryCount }) => {
+const Sidebar = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, onRenameFolder, onDeleteFolder, entryCount }) => {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
   const [showFolderDialog, setShowFolderDialog] = useState(false);
@@ -19,8 +19,8 @@ const Sidebar = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRenam
     setShowContextMenu(false);
   };
 
-  const handleFolderDialogConfirm = (folderName) => {
-    onAddFolder('root', folderName);
+  const handleFolderDialogConfirm = (folderName, folderIcon) => {
+    onAddFolder('root', folderName, folderIcon);
     setShowFolderDialog(false);
   };
 
@@ -56,7 +56,7 @@ const Sidebar = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRenam
       >
         <FolderTree
           folders={folders}
-          selectedFolder={selectedFolder}
+          selectedFolderId={selectedFolderId}
           onFolderSelect={onFolderSelect}
           onAddFolder={onAddFolder}
           onRenameFolder={onRenameFolder}

@@ -5,10 +5,10 @@ import EntryForm from '../dialogs/EntryForm';
 import PasswordGenerator from '../dialogs/PasswordGenerator';
 import Titlebar from '../ui/Titlebar';
 import IconRenderer from '../ui/IconRenderer';
-import { Search, Plus, Save, Key, X, ChevronDown, Folder, FolderClosed, PlusCircle } from 'lucide-react';
+import { Search, Plus, Save, Key, X, ChevronDown, Folder, FolderOpen, PlusCircle } from 'lucide-react';
 
 const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onSave, onSaveAs, currentFile, hasUnsavedChanges, onClose, onCloseApp, onAddFolder, onRenameFolder, onDeleteFolder, onNewDatabase, onOpenDatabase }) => {
-  const [selectedFolder, setSelectedFolder] = useState('');
+  const [selectedFolderId, setSelectedFolderId] = useState('root');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -120,25 +120,53 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
     return result;
   };
 
+  // Finde den ausgewählten Ordner und sein Icon
+  const getSelectedFolderIcon = () => {
+    if (!selectedFolderId || selectedFolderId === 'root') return null;
+    
+    const allFolders = getAllFolders();
+    const folder = allFolders.find(f => f.id === selectedFolderId);
+    return folder?.icon || null;
+  };
+
+  // Finde den ausgewählten Ordner für Display
+  const getSelectedFolderForDisplay = () => {
+    if (!selectedFolderId || selectedFolderId === 'root') return null;
+    
+    const allFolders = getAllFolders();
+    return allFolders.find(f => f.id === selectedFolderId);
+  };
+
+  // Helper function to get folder from ID (for backward compatibility)
+  const getFolderFromId = (folderId) => {
+    if (!folderId) return null;
+    
+    const allFolders = getAllFolders();
+    return allFolders.find(f => f.id === folderId || f.path === folderId);
+  };
+
   useEffect(() => {
     let filtered = database.entries;
 
     if (searchTerm) {
       // Global search - search across ALL entries, ignore folder selection
-      filtered = filtered.filter(entry =>
-        entry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        entry.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        entry.url.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (entry.notes && entry.notes.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        entry.folder.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    } else if (selectedFolder !== '') {
-      // Only filter by folder if NOT searching
-      filtered = filtered.filter(entry => entry.folder === selectedFolder);
+      filtered = filtered.filter(entry => {
+        const entryFolder = getFolderFromId(entry.folderId || entry.folder);
+        return (
+          entry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          entry.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          entry.url.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (entry.notes && entry.notes.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (entryFolder && entryFolder.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+      });
+    } else if (selectedFolderId !== 'root') {
+      // Only filter by folder if NOT searching and not root
+      filtered = filtered.filter(entry => (entry.folderId || entry.folder) === selectedFolderId);
     }
 
     setFilteredEntries(filtered);
-  }, [database.entries, selectedFolder, searchTerm]);
+  }, [database.entries, selectedFolderId, searchTerm]);
 
   useEffect(() => {
     if (window.electronAPI) {
@@ -298,8 +326,8 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
         <div className="h-full smooth-scroll scrollbar-cool">
           <Sidebar
             folders={database.folders}
-            selectedFolder={selectedFolder}
-            onFolderSelect={setSelectedFolder}
+            selectedFolderId={selectedFolderId}
+            onFolderSelect={setSelectedFolderId}
             onAddFolder={onAddFolder}
             onRenameFolder={onRenameFolder}
             onDeleteFolder={onDeleteFolder}
@@ -345,10 +373,26 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
                     </button>
                   </span>
                 ) : (
-                  <>
-                    {currentFile ? currentFile.replace(/^.*[\\\/]/, '') : 'New Database'}
+                  <span className="flex items-center gap-2">
+                    {selectedFolderId && selectedFolderId !== 'root' ? (
+                      <>
+                        {getSelectedFolderIcon() ? (
+                          <IconRenderer 
+                            icon={getSelectedFolderIcon()} 
+                            className="w-4 h-4 sm:w-5 sm:h-5" 
+                          />
+                        ) : (
+                          <FolderOpen className="w-4 h-4 sm:w-5 sm:h-5" />
+                        )}
+                        <span>{getSelectedFolderForDisplay()?.name}</span>
+                      </>
+                    ) : (
+                      <>
+                        {currentFile ? currentFile.replace(/^.*[\\\/]/, '') : 'New Database'}
+                      </>
+                    )}
                     {hasUnsavedChanges && <span className="text-orange-500 ml-1 lg:ml-2">•</span>}
-                  </>
+                  </span>
                 )}
               </h1>
             </div>
@@ -404,7 +448,7 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
             entries={filteredEntries}
             onEditEntry={handleEditEntry}
             onDeleteEntry={onDeleteEntry}
-            selectedFolder={selectedFolder}
+            selectedFolderId={selectedFolderId}
             searchTerm={searchTerm}
           />
         </main>
@@ -414,7 +458,7 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
         <EntryForm
           entry={selectedEntry}
           folders={database.folders}
-          currentFolder={selectedFolder} 
+          currentFolderId={selectedFolderId} 
           onSubmit={handleFormSubmit}
           onClose={handleFormClose}
         />
