@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import WelcomeScreen from './components/WelcomeScreen';
 import LoginScreen from './components/LoginScreen';
 import CreateDatabaseScreen from './components/CreateDatabaseScreen';
@@ -10,138 +10,41 @@ import KeePassImportDialog from './components/KeePassImportDialog';
 import KeePassImportSuccessDialog from './components/KeePassImportSuccessDialog';
 import MasterPasswordDialog from './components/MasterPasswordDialog';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { encryptData, decryptData } from './utils/crypto';
+import { useAppState } from './hooks/useAppState';
+import { useDatabase } from './hooks/useDatabase';
+import { useFileOperations } from './hooks/useFileOperations';
+import { useDialogState } from './hooks/useDialogState';
 import './App.css';
 
 function App() {
-  const [appState, setAppState] = useState('welcome'); // 'welcome', 'login', 'create', 'unlocking', 'authenticated'
-  const [isAutoLoaded, setIsAutoLoaded] = useState(false); // Track if we auto-loaded a recent database
-  const [hasInitialLoad, setHasInitialLoad] = useState(false); // Track if we've done the initial startup check
-  const [showUnlockAnimation, setShowUnlockAnimation] = useState(false);
-  const [database, setDatabase] = useState({
-    entries: [],
-    folders: [
-      {
-        id: 'root',
-        name: 'All Entries',
-        path: '',
-        children: [
-          {
-            id: 'general',
-            name: 'General',
-            path: 'General',
-            icon: null,
-            children: []
-          }
-        ]
-      }
-    ]
-  });
-  const [currentFile, setCurrentFile] = useState(null);
-  const [masterPassword, setMasterPassword] = useState('');
-  const [pendingDatabaseData, setPendingDatabaseData] = useState(null);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [lastSavedDatabase, setLastSavedDatabase] = useState(null);
-  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
-  const [pendingAction, setPendingAction] = useState(null);
-  const [pendingActionResolve, setPendingActionResolve] = useState(null);
-  const [showMultiWindowDialog, setShowMultiWindowDialog] = useState(false);
-  const [pendingMultiWindowAction, setPendingMultiWindowAction] = useState(null);
-  const [showKeePassImportDialog, setShowKeePassImportDialog] = useState(false);
-  const [showKeePassSuccessDialog, setShowKeePassSuccessDialog] = useState(false);
-  const [importStats, setImportStats] = useState(null);
-  const [showMasterPasswordDialog, setShowMasterPasswordDialog] = useState(false);
-  const [pendingSaveResolve, setPendingSaveResolve] = useState(null);
-  const [multiWindowActionCompleted, setMultiWindowActionCompleted] = useState(false);
+  // Initialize custom hooks
+  const appStateHook = useAppState();
+  const databaseHook = useDatabase();
+  const fileOpsHook = useFileOperations();
+  const dialogsHook = useDialogState();
 
-  // Check if database is in default state (no real changes)
-  const isDefaultDatabase = (db) => {
-    return db.entries.length === 0 && 
-           db.folders.length === 1 && 
-           db.folders[0].id === 'root' && 
-           db.folders[0].children.length === 1 && 
-           db.folders[0].children[0].id === 'general' &&
-           db.folders[0].children[0].icon === null;
-  };
-
-  // Track unsaved changes
+  // Handle startup actions from useAppState hook
   useEffect(() => {
-    if (lastSavedDatabase) {
-      const hasChanges = JSON.stringify(database) !== JSON.stringify(lastSavedDatabase);
-      setHasUnsavedChanges(hasChanges);
-    } else if (!isDefaultDatabase(database)) {
-      // If no saved state but we have data (e.g., after import), mark as unsaved
-      setHasUnsavedChanges(true);
-    } else {
-      // Default database should not be considered as having unsaved changes
-      setHasUnsavedChanges(false);
-    }
-  }, [database, lastSavedDatabase]);
-
-  // Check for command line file or recent database on startup - only once
-  useEffect(() => {
-    const checkStartupDatabase = async () => {
-      if (window.electronAPI && !hasInitialLoad) {
-        setHasInitialLoad(true);
-        try {
-          // First check for startup action (e.g., import-keepass)
-          const startupAction = await window.electronAPI.getStartupAction();
-          if (startupAction) {
-            // If we have any startup action, skip recent file loading and handle the action
-            if (startupAction === 'import-keepass') {
-              setShowKeePassImportDialog(true);
-            }
-            // Add other startup actions here as needed
-            return; // Exit early - don't load recent files when we have a specific startup action
-          }
-          
-          // Then check for command line file
-          const pendingFile = await window.electronAPI.getPendingFile();
-          if (pendingFile) {
-            try {
-              const result = await window.electronAPI.loadDatabaseFile(pendingFile);
-              if (result.success) {
-                setPendingDatabaseData(result);
-                setCurrentFile(pendingFile);
-                setIsAutoLoaded(false); // Command line opening is not auto-loading
-                await window.electronAPI.setRecentDatabase(pendingFile);
-                setAppState('login');
-                return;
-              }
-            } catch (error) {
-              console.error('Error loading command line file:', error);
-            }
-          }
-          
-          // If no command line file, check for recent database
-          const recentPath = await window.electronAPI.getRecentDatabase();
-          if (recentPath) {
-            // Load the database file data without dialog
-            try {
-              const result = await window.electronAPI.loadDatabaseFile(recentPath);
-              if (result.success) {
-                setPendingDatabaseData(result);
-                setCurrentFile(recentPath);
-                setIsAutoLoaded(true);
-                setAppState('login');
-              } else {
-                // File doesn't exist anymore, clear recent database
-                await window.electronAPI.clearRecentDatabase();
-              }
-            } catch (error) {
-              // File doesn't exist anymore, clear recent database
-              await window.electronAPI.clearRecentDatabase();
-            }
-          }
-        } catch (error) {
-          console.error('Error checking startup database:', error);
+    const handleStartupAction = (event) => {
+      const { action, data, filePath } = event.detail;
+      
+      if (action === 'import-keepass') {
+        dialogsHook.openKeePassImportDialog();
+      } else if (action === 'load-file' || action === 'load-recent') {
+        fileOpsHook.setPendingDatabaseData(data);
+        fileOpsHook.setCurrentFile(filePath);
+        if (action === 'load-recent') {
+          appStateHook.setIsAutoLoaded(true);
         }
+        appStateHook.goToLogin();
       }
     };
 
-    checkStartupDatabase();
-  }, [hasInitialLoad]);
+    window.addEventListener('startupAction', handleStartupAction);
+    return () => window.removeEventListener('startupAction', handleStartupAction);
+  }, []);
 
+  // Menu event handlers and file opening
   useEffect(() => {
     if (window.electronAPI) {
       window.electronAPI.onMenuNewDatabase(async () => {
@@ -164,13 +67,10 @@ function App() {
       window.electronAPI.onOpenFile(async (event, filePath) => {
         const doOpenFile = async () => {
           try {
-            const result = await window.electronAPI.loadDatabaseFile(filePath);
+            const result = await fileOpsHook.loadDatabaseFile(filePath);
             if (result.success) {
-              setPendingDatabaseData(result);
-              setCurrentFile(filePath);
-              setIsAutoLoaded(false);
-              await window.electronAPI.setRecentDatabase(filePath);
-              setAppState('login');
+              appStateHook.setIsAutoLoaded(false);
+              appStateHook.goToLogin();
             }
           } catch (error) {
             console.error('Error opening file:', error);
@@ -178,12 +78,11 @@ function App() {
         };
 
         // Check if we have an active database or are in the process of opening one
-        if (appState === 'authenticated') {
+        if (appStateHook.appState === 'authenticated') {
           await checkUnsavedChanges(doOpenFile);
-        } else if (appState === 'login' || appState === 'create' || currentFile || pendingDatabaseData) {
+        } else if (appStateHook.appState === 'login' || appStateHook.appState === 'create' || fileOpsHook.currentFile || fileOpsHook.pendingDatabaseData) {
           // Ask for confirmation if we're switching from another database
-          setPendingAction(() => doOpenFile);
-          setShowUnsavedDialog(true);
+          await dialogsHook.openUnsavedChangesDialog(doOpenFile);
         } else {
           await doOpenFile();
         }
@@ -203,7 +102,7 @@ function App() {
   useEffect(() => {
     const handleGlobalKeyDown = async (e) => {
       // Only handle shortcuts when not in input fields and not authenticated
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || appState === 'authenticated') {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || appStateHook.appState === 'authenticated') {
         return;
       }
 
@@ -225,95 +124,38 @@ function App() {
 
     document.addEventListener('keydown', handleGlobalKeyDown);
     return () => document.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [appState]);
+  }, [appStateHook.appState]);
 
   const checkUnsavedChanges = async (action) => {
     // Never show unsaved changes dialog unless we're in an authenticated database
-    if (hasUnsavedChanges && appState === 'authenticated') {
-      return new Promise((resolve) => {
-        setPendingAction(() => () => {
-          resolve(true); // Resolve with true when action should proceed
-          action();
-        });
-        // Store resolve function for cancel case
-        setPendingActionResolve(() => resolve);
-        setShowUnsavedDialog(true);
-      });
+    if (databaseHook.hasUnsavedChanges && appStateHook.appState === 'authenticated') {
+      return await dialogsHook.openUnsavedChangesDialog(action);
     }
     action(); // Execute immediately if no unsaved changes or not in authenticated state
     return true;
   };
 
-  const handleUnsavedDialogSave = async () => {
-    try {
-      const success = await handleSmartSave(); // Use smart save instead
-      if (success) {
-        // Only proceed if save was successful (not canceled)
-        if (pendingAction) {
-          pendingAction();
-        }
-        setShowUnsavedDialog(false);
-        setPendingAction(null);
-        setPendingActionResolve(null);
-      }
-      // If save was canceled or failed, keep the dialog open
-    } catch (error) {
-      console.error('Error saving database:', error);
-      // Don't close dialog or execute pending action if save failed
-    }
-  };
-
-  const handleUnsavedDialogDiscard = () => {
-    if (pendingAction) {
-      pendingAction();
-    }
-    setShowUnsavedDialog(false);
-    setPendingAction(null);
-    setPendingActionResolve(null);
-  };
-
-  const handleUnsavedDialogCancel = () => {
-    // Resolve with false to indicate action was canceled
-    if (pendingActionResolve) {
-      pendingActionResolve(false);
-    }
-    setShowUnsavedDialog(false);
-    setPendingAction(null);
-    setPendingActionResolve(null);
-  };
-
   const handleCreateNewDatabase = async () => {
     const doCreateNew = () => {
-      setAppState('create');
-      setCurrentFile(null);
-      setPendingDatabaseData(null);
-      setMasterPassword('');
-      setHasUnsavedChanges(false);
-      setLastSavedDatabase(null);
-      setIsAutoLoaded(false);
+      appStateHook.goToCreate();
+      fileOpsHook.clearCurrentFile();
+      databaseHook.resetDatabase();
+      appStateHook.setIsAutoLoaded(false);
     };
 
     // Check if this action was already completed via MultiWindow dialog
-    if (multiWindowActionCompleted) {
-      setMultiWindowActionCompleted(false);
+    if (dialogsHook.multiWindowActionCompleted) {
+      dialogsHook.setMultiWindowActionCompleted(false);
       return;
     }
 
     // Check if we have an active database (authenticated) or are in the process of opening one
-    if (appState === 'authenticated') {
+    if (appStateHook.appState === 'authenticated') {
       // Show multi-window dialog for authenticated state
-      setPendingMultiWindowAction('new-database');
-      setShowMultiWindowDialog(true);
-    } else if (appState === 'login' || currentFile || pendingDatabaseData) {
+      dialogsHook.openMultiWindowDialog('new-database');
+    } else if (appStateHook.appState === 'login' || fileOpsHook.currentFile || fileOpsHook.pendingDatabaseData) {
       // Ask for confirmation if we're switching from another database
-      return new Promise((resolve) => {
-        setPendingAction(() => () => {
-          resolve(true);
-          doCreateNew();
-        });
-        setPendingActionResolve(() => resolve);
-        setShowUnsavedDialog(true);
-      });
+      return await dialogsHook.openUnsavedChangesDialog(doCreateNew);
     } else {
       // For create state or welcome state, just create new directly
       doCreateNew();
@@ -322,40 +164,26 @@ function App() {
 
   const handleOpenExistingDatabase = async () => {
     const doOpenExisting = async () => {
-      if (window.electronAPI) {
-        const result = await window.electronAPI.loadDatabase();
-        if (result.success && !result.canceled) {
-          setPendingDatabaseData(result);
-          setCurrentFile(result.filePath);
-          setIsAutoLoaded(false); // This is manual loading
-          // Save as recent database
-          await window.electronAPI.setRecentDatabase(result.filePath);
-          setAppState('login');
-        }
+      const result = await fileOpsHook.openDatabase();
+      if (result.success && !result.canceled) {
+        appStateHook.setIsAutoLoaded(false); // This is manual loading
+        appStateHook.goToLogin();
       }
     };
 
     // Check if this action was already completed via MultiWindow dialog
-    if (multiWindowActionCompleted) {
-      setMultiWindowActionCompleted(false);
+    if (dialogsHook.multiWindowActionCompleted) {
+      dialogsHook.setMultiWindowActionCompleted(false);
       return;
     }
 
     // Check if we have an active database (authenticated) or are in the process of opening one
-    if (appState === 'authenticated') {
+    if (appStateHook.appState === 'authenticated') {
       // Show multi-window dialog for authenticated state
-      setPendingMultiWindowAction('open-database');
-      setShowMultiWindowDialog(true);
-    } else if (appState === 'login' || currentFile || pendingDatabaseData) {
+      dialogsHook.openMultiWindowDialog('open-database');
+    } else if (appStateHook.appState === 'login' || fileOpsHook.currentFile || fileOpsHook.pendingDatabaseData) {
       // Ask for confirmation if we're switching from another database
-      return new Promise((resolve) => {
-        setPendingAction(() => () => {
-          resolve(true);
-          doOpenExisting();
-        });
-        setPendingActionResolve(() => resolve);
-        setShowUnsavedDialog(true);
-      });
+      return await dialogsHook.openUnsavedChangesDialog(doOpenExisting);
     } else {
       // For create state or welcome state, just open directly
       await doOpenExisting();
@@ -363,137 +191,47 @@ function App() {
   };
 
   const handleDatabaseCreated = (password) => {
-    setMasterPassword(password);
-    
-    // Create a sample entry to demonstrate the app and ensure unsaved changes
-    const sampleEntry = {
-      id: Date.now().toString(),
-      title: 'Welcome to Simple Password Manager',
-      username: 'your-username@example.com',
-      password: 'SamplePassword123!',
-      url: 'https://example.com',
-      folder: 'General',
-      notes: 'This is a sample entry to get you started. You can edit or delete this entry and add your own passwords. Don\'t forget to save your database!',
-      icon: null,
-      createdAt: new Date(),
-      modifiedAt: new Date()
-    };
-
-    const newDatabase = {
-      entries: [sampleEntry], // Include the sample entry
-      folders: [
-        {
-          id: 'root',
-          name: 'All Entries',
-          path: '',
-          children: [
-            {
-              id: 'general',
-              name: 'General',
-              path: 'General',
-              icon: null,
-              children: []
-            }
-          ]
-        }
-      ]
-    };
-    
-    setDatabase(newDatabase);
-    setLastSavedDatabase(null); // Set to null so it's marked as unsaved (like import)
-    setCurrentFile(null);
-    setHasUnsavedChanges(false); // Will be set to true by useEffect due to lastSavedDatabase being null
-    setAppState('authenticated');
+    fileOpsHook.setMasterPassword(password);
+    databaseHook.createNewDatabase(password);
+    fileOpsHook.setCurrentFile(null);
+    appStateHook.goToAuthenticated();
   };
 
   const handleLoginSuccess = (password) => {
-    if (pendingDatabaseData) {
-      try {
-        const decryptedData = decryptData(pendingDatabaseData.data, password);
-        const loadedDatabase = JSON.parse(decryptedData);
-        setDatabase(loadedDatabase);
-        setLastSavedDatabase(loadedDatabase);
-        setMasterPassword(password);
-        setHasUnsavedChanges(false);
-        // Show unlock animation instead of immediate transition
-        setAppState('unlocking');
-        setShowUnlockAnimation(true);
-        setPendingDatabaseData(null);
-      } catch (error) {
-        console.error('Decryption error:', error);
-        return false;
-      }
+    const result = fileOpsHook.decryptDatabase(password);
+    if (result.success) {
+      databaseHook.loadDatabase(result.database);
+      // Show unlock animation instead of immediate transition
+      appStateHook.goToUnlocking();
+      return true;
+    } else {
+      console.error('Decryption error:', result.error);
+      return false;
     }
-    return true;
-  };
-  
-  const handleAnimationComplete = () => {
-    setShowUnlockAnimation(false);
-    setAppState('authenticated');
-  };
-
-  const handleNewDatabase = async () => {
-    await handleCreateNewDatabase();
-  };
-
-  const handleOpenDatabase = async () => {
-    await handleOpenExistingDatabase();
   };
 
   const handleSaveDatabase = async (forceDialog = false) => {
-    let passwordToUse = masterPassword;
+    let passwordToUse = fileOpsHook.masterPassword;
     
     // If no master password is set (e.g., after KeePass import), show dialog
     if (!passwordToUse) {
-      return new Promise((resolve) => {
-        setPendingSaveResolve(() => (password) => {
-          if (password) {
-            setMasterPassword(password);
-            performSave(password, forceDialog).then(resolve);
-          } else {
-            resolve(false); // User canceled
-          }
-        });
-        setShowMasterPasswordDialog(true);
-      });
-    }
-
-    return await performSave(passwordToUse, forceDialog);
-  };
-
-  const performSave = async (passwordToUse, forceDialog = false) => {
-    if (window.electronAPI && passwordToUse) {
-      try {
-        const encryptedData = encryptData(JSON.stringify(database), passwordToUse);
-        
-        let result;
-        // If we have a current file path and not forcing dialog, save directly
-        if (currentFile && !forceDialog) {
-          // Save to existing file path without dialog
-          result = await window.electronAPI.saveDatabase(encryptedData, currentFile);
-        } else {
-          // Show save dialog for new files, after import, or when forced (Save As)
-          result = await window.electronAPI.saveDatabase(encryptedData);
-        }
-        
-        if (result.success) {
-          setCurrentFile(result.filePath);
-          // Save as recent database
-          await window.electronAPI.setRecentDatabase(result.filePath);
-          setLastSavedDatabase(JSON.parse(JSON.stringify(database))); // Deep copy
-          setHasUnsavedChanges(false);
-          return true;
-        } else if (result.canceled) {
-          // User canceled the save dialog
-          return false;
-        }
-      } catch (error) {
-        console.error('Save error:', error);
-        alert('Failed to save database. Please try again.');
-        return false;
+      passwordToUse = await dialogsHook.openMasterPasswordDialog();
+      if (!passwordToUse) {
+        return false; // User canceled
       }
+      fileOpsHook.setMasterPassword(passwordToUse);
     }
-    return false;
+
+    const result = await fileOpsHook.saveDatabase(databaseHook.database, forceDialog, passwordToUse);
+    if (result.success) {
+      databaseHook.markAsSaved(databaseHook.database);
+      return true;
+    } else if (result.canceled) {
+      return false; // User canceled
+    } else {
+      alert('Failed to save database. Please try again.');
+      return false;
+    }
   };
 
   const handleSaveAsDatabase = async () => {
@@ -503,7 +241,7 @@ function App() {
   // Smart save: automatically uses "Save As" for new databases
   const handleSmartSave = async () => {
     // If no current file (new database or after import), automatically use Save As
-    if (!currentFile) {
+    if (!fileOpsHook.currentFile) {
       return await handleSaveDatabase(true); // Force Save As dialog
     } else {
       return await handleSaveDatabase(false); // Normal save
@@ -512,20 +250,17 @@ function App() {
 
   const handleBackToWelcome = async () => {
     const doBackToWelcome = () => {
-      setAppState('welcome');
-      setCurrentFile(null);
-      setPendingDatabaseData(null);
-      setMasterPassword('');
-      setHasUnsavedChanges(false);
-      setLastSavedDatabase(null);
-      setIsAutoLoaded(false);
+      appStateHook.goToWelcome();
+      fileOpsHook.clearCurrentFile();
+      databaseHook.resetDatabase();
+      appStateHook.setIsAutoLoaded(false);
       // Clear recent database when going back
-      if (isAutoLoaded && window.electronAPI) {
-        window.electronAPI.clearRecentDatabase();
+      if (appStateHook.isAutoLoaded) {
+        fileOpsHook.clearRecentDatabase();
       }
     };
 
-    if (appState === 'authenticated' && hasUnsavedChanges) {
+    if (appStateHook.appState === 'authenticated' && databaseHook.hasUnsavedChanges) {
       await checkUnsavedChanges(doBackToWelcome);
     } else {
       doBackToWelcome();
@@ -539,238 +274,57 @@ function App() {
       }
     };
 
-    if (appState === 'authenticated' && hasUnsavedChanges) {
+    if (appStateHook.appState === 'authenticated' && databaseHook.hasUnsavedChanges) {
       await checkUnsavedChanges(doCloseApp);
     } else {
       doCloseApp();
     }
   };
 
-  const addEntry = (entry) => {
-    setDatabase(prev => ({
-      ...prev,
-      entries: [...prev.entries, { ...entry, id: Date.now() }]
-    }));
+  const handleNewDatabase = async () => {
+    await handleCreateNewDatabase();
   };
 
-  const updateEntry = (id, updatedEntry) => {
-    setDatabase(prev => ({
-      ...prev,
-      entries: prev.entries.map(entry => 
-        entry.id === id ? { ...entry, ...updatedEntry } : entry
-      )
-    }));
-  };
-
-  const deleteEntry = (id) => {
-    setDatabase(prev => ({
-      ...prev,
-      entries: prev.entries.filter(entry => entry.id !== id)
-    }));
-  };
-
-  // Folder management functions
-  const findFolderById = (folders, id) => {
-    for (const folder of folders) {
-      if (folder.id === id) return folder;
-      if (folder.children) {
-        const found = findFolderById(folder.children, id);
-        if (found) return found;
-      }
-    }
-    return null;
-  };
-
-  const addFolder = (parentId, folderName, icon = null) => {
-    const newFolder = {
-      id: Date.now().toString(),
-      name: folderName,
-      path: parentId === 'root' ? folderName : '', // Will be updated properly
-      icon: icon,
-      children: []
-    };
-
-    setDatabase(prev => {
-      const updateFolders = (folders) => {
-        return folders.map(folder => {
-          if (folder.id === parentId) {
-            // Update path for new folder
-            newFolder.path = folder.path ? `${folder.path}/${folderName}` : folderName;
-            return {
-              ...folder,
-              children: [...folder.children, newFolder]
-            };
-          }
-          return {
-            ...folder,
-            children: folder.children ? updateFolders(folder.children) : []
-          };
-        });
-      };
-
-      return {
-        ...prev,
-        folders: updateFolders(prev.folders)
-      };
-    });
-  };
-
-  const renameFolder = (folderId, newName, icon = undefined) => {
-    setDatabase(prev => {
-      const updateFolders = (folders, parentPath = '') => {
-        return folders.map(folder => {
-          if (folder.id === folderId) {
-            const newPath = parentPath ? `${parentPath}/${newName}` : newName;
-            const updatedFolder = {
-              ...folder,
-              name: newName,
-              path: newPath
-            };
-            // Only update icon if it's provided (undefined means keep existing)
-            if (icon !== undefined) {
-              updatedFolder.icon = icon;
-            }
-            return updatedFolder;
-          }
-          const currentPath = folder.path || folder.name;
-          return {
-            ...folder,
-            children: folder.children ? updateFolders(folder.children, currentPath) : []
-          };
-        });
-      };
-
-      return {
-        ...prev,
-        folders: updateFolders(prev.folders)
-      };
-    });
-  };
-
-  const deleteFolder = (folderId) => {
-    // Check if folder has entries
-    const folderToDelete = findFolderById(database.folders, folderId);
-    if (!folderToDelete) return;
-
-    const hasEntries = database.entries.some(entry => 
-      entry.folder && entry.folder.startsWith(folderToDelete.path)
-    );
-
-    if (hasEntries) {
-      const shouldDelete = window.confirm(
-        `This folder contains password entries. Are you sure you want to delete it? All entries in this folder will be moved to "General".`
-      );
-      if (!shouldDelete) return;
-
-      // Move entries to General
-      setDatabase(prev => ({
-        ...prev,
-        entries: prev.entries.map(entry => 
-          entry.folder && entry.folder.startsWith(folderToDelete.path)
-            ? { ...entry, folder: 'General' }
-            : entry
-        )
-      }));
-    }
-
-    // Remove folder from tree
-    setDatabase(prev => {
-      const removeFolderFromTree = (folders) => {
-        return folders.filter(folder => {
-          if (folder.id === folderId) return false;
-          return {
-            ...folder,
-            children: folder.children ? removeFolderFromTree(folder.children) : []
-          };
-        }).map(folder => ({
-          ...folder,
-          children: folder.children ? removeFolderFromTree(folder.children) : []
-        }));
-      };
-
-      return {
-        ...prev,
-        folders: removeFolderFromTree(prev.folders)
-      };
-    });
+  const handleOpenDatabase = async () => {
+    await handleOpenExistingDatabase();
   };
 
   // Multi-window dialog handlers
-  const handleMultiWindowOpenInNewWindow = async () => {
-    try {
-      if (pendingMultiWindowAction === 'new-database') {
-        await window.electronAPI.createNewDatabaseWindow();
-      } else if (pendingMultiWindowAction === 'open-database') {
-        await window.electronAPI.openDatabaseInNewWindow();
-      } else if (pendingMultiWindowAction === 'import-keepass') {
-        await window.electronAPI.importKeePassInNewWindow();
-      }
-    } catch (error) {
-      console.error('Error opening in new window:', error);
-    }
-    setShowMultiWindowDialog(false);
-    setPendingMultiWindowAction(null);
-  };
-
   const handleMultiWindowReplaceCurrentDatabase = async () => {
-    // User already chose "Replace Current Database" - execute directly without additional confirmation
-    if (pendingMultiWindowAction === 'new-database') {
+    const action = dialogsHook.handleMultiWindowReplaceCurrentDatabase();
+    
+    if (action === 'new-database') {
       // Reset to create new database
-      setAppState('create');
-      setCurrentFile(null);
-      setPendingDatabaseData(null);
-      setMasterPassword('');
-      setHasUnsavedChanges(false);
-      setLastSavedDatabase(null);
-      setIsAutoLoaded(false);
-      setMultiWindowActionCompleted(true); // Mark as completed to prevent double UnsavedChanges dialog
-    } else if (pendingMultiWindowAction === 'open-database') {
+      appStateHook.goToCreate();
+      fileOpsHook.clearCurrentFile();
+      databaseHook.resetDatabase();
+      appStateHook.setIsAutoLoaded(false);
+    } else if (action === 'open-database') {
       // Trigger open database dialog
-      if (window.electronAPI) {
-        const result = await window.electronAPI.loadDatabase();
-        if (result.success && !result.canceled) {
-          setPendingDatabaseData(result);
-          setCurrentFile(result.filePath);
-          setIsAutoLoaded(false);
-          await window.electronAPI.setRecentDatabase(result.filePath);
-          setAppState('login');
-          setMultiWindowActionCompleted(true); // Mark as completed to prevent double UnsavedChanges dialog
-        }
+      const result = await fileOpsHook.openDatabase();
+      if (result.success && !result.canceled) {
+        appStateHook.setIsAutoLoaded(false);
+        appStateHook.goToLogin();
       }
-    } else if (pendingMultiWindowAction === 'import-keepass') {
+    } else if (action === 'import-keepass') {
       // Show KeePass import dialog
-      setShowKeePassImportDialog(true);
+      dialogsHook.openKeePassImportDialog();
     }
-    setShowMultiWindowDialog(false);
-    setPendingMultiWindowAction(null);
-  };
-
-  const handleMultiWindowCancel = () => {
-    setShowMultiWindowDialog(false);
-    setPendingMultiWindowAction(null);
   };
 
   // KeePass Import handlers
   const handleImportKeePass = async () => {
     const doImportKeePass = () => {
-      setShowKeePassImportDialog(true);
+      dialogsHook.openKeePassImportDialog();
     };
 
-    if (appState === 'authenticated') {
+    if (appStateHook.appState === 'authenticated') {
       // Show multi-window dialog for authenticated state
-      setPendingMultiWindowAction('import-keepass');
-      setShowMultiWindowDialog(true);
-    } else if ((appState === 'login' && (currentFile || pendingDatabaseData)) || 
-               (appState !== 'create' && (currentFile || pendingDatabaseData))) {
+      dialogsHook.openMultiWindowDialog('import-keepass');
+    } else if ((appStateHook.appState === 'login' && (fileOpsHook.currentFile || fileOpsHook.pendingDatabaseData)) || 
+               (appStateHook.appState !== 'create' && (fileOpsHook.currentFile || fileOpsHook.pendingDatabaseData))) {
       // Ask for confirmation if we're switching from another database (but not in create mode)
-      return new Promise((resolve) => {
-        setPendingAction(() => () => {
-          resolve(true);
-          doImportKeePass();
-        });
-        setPendingActionResolve(() => resolve);
-        setShowUnsavedDialog(true);
-      });
+      return await dialogsHook.openUnsavedChangesDialog(doImportKeePass);
     } else {
       // Direct import - no database exists yet (create mode) or no database loaded
       doImportKeePass();
@@ -798,54 +352,22 @@ function App() {
       ]
     };
 
-    // Keep entry folder paths as they are from the import
-    // Don't force entries into "General" - let them keep their original folder structure
-
     // Set the converted database as current
-    setDatabase(standardDatabase);
-    setLastSavedDatabase(null); // No saved state yet - this is a new import
-    setCurrentFile(null); // No file yet, needs to be saved
-    setMasterPassword(''); // Will need to set new master password when saving
+    databaseHook.setDatabase(standardDatabase);
+    databaseHook.setLastSavedDatabase(null); // No saved state yet - this is a new import
+    fileOpsHook.setCurrentFile(null); // No file yet, needs to be saved
+    fileOpsHook.setMasterPassword(''); // Will need to set new master password when saving
     
     // Show success dialog
-    setImportStats(stats);
-    setShowKeePassSuccessDialog(true);
+    dialogsHook.handleKeePassImportSuccess(stats);
     
     // Transition to authenticated state
-    setAppState('authenticated');
-    
-    // hasUnsavedChanges will be automatically set to true by the useEffect
-  };
-
-  const handleKeePassImportDialogClose = () => {
-    setShowKeePassImportDialog(false);
-  };
-
-  const handleKeePassSuccessDialogClose = () => {
-    setShowKeePassSuccessDialog(false);
-    setImportStats(null);
-  };
-
-  // Master Password Dialog handlers
-  const handleMasterPasswordConfirm = (password) => {
-    if (pendingSaveResolve) {
-      pendingSaveResolve(password);
-      setPendingSaveResolve(null);
-    }
-    setShowMasterPasswordDialog(false);
-  };
-
-  const handleMasterPasswordCancel = () => {
-    if (pendingSaveResolve) {
-      pendingSaveResolve(null);
-      setPendingSaveResolve(null);
-    }
-    setShowMasterPasswordDialog(false);
+    appStateHook.goToAuthenticated();
   };
 
   // Render different screens based on app state
   const renderMainContent = () => {
-    switch (appState) {
+    switch (appStateHook.appState) {
       case 'welcome':
         return (
           <WelcomeScreen
@@ -871,7 +393,7 @@ function App() {
           <LoginScreen 
             onLoginSuccess={handleLoginSuccess}
             onBack={handleBackToWelcome}
-            currentFile={currentFile}
+            currentFile={fileOpsHook.currentFile}
             onNewDatabase={handleNewDatabase}
             onOpenDatabase={handleOpenDatabase}
             onImportKeePass={handleImportKeePass}
@@ -884,21 +406,21 @@ function App() {
       case 'authenticated':
         return (
           <MainInterface
-            database={database}
-            onAddEntry={addEntry}
-            onUpdateEntry={updateEntry}
-            onDeleteEntry={deleteEntry}
+            database={databaseHook.database}
+            onAddEntry={databaseHook.addEntry}
+            onUpdateEntry={databaseHook.updateEntry}
+            onDeleteEntry={databaseHook.deleteEntry}
             onSave={handleSmartSave}
             onSaveAs={handleSaveAsDatabase}
             onClose={handleBackToWelcome}
             onCloseApp={handleCloseApp}
-            onAddFolder={addFolder}
-            onRenameFolder={renameFolder}
-            onDeleteFolder={deleteFolder}
+            onAddFolder={databaseHook.addFolder}
+            onRenameFolder={databaseHook.renameFolder}
+            onDeleteFolder={databaseHook.deleteFolder}
             onNewDatabase={handleNewDatabase}
             onOpenDatabase={handleOpenDatabase}
-            currentFile={currentFile}
-            hasUnsavedChanges={hasUnsavedChanges}
+            currentFile={fileOpsHook.currentFile}
+            hasUnsavedChanges={databaseHook.hasUnsavedChanges}
           />
         );
       
@@ -910,35 +432,35 @@ function App() {
   return (
     <ThemeProvider>
       {renderMainContent()}
-      {showUnlockAnimation && <LockAnimation onAnimationComplete={handleAnimationComplete} />}
+      {appStateHook.showUnlockAnimation && <LockAnimation onAnimationComplete={appStateHook.handleAnimationComplete} />}
       <UnsavedChangesDialog
-        isOpen={showUnsavedDialog}
-        onSave={handleUnsavedDialogSave}
-        onDiscard={handleUnsavedDialogDiscard}
-        onCancel={handleUnsavedDialogCancel}
+        isOpen={dialogsHook.showUnsavedDialog}
+        onSave={() => dialogsHook.handleUnsavedDialogSave(handleSmartSave)}
+        onDiscard={dialogsHook.handleUnsavedDialogDiscard}
+        onCancel={dialogsHook.handleUnsavedDialogCancel}
       />
       <MultiWindowDialog
-        isOpen={showMultiWindowDialog}
-        onOpenInNewWindow={handleMultiWindowOpenInNewWindow}
+        isOpen={dialogsHook.showMultiWindowDialog}
+        onOpenInNewWindow={dialogsHook.handleMultiWindowOpenInNewWindow}
         onReplaceCurrentDatabase={handleMultiWindowReplaceCurrentDatabase}
-        onCancel={handleMultiWindowCancel}
-        action={pendingMultiWindowAction}
-        hasUnsavedChanges={hasUnsavedChanges}
+        onCancel={dialogsHook.handleMultiWindowCancel}
+        action={dialogsHook.pendingMultiWindowAction}
+        hasUnsavedChanges={databaseHook.hasUnsavedChanges}
       />
       <KeePassImportDialog
-        isOpen={showKeePassImportDialog}
-        onClose={handleKeePassImportDialogClose}
+        isOpen={dialogsHook.showKeePassImportDialog}
+        onClose={dialogsHook.handleKeePassImportDialogClose}
         onImportSuccess={handleKeePassImportSuccess}
       />
       <KeePassImportSuccessDialog
-        isOpen={showKeePassSuccessDialog}
-        onClose={handleKeePassSuccessDialogClose}
-        stats={importStats}
+        isOpen={dialogsHook.showKeePassSuccessDialog}
+        onClose={dialogsHook.handleKeePassSuccessDialogClose}
+        stats={dialogsHook.importStats}
       />
       <MasterPasswordDialog
-        isOpen={showMasterPasswordDialog}
-        onClose={handleMasterPasswordCancel}
-        onConfirm={handleMasterPasswordConfirm}
+        isOpen={dialogsHook.showMasterPasswordDialog}
+        onClose={dialogsHook.handleMasterPasswordCancel}
+        onConfirm={dialogsHook.handleMasterPasswordConfirm}
         title="Set Master Password"
       />
     </ThemeProvider>
