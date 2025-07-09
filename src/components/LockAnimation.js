@@ -40,9 +40,16 @@ const LockAnimation = ({ onAnimationComplete }) => {
   }, [onAnimationComplete]);
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center theme-background transition-all duration-500 ${
-      animationStage === 3 ? 'bg-opacity-0' : 'bg-opacity-70'
-    }`}>
+    <div className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-500 ${
+      animationStage === 3 ? 'pointer-events-none' : ''
+    }`}
+      style={{
+        background: actualTheme === 'dark' 
+          ? 'rgba(17, 24, 39, 1)' // Same as dark main-content but solid
+          : themeColors.background, // Use theme background color
+        backdropFilter: 'blur(10px)',
+        opacity: animationStage === 3 ? 0 : 1
+      }}>
       <div className={`transform transition-all duration-500 ease-in-out ${
         animationStage === 0 ? 'scale-100 animate-pulse' : 
         animationStage === 1 ? 'scale-110' : 
