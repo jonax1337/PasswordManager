@@ -189,8 +189,8 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Handle Escape key to close search overlay
-      if (e.key === 'Escape' && isSearchOpen) {
+      // Handle Escape and Enter keys to close search overlay
+      if ((e.key === 'Escape' || e.key === 'Enter') && isSearchOpen) {
         setIsSearchOpen(false);
         return;
       }
@@ -363,7 +363,8 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
               <h1 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold theme-text truncate">
                 {searchTerm ? (
                   <span className="flex items-center gap-2">
-                    Search: "{searchTerm}" ({filteredEntries.length} results)
+                    <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span>{searchTerm}</span>
                     <button
                       onClick={() => setSearchTerm('')}
                       className="ml-2 p-1 hover:opacity-80 theme-button-secondary rounded transition-colors"

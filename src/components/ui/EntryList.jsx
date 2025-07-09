@@ -53,7 +53,7 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolderId, sear
             </h3>
             <p className="theme-text-secondary">
               {searchTerm 
-                ? `No entries match "${searchTerm}" in ${selectedFolder === '' ? 'any folder' : selectedFolder}`
+                ? `No entries match "${searchTerm}"`
                 : 'Create your first password entry to get started'
               }
             </p>
