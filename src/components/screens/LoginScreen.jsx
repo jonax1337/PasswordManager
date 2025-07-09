@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Lock, Key, ArrowLeft, AlertCircle, Eye, Unlock } from 'lucide-react';
-import Titlebar from './Titlebar';
+import Titlebar from '../ui/Titlebar';
 
 const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpenDatabase, onImportKeePass }) => {
   const [password, setPassword] = useState('');

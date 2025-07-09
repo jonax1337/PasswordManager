@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Copy, RefreshCw } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
-import { generatePassword, checkPasswordStrength } from '../utils/crypto';
+import { useTheme } from '../../contexts/ThemeContext';
+import { generatePassword, checkPasswordStrength } from '../../utils/crypto';
 
 const PasswordGenerator = ({ onClose }) => {
   const { themes, actualTheme } = useTheme();

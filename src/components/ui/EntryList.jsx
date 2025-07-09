@@ -1,8 +1,8 @@
 import React from 'react';
-import { Edit, Trash2, Eye, EyeOff, Globe, User } from 'lucide-react';
+import { Edit, Trash2, Globe } from 'lucide-react';
 import IconRenderer from './IconRenderer';
-import DeleteConfirmDialog from './DeleteConfirmDialog';
-import CopyButton from './ui/CopyButton';
+import DeleteConfirmDialog from '../dialogs/DeleteConfirmDialog';
+import CopyButton from './CopyButton';
 
 const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolder, searchTerm }) => {
   const [showPasswords, setShowPasswords] = React.useState({});

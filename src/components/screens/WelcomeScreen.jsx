@@ -1,6 +1,6 @@
 import React from 'react';
 import { Plus, FolderOpen, Shield, ShieldCheck, Upload, FilePlus2 } from 'lucide-react';
-import Titlebar from './Titlebar';
+import Titlebar from '../ui/Titlebar';
 
 const WelcomeScreen = ({ onCreateNew, onOpenExisting, onImportKeePass }) => {
   const handleCloseApp = () => {

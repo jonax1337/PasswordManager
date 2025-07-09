@@ -3,7 +3,6 @@ import CryptoJS from 'crypto-js';
 export const encryptData = (data, password) => {
   try {
     const encrypted = CryptoJS.AES.encrypt(data, password).toString();
-    console.log('Encryption successful, data length:', data.length, 'encrypted length:', encrypted.length);
     return encrypted;
   } catch (error) {
     console.error('Encryption error:', error);
@@ -13,10 +12,8 @@ export const encryptData = (data, password) => {
 
 export const decryptData = (encryptedData, password) => {
   try {
-    console.log('Attempting to decrypt data, encrypted length:', encryptedData.length);
     const bytes = CryptoJS.AES.decrypt(encryptedData, password);
     const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-    console.log('Decryption result length:', decrypted.length);
     
     if (!decrypted || decrypted.length === 0) {
       throw new Error('Failed to decrypt data - empty result');
@@ -30,7 +27,6 @@ export const decryptData = (encryptedData, password) => {
       throw new Error('Decrypted data is not valid JSON');
     }
     
-    console.log('Successfully decrypted and validated JSON');
     return decrypted;
   } catch (error) {
     console.error('Decryption error:', error);

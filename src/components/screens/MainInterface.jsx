@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from './Sidebar';
-import EntryList from './EntryList';
-import EntryForm from './EntryForm';
-import PasswordGenerator from './PasswordGenerator';
-import Titlebar from './Titlebar';
-import IconRenderer from './IconRenderer';
+import Sidebar from '../ui/Sidebar';
+import EntryList from '../ui/EntryList';
+import EntryForm from '../dialogs/EntryForm';
+import PasswordGenerator from '../dialogs/PasswordGenerator';
+import Titlebar from '../ui/Titlebar';
+import IconRenderer from '../ui/IconRenderer';
 import { Search, Plus, Save, Key, X, ChevronDown, Folder, FolderClosed, PlusCircle } from 'lucide-react';
 
 const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onSave, onSaveAs, currentFile, hasUnsavedChanges, onClose, onCloseApp, onAddFolder, onRenameFolder, onDeleteFolder, onNewDatabase, onOpenDatabase }) => {

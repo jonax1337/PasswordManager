@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { Minus, Square, X, FileText, FolderOpen, Save, Plus, Key, Sun, Moon, Palette, Heart, Upload, FilePlus2, Circle, PlusCircle } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const Titlebar = ({ 
   title = 'Simple Password Manager',

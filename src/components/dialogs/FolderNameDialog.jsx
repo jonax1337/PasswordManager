@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Folder, Smile } from 'lucide-react';
+import { X, Smile } from 'lucide-react';
 import IconPicker from './IconPicker';
-import IconRenderer from './IconRenderer';
+import IconRenderer from '../ui/IconRenderer';
 
 const FolderNameDialog = ({ isOpen, title, confirmText = 'Create', initialValue = '', initialIcon = null, onConfirm, onCancel }) => {
   const [folderName, setFolderName] = useState(initialValue);

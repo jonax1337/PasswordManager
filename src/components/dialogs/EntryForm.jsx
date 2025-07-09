@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Eye, EyeOff, Shuffle, Copy, Smile } from 'lucide-react';
-import { generatePassword, checkPasswordStrength } from '../utils/crypto';
-import { useTheme } from '../contexts/ThemeContext';
+import { X, Eye, EyeOff, Shuffle, Copy, Smile, ChevronDown, Folder } from 'lucide-react';
+import { generatePassword, checkPasswordStrength } from '../../utils/crypto';
+import { useTheme } from '../../contexts/ThemeContext';
 import IconPicker from './IconPicker';
-import IconRenderer from './IconRenderer';
+import IconRenderer from '../ui/IconRenderer';
 
 const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
   const { themes, actualTheme } = useTheme();
@@ -13,33 +13,42 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
     username: '',
     password: '',
     url: '',
-    folder: currentFolder || 'General',
+    folder: (currentFolder && currentFolder !== '') ? currentFolder : 'General',
     notes: '',
     icon: null
   });
 
   const [showIconPicker, setShowIconPicker] = useState(false);
+  const [showFolderDropdown, setShowFolderDropdown] = useState(false);
 
-  // Extract all folder paths for the dropdown
-  const getAllFolderPaths = (folders, paths = []) => {
+  // Extract all folder paths for the dropdown, excluding root "All Entries"
+  const getAllFolderPaths = (folders, paths = [], level = 0) => {
     folders.forEach(folder => {
-      if (folder.path) paths.push(folder.path);
+      // Skip the root "All Entries" folder (id: 'root')
+      if (folder.id !== 'root' && folder.path) {
+        paths.push({
+          path: folder.path,
+          name: folder.name,
+          level: level,
+          icon: folder.icon
+        });
+      }
       if (folder.children) {
-        getAllFolderPaths(folder.children, paths);
+        getAllFolderPaths(folder.children, paths, level + 1);
       }
     });
     return paths;
   };
 
-  const folderPaths = getAllFolderPaths(folders);
+  const folderOptions = getAllFolderPaths(folders);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(null);
 
   useEffect(() => {
     if (entry) {
       setFormData(entry);
-    } else if (currentFolder && !entry) {
-      // Wenn ein neuer Eintrag erstellt wird, nutze den aktuellen Ordner
+    } else if (currentFolder && currentFolder !== '' && !entry) {
+      // Wenn ein neuer Eintrag erstellt wird, nutze den aktuellen Ordner (aber nicht Root)
       setFormData(prev => ({
         ...prev,
         folder: currentFolder
@@ -54,6 +63,18 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
       setPasswordStrength(null);
     }
   }, [formData.password]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showFolderDropdown && !event.target.closest('.relative')) {
+        setShowFolderDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showFolderDropdown]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -160,20 +181,62 @@ const EntryForm = ({ entry, folders, currentFolder, onSubmit, onClose }) => {
             </div>
 
             {/* Folder - Takes 1 column on large screens */}
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 relative">
               <label className="block text-sm font-medium theme-text mb-2">
                 Folder
               </label>
-              <select
-                name="folder"
-                value={formData.folder}
-                onChange={handleChange}
-                className="w-full theme-input px-3 py-2 rounded-lg"
-              >
-                {folderPaths.map(path => (
-                  <option key={path} value={path}>{path}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowFolderDropdown(!showFolderDropdown)}
+                  className="w-full theme-input px-3 py-2 rounded-lg text-left flex items-center justify-between hover:opacity-80 transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    {(() => {
+                      const selectedFolder = folderOptions.find(f => f.path === formData.folder);
+                      return (
+                        <>
+                          {selectedFolder?.icon ? (
+                            <IconRenderer icon={selectedFolder.icon} className="w-4 h-4" />
+                          ) : (
+                            <Folder className="w-4 h-4 theme-text-secondary" />
+                          )}
+                          <span>{selectedFolder?.name || formData.folder}</span>
+                        </>
+                      );
+                    })()}
+                  </span>
+                  <ChevronDown className={`w-4 h-4 theme-text-secondary transition-transform ${showFolderDropdown ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {showFolderDropdown && (
+                  <div className="absolute top-full left-0 right-0 mt-1 theme-surface border theme-border rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto scrollbar-cool">
+                    {folderOptions.map(folder => (
+                      <button
+                        key={folder.path}
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, folder: folder.path }));
+                          setShowFolderDropdown(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 hover:opacity-80 theme-button-secondary transition-colors flex items-center gap-2 ${
+                          formData.folder === folder.path ? 'bg-blue-50 theme-primary' : ''
+                        }`}
+                        style={{ paddingLeft: `${folder.level * 16 + 12}px` }}
+                      >
+                        {folder.icon ? (
+                          <IconRenderer icon={folder.icon} className="w-4 h-4" />
+                        ) : (
+                          <Folder className="w-4 h-4 theme-text-secondary" />
+                        )}
+                        <span className={folder.level === 0 ? 'font-medium' : 'font-normal'}>
+                          {folder.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

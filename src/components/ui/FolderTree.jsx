@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Folder, FolderOpen, FolderPlus, ChevronRight, ChevronDown, MoreHorizontal } from 'lucide-react';
-import FolderNameDialog from './FolderNameDialog';
-import DeleteConfirmDialog from './DeleteConfirmDialog';
+import FolderNameDialog from '../dialogs/FolderNameDialog';
+import DeleteConfirmDialog from '../dialogs/DeleteConfirmDialog';
 import IconRenderer from './IconRenderer';
 
 const FolderTree = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onEditFolder, onRenameFolder, onDeleteFolder, entryCount }) => {

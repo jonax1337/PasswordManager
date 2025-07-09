@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, X, FileText, Eye, EyeOff, AlertCircle, CheckCircle, Loader } from 'lucide-react';
-import { importKeePassDatabase, validateKeePassFile, testKdbxWeb } from '../utils/keepassImport';
+import { importKeePassDatabase, validateKeePassFile, testKdbxWeb } from '../../utils/keepassImport';
 
 const KeePassImportDialog = ({ isOpen, onClose, onImportSuccess }) => {
   const [selectedFile, setSelectedFile] = useState(null);

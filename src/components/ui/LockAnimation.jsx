@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Lock, Unlock } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const LockAnimation = ({ onAnimationComplete }) => {
   const { themes, actualTheme } = useTheme();

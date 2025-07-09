@@ -3,22 +3,15 @@ let kdbxweb;
 try {
   // First try ES6 import
   kdbxweb = require('kdbxweb');
-  console.log('kdbxweb loaded via require:', kdbxweb);
 } catch (e1) {
   try {
     // Try default import
     const kdbxwebModule = require('kdbxweb');
     kdbxweb = kdbxwebModule.default || kdbxwebModule;
-    console.log('kdbxweb loaded via require.default:', kdbxweb);
   } catch (e2) {
     console.error('Failed to load kdbxweb:', e1, e2);
   }
 }
-
-// Debug kdbxweb loading
-console.log('Final kdbxweb loaded:', kdbxweb);
-console.log('kdbxweb.Kdbx:', kdbxweb?.Kdbx);
-console.log('kdbxweb.Credentials:', kdbxweb?.Credentials);
 
 // Test function to verify kdbxweb basic functionality
 export const testKdbxWeb = () => {
@@ -29,7 +22,6 @@ export const testKdbxWeb = () => {
     }
     const testPassword = 'test';
     const credentials = new kdbxweb.Credentials(kdbxweb.ProtectedValue.fromString(testPassword));
-    console.log('kdbxweb basic test passed:', credentials);
     return true;
   } catch (error) {
     console.error('kdbxweb basic test failed:', error);
@@ -44,9 +36,6 @@ export const testKdbxWeb = () => {
  * @returns {Promise<Object>} - Promise resolving to database object in our format
  */
 export const importKeePassDatabase = async (file, password) => {
-  console.log('Starting KeePass import...');
-  console.log('File:', file.name, 'Size:', file.size);
-  
   try {
     // Check if kdbxweb is loaded
     if (!kdbxweb || !kdbxweb.Kdbx || !kdbxweb.Credentials) {
@@ -61,23 +50,18 @@ export const importKeePassDatabase = async (file, password) => {
       throw new Error('No password provided');
     }
     
-    console.log('Reading file as ArrayBuffer...');
     // Read the file as ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
-    console.log('ArrayBuffer size:', arrayBuffer.byteLength);
     
     if (arrayBuffer.byteLength === 0) {
       throw new Error('File is empty');
     }
     
-    console.log('Creating credentials...');
     // Convert password to ArrayBuffer if needed
     const credentials = new kdbxweb.Credentials(kdbxweb.ProtectedValue.fromString(password));
     
-    console.log('Loading KDBX database...');
     // Open the KDBX database
     const db = await kdbxweb.Kdbx.load(arrayBuffer, credentials);
-    console.log('Database loaded successfully');
     
     // Convert to our database format
     const convertedDatabase = {
@@ -143,14 +127,9 @@ export const importKeePassDatabase = async (file, password) => {
       });
     };
     
-    console.log('Processing groups and entries...');
     // Start processing from root group
     const defaultGroup = db.getDefaultGroup();
-    console.log('Default group:', defaultGroup.name);
     processGroup(defaultGroup);
-    
-    console.log('Entries found:', convertedDatabase.entries.length);
-    console.log('Folders found:', convertedDatabase.folders.length);
     
     // Build folder hierarchy
     const folderMap = {};
@@ -173,7 +152,6 @@ export const importKeePassDatabase = async (file, password) => {
     
     convertedDatabase.folders = rootFolders;
     
-    console.log('Import completed successfully');
     return {
       success: true,
       database: convertedDatabase,
@@ -185,9 +163,6 @@ export const importKeePassDatabase = async (file, password) => {
     };
     
   } catch (error) {
-    console.error('KeePass import error:', error);
-    
-    // Provide more specific error messages
     let errorMessage = 'Failed to import KeePass database';
     
     if (error.message && error.message.includes('invalid key')) {

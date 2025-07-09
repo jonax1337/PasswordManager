@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Hash, FolderPlus } from 'lucide-react';
 import FolderTree from './FolderTree';
-import FolderNameDialog from './FolderNameDialog';
+import FolderNameDialog from '../dialogs/FolderNameDialog';
 
 const Sidebar = ({ folders, selectedFolder, onFolderSelect, onAddFolder, onRenameFolder, onDeleteFolder, entryCount }) => {
   const [showContextMenu, setShowContextMenu] = useState(false);

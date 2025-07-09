@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, FileKey, Eye, EyeOff, AlertCircle, CheckCircle, Upload, FileLock2, FileLock, File, FilePlus, FilePlus2 } from 'lucide-react';
-import { checkPasswordStrength } from '../utils/crypto';
-import Titlebar from './Titlebar';
+import { checkPasswordStrength } from '../../utils/crypto';
+import Titlebar from '../ui/Titlebar';
 
 const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpenDatabase, onImportKeePass }) => {
   const [password, setPassword] = useState('');
