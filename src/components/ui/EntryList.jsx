@@ -4,10 +4,13 @@ import IconRenderer from './IconRenderer';
 import DeleteConfirmDialog from '../dialogs/DeleteConfirmDialog';
 import CopyButton from './CopyButton';
 
-const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolderId, searchTerm }) => {
+const EntryList = ({ entries, onEditEntry, onDeleteEntry, onReorderEntries, selectedFolderId, searchTerm }) => {
   const [showPasswords, setShowPasswords] = React.useState({});
   const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
   const [entryToDelete, setEntryToDelete] = React.useState(null);
+  const [draggedEntry, setDraggedEntry] = React.useState(null);
+  const [dragOverEntry, setDragOverEntry] = React.useState(null);
+  const [dropPosition, setDropPosition] = React.useState('after'); // 'before' or 'after'
 
   // Handle drag start with target checking
   const handleDragStart = (e, entry) => {
@@ -30,6 +33,7 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolderId, sear
       return;
     }
 
+    setDraggedEntry(entry);
     e.dataTransfer.setData('text/plain', JSON.stringify({
       type: 'entry',
       entryId: entry.id,
@@ -118,10 +122,58 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolderId, sear
           {entries.map(entry => (
             <div
               key={entry.id}
-              className="entry-card theme-card rounded-xl shadow-sm p-3 sm:p-4 lg:p-5 hover:shadow-md transition-all group cursor-pointer flex flex-col min-h-[280px] sm:min-h-[300px] md:min-h-[320px] lg:min-h-[340px] select-none"
+              className={`entry-card theme-card rounded-xl shadow-sm p-3 sm:p-4 lg:p-5 hover:shadow-md transition-all group cursor-pointer flex flex-col min-h-[280px] sm:min-h-[300px] md:min-h-[320px] lg:min-h-[340px] select-none ${
+                dragOverEntry === entry.id ? (
+                  dropPosition === 'before' 
+                    ? 'border-t-4 border-blue-400 bg-blue-50' 
+                    : 'border-b-4 border-blue-400 bg-blue-50'
+                ) : ''
+              } ${
+                draggedEntry && draggedEntry.id === entry.id ? 'opacity-50' : ''
+              }`}
               onDoubleClick={() => onEditEntry(entry)}
               draggable={true}
               onDragStart={(e) => handleDragStart(e, entry)}
+              onDragEnd={() => {
+                setDraggedEntry(null);
+                setDragOverEntry(null);
+                setDropPosition('after');
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                if (draggedEntry && draggedEntry.id !== entry.id) {
+                  e.dataTransfer.dropEffect = 'move';
+                  setDragOverEntry(entry.id);
+                  
+                  // Calculate drop position based on mouse Y position
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const mouseY = e.clientY - rect.top;
+                  const elementHeight = rect.height;
+                  
+                  if (mouseY < elementHeight * 0.5) {
+                    setDropPosition('before');
+                  } else {
+                    setDropPosition('after');
+                  }
+                }
+              }}
+              onDragLeave={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget)) {
+                  setDragOverEntry(null);
+                  setDropPosition('after');
+                }
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                
+                if (draggedEntry && draggedEntry.id !== entry.id && onReorderEntries) {
+                  onReorderEntries(draggedEntry.id, entry.id, dropPosition);
+                }
+                
+                setDraggedEntry(null);
+                setDragOverEntry(null);
+                setDropPosition('after');
+              }}
               onMouseDown={(e) => {
                 // Additional check on mousedown to prevent drag if over text areas
                 const hasTextCursor = (element) => {

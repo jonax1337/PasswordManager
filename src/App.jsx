@@ -419,6 +419,7 @@ function App() {
             onDeleteFolder={databaseHook.deleteFolder}
             onMoveFolder={databaseHook.moveFolder}
             onMoveEntry={databaseHook.moveEntryToFolder}
+            onReorderEntries={databaseHook.reorderEntries}
             onNewDatabase={handleNewDatabase}
             onOpenDatabase={handleOpenDatabase}
             currentFile={fileOpsHook.currentFile}

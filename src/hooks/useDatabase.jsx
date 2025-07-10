@@ -300,6 +300,39 @@ export const useDatabase = () => {
     setHasUnsavedChanges(false);
   };
 
+  const reorderEntries = (draggedEntryId, targetEntryId, position = 'after') => {
+    setDatabase(prev => {
+      const entries = [...prev.entries];
+      const draggedIndex = entries.findIndex(entry => entry.id === draggedEntryId);
+      const targetIndex = entries.findIndex(entry => entry.id === targetEntryId);
+      
+      if (draggedIndex === -1 || targetIndex === -1 || draggedIndex === targetIndex) {
+        return prev;
+      }
+      
+      // Remove the dragged entry
+      const [draggedEntry] = entries.splice(draggedIndex, 1);
+      
+      // Calculate new target index after removal
+      let newTargetIndex = targetIndex;
+      if (draggedIndex < targetIndex) {
+        newTargetIndex = targetIndex - 1;
+      }
+      
+      // Insert at the appropriate position
+      if (position === 'before') {
+        entries.splice(newTargetIndex, 0, draggedEntry);
+      } else {
+        entries.splice(newTargetIndex + 1, 0, draggedEntry);
+      }
+      
+      return {
+        ...prev,
+        entries
+      };
+    });
+  };
+
   const moveFolder = (folderId, targetFolderId, position = 'into') => {
     setDatabase(prev => {
       // Find and remove the folder from its current location
@@ -464,6 +497,7 @@ export const useDatabase = () => {
     updateEntry,
     deleteEntry,
     moveEntryToFolder,
+    reorderEntries,
     findFolderById,
     addFolder,
     renameFolder,
