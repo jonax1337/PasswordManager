@@ -7,7 +7,7 @@ import Titlebar from '../ui/Titlebar';
 import IconRenderer from '../ui/IconRenderer';
 import { Search, Plus, Save, Key, X, ChevronDown, Folder, FolderOpen, PlusCircle } from 'lucide-react';
 
-const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onSave, onSaveAs, currentFile, hasUnsavedChanges, onClose, onCloseApp, onAddFolder, onRenameFolder, onDeleteFolder, onNewDatabase, onOpenDatabase }) => {
+const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onSave, onSaveAs, currentFile, hasUnsavedChanges, onClose, onCloseApp, onAddFolder, onRenameFolder, onDeleteFolder, onMoveFolder, onNewDatabase, onOpenDatabase }) => {
   const [selectedFolderId, setSelectedFolderId] = useState('root');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEntry, setSelectedEntry] = useState(null);
@@ -331,6 +331,7 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
             onAddFolder={onAddFolder}
             onRenameFolder={onRenameFolder}
             onDeleteFolder={onDeleteFolder}
+            onMoveFolder={onMoveFolder}
             entryCount={database.entries.length}
           />
         </div>

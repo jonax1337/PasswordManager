@@ -417,6 +417,7 @@ function App() {
             onAddFolder={databaseHook.addFolder}
             onRenameFolder={databaseHook.renameFolder}
             onDeleteFolder={databaseHook.deleteFolder}
+            onMoveFolder={databaseHook.moveFolder}
             onNewDatabase={handleNewDatabase}
             onOpenDatabase={handleOpenDatabase}
             currentFile={fileOpsHook.currentFile}

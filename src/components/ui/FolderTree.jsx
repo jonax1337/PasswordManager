@@ -4,7 +4,7 @@ import FolderNameDialog from '../dialogs/FolderNameDialog';
 import DeleteConfirmDialog from '../dialogs/DeleteConfirmDialog';
 import IconRenderer from './IconRenderer';
 
-const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, onEditFolder, onRenameFolder, onDeleteFolder, entryCount }) => {
+const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, onEditFolder, onRenameFolder, onDeleteFolder, onMoveFolder, entryCount }) => {
   // For backward compatibility, use onRenameFolder if onEditFolder is not provided
   const handleEditFolder = onEditFolder || onRenameFolder;
   const [expandedFolders, setExpandedFolders] = useState(new Set(['root']));
@@ -17,6 +17,9 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
   const [pendingParentId, setPendingParentId] = useState(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState(null);
+  const [draggedFolder, setDraggedFolder] = useState(null);
+  const [dragOverFolder, setDragOverFolder] = useState(null);
+  const [dropPosition, setDropPosition] = useState(null); // 'into', 'above', 'below'
 
   const toggleFolder = (folderId) => {
     const newExpanded = new Set(expandedFolders);
@@ -106,9 +109,83 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
             isSelected
               ? 'theme-surface theme-primary'
               : 'theme-text-secondary'
+          } ${
+            dragOverFolder === folder.id ? (
+              dropPosition === 'into' 
+                ? 'theme-button-hover border-2 border-blue-400 border-dashed' 
+                : dropPosition === 'above'
+                ? 'border-t-4 border-blue-400'
+                : dropPosition === 'below'
+                ? 'border-b-4 border-blue-400'
+                : ''
+            ) : ''
           }`}
           style={{ paddingLeft: `${8 + level * 16}px` }}
           onContextMenu={(e) => handleRightClick(e, folder)}
+          draggable={true}
+          onDragStart={(e) => {
+            setDraggedFolder(folder);
+            e.dataTransfer.effectAllowed = 'move';
+          }}
+          onDragEnd={() => {
+            setDraggedFolder(null);
+            setDragOverFolder(null);
+            setDropPosition(null);
+          }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            if (draggedFolder && draggedFolder.id !== folder.id) {
+              e.dataTransfer.dropEffect = 'move';
+              setDragOverFolder(folder.id);
+              
+              // Calculate drop position based on mouse Y position
+              const rect = e.currentTarget.getBoundingClientRect();
+              const mouseY = e.clientY - rect.top;
+              const elementHeight = rect.height;
+              
+              if (mouseY < elementHeight * 0.25) {
+                setDropPosition('above');
+              } else if (mouseY > elementHeight * 0.75) {
+                setDropPosition('below');
+              } else {
+                setDropPosition('into');
+              }
+            }
+          }}
+          onDragLeave={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget)) {
+              setDragOverFolder(null);
+              setDropPosition(null);
+            }
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            console.log('DROP EVENT:', {
+              draggedFolder: draggedFolder?.id,
+              targetFolder: folder.id,
+              dropPosition,
+              onMoveFolder: !!onMoveFolder
+            });
+            
+            if (draggedFolder && draggedFolder.id !== folder.id && onMoveFolder) {
+              console.log('CALLING onMoveFolder:', draggedFolder.id, folder.id, dropPosition);
+              if (dropPosition === 'into') {
+                onMoveFolder(draggedFolder.id, folder.id, 'into');
+              } else if (dropPosition === 'above') {
+                onMoveFolder(draggedFolder.id, folder.id, 'above');
+              } else if (dropPosition === 'below') {
+                onMoveFolder(draggedFolder.id, folder.id, 'below');
+              }
+            } else {
+              console.log('DROP CANCELLED:', {
+                hasDraggedFolder: !!draggedFolder,
+                sameFolder: draggedFolder?.id === folder.id,
+                hasOnMoveFolder: !!onMoveFolder
+              });
+            }
+            setDragOverFolder(null);
+            setDropPosition(null);
+          }}
         >
           {hasChildren ? (
             <button
