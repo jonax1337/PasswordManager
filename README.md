@@ -1,294 +1,192 @@
 # Simple Password Manager
 
-[![Electron](https://img.shields.io/badge/Electron-37.2.0-47848F?style=for-the-badge&logo=Electron&logoColor=white)](https://www.electronjs.org/)
-[![React](https://img.shields.io/badge/React-18.2.0-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.3.6-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Claude Code](https://img.shields.io/badge/Claude_Code-AI_Powered-FF6B35?style=for-the-badge&logo=anthropic&logoColor=white)](https://claude.ai/code)
-[![MIT License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE.md)
-[![Version](https://img.shields.io/badge/Version-0.0.1--beta-orange?style=for-the-badge)](https://github.com/jonax1337/simple-password-manager/releases)
+[![Download](https://img.shields.io/badge/Download-Latest-blue?style=for-the-badge&logo=download)](https://github.com/jonax1337/simple-password-manager/releases) [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE.md) [![Version](https://img.shields.io/badge/Version-1.0.0-orange?style=for-the-badge)](https://github.com/jonax1337/simple-password-manager/releases)
 
-A secure and modern password manager built with Electron and React, inspired by KeePass but with a fresh, intuitive interface.
+**A secure, offline password manager for Windows, macOS, and Linux**  
+Keep your passwords safe with military-grade encryption, beautiful design, and modern features like drag & drop organization.
 
-[Download](https://github.com/jonax1337/simple-password-manager/releases) • [Report Bug](https://github.com/jonax1337/simple-password-manager/issues) • [Request Feature](https://github.com/jonax1337/simple-password-manager/issues)
+[📥 Download Now](https://github.com/jonax1337/simple-password-manager/releases) • [🐛 Report Bug](https://github.com/jonax1337/simple-password-manager/issues) • [💡 Request Feature](https://github.com/jonax1337/simple-password-manager/issues)
 
-## Features
+---
 
-- **AES-256 Encryption** - Military-grade encryption for all data
-- **Local Storage** - Your passwords never leave your device  
-- **Master Password** - Single password to rule them all
-- **Multiple Themes** - Light, dark, and system themes with beautiful gradients
-- **Smart Icons** - 100+ brand logos, security icons, and custom folder icons
-- **Hierarchical Folders** - Organize with nested folder structure and custom icons
-- **Global Search** - Find entries across all folders with instant results
-- **Advanced Password Generator** - Guaranteed character types with custom rules
-- **Recent Files** - Quick access to last used database
-- **File Association** - Double-click .pmdb files to open directly
-- **Keyboard Shortcuts** - Work faster with hotkeys
-- **Responsive Design** - Optimized for all screen sizes
-- **KeePass Import** - Import your existing KeePass databases
-- **Resizable Interface** - Customize sidebar width to your preference
-- **Cross-Platform** - Works on Windows, macOS, and Linux
-- **No Network Access** - Completely offline for maximum security
+## ✨ Key Features
 
-## Quick Start
+🔒 **Military-Grade Security** - AES-256 encryption keeps your data safe  
+💻 **100% Offline** - Your passwords never leave your device  
+🎨 **Beautiful Themes** - Light, dark, and cute themes with smooth gradients  
+📁 **Drag & Drop Organization** - Intuitive folder management with custom icons  
+🔍 **Smart Search** - Find anything instantly across all entries  
+🎲 **Advanced Password Generator** - Create unbreakable passwords  
+📂 **KeePass Import** - Easily migrate from KeePass databases  
+⌨️ **Keyboard Shortcuts** - Work faster with hotkeys  
+📱 **Responsive Design** - Perfect on any screen size
 
-### For End Users
+---
 
-1. **Download** the latest installer from [Releases](https://github.com/jonax1337/simple-password-manager/releases)
+## 🚀 Quick Start
+
+### Download & Install
+1. **[Download the latest release](https://github.com/jonax1337/simple-password-manager/releases)** for your operating system
 2. **Install** the application
-3. **Create** your first database or **open** an existing one
+3. **Create** your first database with a strong master password
 4. **Start** managing your passwords securely!
 
-### For Developers
+### Create Your First Entry
+1. Click **"Add Entry"** or press `Ctrl+Alt+Win+N`
+2. **Fill in your details** - title, username, password, and website
+3. **Use the password generator** for maximum security
+4. **Organize** with folders and custom icons
+5. **Save** and you're done!
 
-#### Prerequisites
-- Node.js (version 16 or higher)
-- npm or yarn package manager
+---
 
-#### Installation & Setup
+## 🎯 Main Features
 
+### 🔐 **Secure Password Management**
+- **One Master Password** unlocks everything
+- **AES-256 encryption** protects your data
+- **Local storage only** - no cloud, no tracking
+- **Encrypted .pmdb files** you can backup anywhere
+
+### 📋 **Smart Organization**
+- **Hierarchical folders** with unlimited nesting
+- **Drag & drop** entries and folders effortlessly
+- **Custom folder icons** for quick visual recognition
+- **Entry counts** show how many passwords are in each folder
+- **Reorder entries** by dragging them around
+
+### 🔍 **Lightning-Fast Search**
+- **Global search** across all entries and folders
+- **Instant results** as you type
+- **Search by title, username, URL, notes, or folder**
+- **Press Enter** to close search quickly
+
+### 🎲 **Advanced Password Generator**
+- **Customizable length** (4-128 characters)
+- **Character type control** (uppercase, numbers, symbols)
+- **Exclude confusing characters** (0/O, 1/l/I)
+- **Guaranteed inclusion** of selected character types
+- **Real-time strength meter**
+
+### 📂 **KeePass Migration Made Easy**
+- **Import entire KeePass databases** (.kdbx files)
+- **Preserves folder structure** and organization
+- **Converts all entries** with complete data
+- **One-click migration** with no data loss
+
+### 🎨 **Beautiful Interface**
+- **Multiple themes**: Light, Dark, and Cute
+- **Smooth animations** and modern design
+- **Resizable sidebar** to fit your workflow
+- **Custom scrollbars** that match your theme
+- **Responsive layout** works on any screen
+
+---
+
+## ⌨️ Essential Shortcuts
+
+| **Action** | **Shortcut** |
+|------------|--------------|
+| New Database | `Ctrl+N` |
+| Open Database | `Ctrl+O` |
+| Save Database | `Ctrl+S` |
+| Add Entry | `Ctrl+Alt+Win+N` |
+| Generate Password | `Ctrl+G` |
+| Search | `Ctrl+F` |
+| Close/Cancel | `Escape` |
+
+---
+
+## 🔄 Importing from KeePass
+
+**Switching from KeePass is simple:**
+
+1. **Create New Database** → **Import from KeePass**
+2. **Select your .kdbx file** and enter the password
+3. **Everything imports automatically** - entries, folders, organization
+4. **Set a new master password** for your imported database
+5. **Start using** your familiar data in a modern interface
+
+---
+
+## 🛡️ Security & Privacy
+
+| **Security Feature** | **Details** |
+|---------------------|-------------|
+| **Encryption** | AES-256 military-grade standard |
+| **Master Password** | Never stored anywhere, memory-only |
+| **Data Storage** | Local files only, never uploaded |
+| **Network Access** | Completely offline application |
+| **File Format** | Encrypted .pmdb files you control |
+
+> ⚠️ **Important**: Your master password is never saved. Make sure to remember it or keep it in a secure backup!
+
+---
+
+## 🛠️ For Developers
+
+**Want to contribute or build from source?**
+
+### Prerequisites
+- Node.js 16+
+- npm or yarn
+
+### Quick Setup
 ```bash
-# Clone the repository
+# Clone and install
 git clone https://github.com/jonax1337/simple-password-manager.git
 cd simple-password-manager
-
-# Install dependencies
 npm install
 
-# Install electron-store for settings
-npm install electron-store
-```
-
-#### Development
-
-```bash
-# Start development server
+# Start development
 npm run dev
 ```
 
-This starts both React development server and Electron application with hot reload.
-
-#### Building
-
+### Build for Production
 ```bash
-# Build for production
-npm run build
-
-# Create installer (Windows)
-npm run electron-build -- --win
-
-# Create installer (macOS)  
-npm run electron-build -- --mac
-
-# Create installer (Linux)
-npm run electron-build -- --linux
-
 # Build for all platforms
 npm run dist
+
+# Or build for specific platform
+npm run electron-build -- --win    # Windows
+npm run electron-build -- --mac    # macOS  
+npm run electron-build -- --linux  # Linux
 ```
 
-Built applications will be in the `release/` folder.
+**Tech Stack**: React 18, Electron, Tailwind CSS, CryptoJS
 
-## Usage Guide
+---
 
-<details>
-<summary><strong>Database Management</strong></summary>
+## 🐛 Troubleshooting
 
-### Creating a New Database
-1. Launch the application
-2. Click **Create New Database** or `Ctrl+N`
-3. Choose a location and filename for your `.pmdb` file
-4. Set a strong master password
-5. Start adding your password entries
+**App won't start?**
+- Update to latest version
+- Check antivirus isn't blocking the app
+- Try running as administrator (Windows)
 
-### Opening an Existing Database
-1. Click **Open Database** or `Ctrl+O`
-2. Select your `.pmdb` file (or double-click it in Explorer)
-3. Enter your master password to unlock
+**Database won't open?**
+- Double-check master password
+- Verify file isn't corrupted
+- Try copying database to desktop
 
-> **Tip**: Recently opened databases are automatically suggested on startup!
+**Need help?** [Create an issue](https://github.com/jonax1337/simple-password-manager/issues) with details about your problem.
 
-</details>
+---
 
-<details>
-<summary><strong>Managing Password Entries</strong></summary>
+## 🤝 Contributing
 
-### Adding New Entries
-1. Click **Add Entry** or press `Ctrl+Alt+Win+N`
-2. Fill in the details:
-   - **Title**: Recognizable name (e.g., "Gmail", "Work Email")
-   - **Folder**: Choose or create an organization folder
-   - **URL**: Website URL (clickable for quick access)
-   - **Username**: Your username or email
-   - **Password**: Use the generator for strong passwords
-   - **Icon**: Pick from 30+ brand logos, emojis, or general icons
-   - **Notes**: Additional information or security questions
+**Help make this better:**
+- 🐛 [Report bugs](https://github.com/jonax1337/simple-password-manager/issues)
+- 💡 [Suggest features](https://github.com/jonax1337/simple-password-manager/issues) 
+- 📝 Improve documentation
+- 🔧 Submit pull requests
 
-### Using the Password Generator
-1. Click **Generate** in the password field or press `Ctrl+G`
-2. Customize options:
-   - **Length**: 4-128 characters
-   - **Character types**: Uppercase, lowercase, numbers, symbols
-   - **Exclude similar**: Avoid confusing characters (i, l, 1, L, o, 0, O)
-   - **Guaranteed inclusion**: Every selected character type is guaranteed to appear
-3. **Copy and use** the generated password with confidence
-4. **Real-time strength**: See password strength analysis as you generate
+---
 
-</details>
+## 📜 License
 
-<details>
-<summary><strong>Organization & Search</strong></summary>
+This project is open source under the **MIT License**. See [LICENSE.md](LICENSE.md) for details.
 
-### Folder Management
-- **Create folders**: Right-click in the folder tree
-- **Nested structure**: Organize with subfolders (Work → Email → Gmail)
-- **Move entries**: Drag & drop or edit entry folder
-- **Folder icons**: Automatic icons based on content
+---
 
-### Finding Entries
-- **Global Search**: Type to find entries across all folders by title, username, URL, notes, and folder name
-- **Search Results**: Click any search result to instantly edit that entry
-- **Smart Navigation**: Return to search after editing with the back button
-- **Folder filtering**: Click folders to show only those entries
-- **Recent files**: Last opened database loads automatically
-
-</details>
-
-<details>
-<summary><strong>KeePass Database Import</strong></summary>
-
-### Importing from KeePass
-1. Click **Create New Database** or `Ctrl+N`
-2. Click **Import from KeePass** at the bottom of the window
-3. **Select your .kdbx file** from KeePass
-4. **Enter the KeePass database password**
-5. All entries, folders, and icons are automatically converted
-6. **Save** the database
-7. **Set a new master password** for the imported database
-
-### What Gets Imported
-- **All password entries** with titles, usernames, passwords, URLs, and notes
-- **Folder structure** maintaining your organization
-- **Nested folders** with full hierarchy
-
-> **Note**: After import, you'll have a new `.pmdb` file that works independently from your original KeePass database.
-
-</details>
-
-<details>
-<summary><strong>Themes & Customization</strong></summary>
-
-### Available Themes
-- **Light**: Clean and bright interface with modern gradients
-- **Dark**: Easy on the eyes for night use with beautiful dark gradients
-- **System**: Automatically matches your OS theme preference
-
-### Changing Themes
-1. Click **Style** in the menu bar
-2. Select your preferred theme
-3. Theme is saved and applied automatically
-
-</details>
-
-## Keyboard Shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl+N` | Create New Database |
-| `Ctrl+O` | Open Database |
-| `Ctrl+S` | Save Database |
-| `Ctrl+Shift+S` | Save Database As |
-| `Ctrl+Alt+Win+N` | Add New Entry |
-| `Ctrl+G` | Generate Password |
-| `Ctrl+F` | Search Entries |
-| `Escape` | Close Dialog/Search |
-| `Ctrl+Q` | Quit Application |
-
-## Technical Stack
-
-### Frontend
-- **React 18** - Modern React with hooks
-- **Tailwind CSS** - Utility-first styling
-- **Lucide React** - Beautiful icon system
-- **React Icons** - Brand-specific icons
-
-### Backend  
-- **Electron** - Cross-platform desktop framework
-- **Node.js** - JavaScript runtime
-- **CryptoJS** - AES encryption implementation
-- **Electron Store** - Settings persistence
-
-### Development
-- **React Scripts** - Build tooling
-- **Electron Builder** - Application packaging
-- **Concurrently** - Development workflow
-
-## Security & Privacy
-
-| Feature | Implementation |
-|---------|----------------|
-| Encryption | AES-256 industry standard |
-| Storage | Local files only, never cloud |
-| Master Password | Never stored, memory-only |
-| File Format | Encrypted .pmdb files |
-| Zero Knowledge | Your data stays on your device |
-
-> **Security Note**: Your master password is never stored anywhere. Make sure to remember it or keep it in a secure backup location!
-
-## Troubleshooting
-
-<details>
-<summary><strong>Application Issues</strong></summary>
-
-### App won't start
-- Ensure Node.js 16+ is installed
-- Delete `node_modules` folder and run `npm install`
-- Check for conflicting antivirus software
-
-### Database won't open
-- Verify correct master password
-- Check file permissions
-- Try moving database to a different location
-
-### Performance is slow
-- Keep database under 10MB
-- Restart the application
-- Clear unused database files
-
-</details>
-
-<details>
-<summary><strong>Development Issues</strong></summary>
-
-### Build fails
-- Run `npm install electron-store` if missing
-- Clear build cache with `npm run build`
-- Check Node.js version compatibility
-
-### Electron won't start
-- Kill any running electron processes
-- Delete `.electron` cache folder
-- Run `npm run react-dev` and `npm run electron-dev` separately
-
-</details>
-
-## Contributing
-
-We welcome contributions! Here's how you can help:
-
-1. **Report Bugs**: [Create an issue](https://github.com/jonax1337/simple-password-manager/issues)
-2. **Suggest Features**: [Request a feature](https://github.com/jonax1337/simple-password-manager/issues)
-3. **Submit PRs**: Fork, develop, and submit a pull request
-4. **Improve Docs**: Help make the documentation better
-
-### Development Setup
-```bash
-git clone https://github.com/jonax1337/simple-password-manager.git
-cd simple-password-manager
-npm install
-npm run dev
-```
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+**Ready to secure your digital life?** [Download Simple Password Manager](https://github.com/jonax1337/simple-password-manager/releases) and take control of your passwords today! 🔐
