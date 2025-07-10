@@ -4,7 +4,7 @@ import FolderNameDialog from '../dialogs/FolderNameDialog';
 import DeleteConfirmDialog from '../dialogs/DeleteConfirmDialog';
 import IconRenderer from './IconRenderer';
 
-const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, onEditFolder, onRenameFolder, onDeleteFolder, onMoveFolder, entryCount }) => {
+const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, onEditFolder, onRenameFolder, onDeleteFolder, onMoveFolder, onMoveEntry, entryCount }) => {
   // For backward compatibility, use onRenameFolder if onEditFolder is not provided
   const handleEditFolder = onEditFolder || onRenameFolder;
   const [expandedFolders, setExpandedFolders] = useState(new Set(['root']));
@@ -20,6 +20,7 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
   const [draggedFolder, setDraggedFolder] = useState(null);
   const [dragOverFolder, setDragOverFolder] = useState(null);
   const [dropPosition, setDropPosition] = useState(null); // 'into', 'above', 'below'
+  const [draggedEntry, setDraggedEntry] = useState(null);
 
   const toggleFolder = (folderId) => {
     const newExpanded = new Set(expandedFolders);
@@ -111,6 +112,8 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
               : 'theme-text-secondary'
           } ${
             dragOverFolder === folder.id ? (
+              draggedEntry ? 
+                'theme-button-hover border-2 border-green-400 border-dashed' :
               dropPosition === 'into' 
                 ? 'theme-button-hover border-2 border-blue-400 border-dashed' 
                 : dropPosition === 'above'
@@ -131,24 +134,44 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
             setDraggedFolder(null);
             setDragOverFolder(null);
             setDropPosition(null);
+            setDraggedEntry(null);
           }}
           onDragOver={(e) => {
             e.preventDefault();
-            if (draggedFolder && draggedFolder.id !== folder.id) {
+            
+            // Check if it's a dragged entry
+            const dragData = e.dataTransfer.getData('text/plain');
+            let isEntryDrag = false;
+            try {
+              const data = JSON.parse(dragData);
+              if (data.type === 'entry') {
+                isEntryDrag = true;
+                setDraggedEntry(data);
+              }
+            } catch (error) {
+              // Not JSON data, ignore
+            }
+            
+            if ((draggedFolder && draggedFolder.id !== folder.id) || isEntryDrag) {
               e.dataTransfer.dropEffect = 'move';
               setDragOverFolder(folder.id);
               
-              // Calculate drop position based on mouse Y position
-              const rect = e.currentTarget.getBoundingClientRect();
-              const mouseY = e.clientY - rect.top;
-              const elementHeight = rect.height;
-              
-              if (mouseY < elementHeight * 0.25) {
-                setDropPosition('above');
-              } else if (mouseY > elementHeight * 0.75) {
-                setDropPosition('below');
-              } else {
+              if (isEntryDrag) {
+                // For entries, always drop "into" the folder
                 setDropPosition('into');
+              } else {
+                // For folders, calculate drop position based on mouse Y position
+                const rect = e.currentTarget.getBoundingClientRect();
+                const mouseY = e.clientY - rect.top;
+                const elementHeight = rect.height;
+                
+                if (mouseY < elementHeight * 0.25) {
+                  setDropPosition('above');
+                } else if (mouseY > elementHeight * 0.75) {
+                  setDropPosition('below');
+                } else {
+                  setDropPosition('into');
+                }
               }
             }
           }}
@@ -156,35 +179,35 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
             if (!e.currentTarget.contains(e.relatedTarget)) {
               setDragOverFolder(null);
               setDropPosition(null);
+              setDraggedEntry(null);
             }
           }}
           onDrop={(e) => {
             e.preventDefault();
-            console.log('DROP EVENT:', {
-              draggedFolder: draggedFolder?.id,
-              targetFolder: folder.id,
-              dropPosition,
-              onMoveFolder: !!onMoveFolder
-            });
             
-            if (draggedFolder && draggedFolder.id !== folder.id && onMoveFolder) {
-              console.log('CALLING onMoveFolder:', draggedFolder.id, folder.id, dropPosition);
-              if (dropPosition === 'into') {
-                onMoveFolder(draggedFolder.id, folder.id, 'into');
-              } else if (dropPosition === 'above') {
-                onMoveFolder(draggedFolder.id, folder.id, 'above');
-              } else if (dropPosition === 'below') {
-                onMoveFolder(draggedFolder.id, folder.id, 'below');
+            // Check if it's an entry being dropped
+            const dragData = e.dataTransfer.getData('text/plain');
+            try {
+              const data = JSON.parse(dragData);
+              if (data.type === 'entry' && onMoveEntry) {
+                onMoveEntry(data.entryId, folder.id);
               }
-            } else {
-              console.log('DROP CANCELLED:', {
-                hasDraggedFolder: !!draggedFolder,
-                sameFolder: draggedFolder?.id === folder.id,
-                hasOnMoveFolder: !!onMoveFolder
-              });
+            } catch (error) {
+              // Handle folder drops
+              if (draggedFolder && draggedFolder.id !== folder.id && onMoveFolder) {
+                if (dropPosition === 'into') {
+                  onMoveFolder(draggedFolder.id, folder.id, 'into');
+                } else if (dropPosition === 'above') {
+                  onMoveFolder(draggedFolder.id, folder.id, 'above');
+                } else if (dropPosition === 'below') {
+                  onMoveFolder(draggedFolder.id, folder.id, 'below');
+                }
+              }
             }
+            
             setDragOverFolder(null);
             setDropPosition(null);
+            setDraggedEntry(null);
           }}
         >
           {hasChildren ? (

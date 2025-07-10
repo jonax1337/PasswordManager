@@ -64,6 +64,34 @@ export const useDatabase = () => {
     }));
   };
 
+  const moveEntryToFolder = (entryId, targetFolderId) => {
+    // Find the target folder and get its path
+    const findFolderPath = (folders, folderId) => {
+      for (const folder of folders) {
+        if (folder.id === folderId) {
+          return folder.path;
+        }
+        if (folder.children) {
+          const found = findFolderPath(folder.children, folderId);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    const targetPath = findFolderPath(database.folders, targetFolderId);
+    if (!targetPath) return;
+
+    setDatabase(prev => ({
+      ...prev,
+      entries: prev.entries.map(entry =>
+        entry.id === entryId 
+          ? { ...entry, folderId: targetFolderId, folder: targetPath }
+          : entry
+      )
+    }));
+  };
+
   const deleteEntry = (id) => {
     setDatabase(prev => ({
       ...prev,
@@ -273,10 +301,7 @@ export const useDatabase = () => {
   };
 
   const moveFolder = (folderId, targetFolderId, position = 'into') => {
-    console.log('moveFolder called:', { folderId, targetFolderId, position });
-    
     setDatabase(prev => {
-      console.log('Current database folders:', JSON.stringify(prev.folders, null, 2));
       // Find and remove the folder from its current location
       let folderToMove = null;
       let targetFolder = null;
@@ -284,14 +309,9 @@ export const useDatabase = () => {
       let targetIndex = -1;
       
       const removeFolderFromTree = (folders) => {
-        console.log('Searching in folders:', folders.map(f => ({ id: f.id, name: f.name })));
-        
         const result = [];
         for (const folder of folders) {
-          console.log('Checking folder:', { id: folder.id, name: folder.name, searchingFor: folderId });
-          
           if (folder.id === folderId) {
-            console.log('FOUND! Folder to move:', folder);
             folderToMove = { ...folder };
             // Don't add to result - this removes it
           } else {
@@ -302,8 +322,6 @@ export const useDatabase = () => {
             result.push(updatedFolder);
           }
         }
-        
-        console.log('Result after processing:', result.map(f => ({ id: f.id, name: f.name })));
         return result;
       };
       
@@ -392,29 +410,19 @@ export const useDatabase = () => {
       };
       
       // Start the search from the root's children, not from the root array
-      console.log('Starting removal process...');
       const rootFolder = prev.folders[0];
-      console.log('Root folder:', rootFolder);
-      console.log('Root folder children:', rootFolder.children);
-      
       const updatedRootChildren = removeFolderFromTree(rootFolder.children);
-      console.log('Updated root children after removal:', updatedRootChildren);
       
       const foldersWithoutMoved = [{
         ...rootFolder,
         children: updatedRootChildren
       }];
-      console.log('Folders after removal:', foldersWithoutMoved);
       
       if (!folderToMove) {
-        console.log('ERROR: Folder to move not found after removal process:', folderId);
         return prev;
       }
       
-      console.log('Found folder to move:', folderToMove);
-      
       findTargetInfo(foldersWithoutMoved);
-      console.log('Target info found:', { targetFolder, targetParent, targetIndex });
       
       let foldersWithMoved;
       if ((position === 'above' || position === 'below') && !targetParent) {
@@ -437,8 +445,6 @@ export const useDatabase = () => {
         foldersWithMoved = addToRoot(foldersWithoutMoved);
       }
       
-      console.log('Final folders structure:', foldersWithMoved);
-      
       return {
         ...prev,
         folders: foldersWithMoved
@@ -457,6 +463,7 @@ export const useDatabase = () => {
     addEntry,
     updateEntry,
     deleteEntry,
+    moveEntryToFolder,
     findFolderById,
     addFolder,
     renameFolder,

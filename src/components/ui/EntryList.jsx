@@ -8,6 +8,35 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolderId, sear
   const [showPasswords, setShowPasswords] = React.useState({});
   const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
   const [entryToDelete, setEntryToDelete] = React.useState(null);
+
+  // Handle drag start with target checking
+  const handleDragStart = (e, entry) => {
+    // Check if the target or any parent has cursor-text style
+    const hasTextCursor = (element) => {
+      if (!element) return false;
+      const computedStyle = window.getComputedStyle(element);
+      return computedStyle.cursor === 'text' || 
+             element.tagName === 'INPUT' || 
+             element.tagName === 'TEXTAREA' ||
+             element.classList.contains('cursor-text') ||
+             element.closest('.cursor-text');
+    };
+
+    // Prevent dragging if clicking on text areas or buttons
+    if (hasTextCursor(e.target) || 
+        e.target.tagName === 'BUTTON' ||
+        e.target.closest('button')) {
+      e.preventDefault();
+      return;
+    }
+
+    e.dataTransfer.setData('text/plain', JSON.stringify({
+      type: 'entry',
+      entryId: entry.id,
+      entryTitle: entry.title
+    }));
+    e.dataTransfer.effectAllowed = 'move';
+  };
   
   // Funktion zum Öffnen von URLs im Standard-Browser
   const openInExternalBrowser = (url) => {
@@ -89,16 +118,40 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolderId, sear
           {entries.map(entry => (
             <div
               key={entry.id}
-              className="entry-card theme-card rounded-xl shadow-sm p-3 sm:p-4 lg:p-5 hover:shadow-md transition-all group cursor-pointer flex flex-col min-h-[280px] sm:min-h-[300px] md:min-h-[320px] lg:min-h-[340px]"
+              className="entry-card theme-card rounded-xl shadow-sm p-3 sm:p-4 lg:p-5 hover:shadow-md transition-all group cursor-pointer flex flex-col min-h-[280px] sm:min-h-[300px] md:min-h-[320px] lg:min-h-[340px] select-none"
               onDoubleClick={() => onEditEntry(entry)}
+              draggable={true}
+              onDragStart={(e) => handleDragStart(e, entry)}
+              onMouseDown={(e) => {
+                // Additional check on mousedown to prevent drag if over text areas
+                const hasTextCursor = (element) => {
+                  if (!element) return false;
+                  const computedStyle = window.getComputedStyle(element);
+                  return computedStyle.cursor === 'text' || 
+                         element.tagName === 'INPUT' || 
+                         element.tagName === 'TEXTAREA' ||
+                         element.classList.contains('cursor-text') ||
+                         element.closest('.cursor-text');
+                };
+                
+                if (hasTextCursor(e.target)) {
+                  e.currentTarget.draggable = false;
+                  // Re-enable draggable after a short delay
+                  setTimeout(() => {
+                    if (e.currentTarget) {
+                      e.currentTarget.draggable = true;
+                    }
+                  }, 100);
+                }
+              }}
             >
               {/* Header with icon, title and actions */}
               <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center min-w-0 flex-1 pl-0 -ml-1.5">
+                <div className="flex items-center min-w-0 flex-1 pl-0 -ml-1.5 drag-handle cursor-move">
                   <div className="flex-shrink-0 w-8 h-8 theme-surface rounded-lg flex items-center justify-center">
                     <IconRenderer icon={entry.icon} className="w-5 h-5 theme-text-secondary" />
                   </div>
-                  <h3 className="ml-1.5 text-sm font-semibold theme-text truncate">{entry.title}</h3>
+                  <h3 className="ml-1.5 text-sm font-semibold theme-text truncate select-none">{entry.title}</h3>
                 </div>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
@@ -149,8 +202,16 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolderId, sear
                     type="text"
                     value={entry.username || ''}
                     readOnly
-                    className="flex-1 px-2 py-1 theme-input rounded-md text-xs min-w-0"
+                    className="flex-1 px-2 py-1 theme-input rounded-md text-xs min-w-0 select-text cursor-text"
                     placeholder="No username"
+                    onMouseEnter={(e) => {
+                      const entryCard = e.currentTarget.closest('.entry-card');
+                      if (entryCard) entryCard.draggable = false;
+                    }}
+                    onMouseLeave={(e) => {
+                      const entryCard = e.currentTarget.closest('.entry-card');
+                      if (entryCard) entryCard.draggable = true;
+                    }}
                   />
                   {entry.username && (
                     <CopyButton
@@ -172,8 +233,16 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolderId, sear
                     type={showPasswords[entry.id] ? 'text' : 'password'}
                     value={entry.password || ''}
                     readOnly
-                    className="flex-1 px-2 py-1 theme-input rounded-md text-xs min-w-0"
+                    className="flex-1 px-2 py-1 theme-input rounded-md text-xs min-w-0 select-text cursor-text"
                     placeholder="No password"
+                    onMouseEnter={(e) => {
+                      const entryCard = e.currentTarget.closest('.entry-card');
+                      if (entryCard) entryCard.draggable = false;
+                    }}
+                    onMouseLeave={(e) => {
+                      const entryCard = e.currentTarget.closest('.entry-card');
+                      if (entryCard) entryCard.draggable = true;
+                    }}
                   />
                   {entry.password && (
                     <div className="flex gap-0.5 flex-shrink-0">
@@ -198,9 +267,19 @@ const EntryList = ({ entries, onEditEntry, onDeleteEntry, selectedFolderId, sear
                     </span>
                   }
                 </div>
-                <div className="overflow-y-auto smooth-scroll scrollbar-thin theme-input rounded-md p-2 flex-1 min-h-[60px] max-h-[120px] sm:max-h-[100px] md:max-h-[120px] lg:max-h-[140px]">
+                <div 
+                  className="overflow-y-auto smooth-scroll scrollbar-thin theme-input rounded-md p-2 flex-1 min-h-[60px] max-h-[120px] sm:max-h-[100px] md:max-h-[120px] lg:max-h-[140px]"
+                  onMouseEnter={(e) => {
+                    const entryCard = e.currentTarget.closest('.entry-card');
+                    if (entryCard) entryCard.draggable = false;
+                  }}
+                  onMouseLeave={(e) => {
+                    const entryCard = e.currentTarget.closest('.entry-card');
+                    if (entryCard) entryCard.draggable = true;
+                  }}
+                >
                   {entry.notes ? (
-                    <p className="text-[11px] theme-text-secondary whitespace-pre-wrap leading-relaxed break-words" title={entry.notes}>
+                    <p className="text-[11px] theme-text-secondary whitespace-pre-wrap leading-relaxed break-words select-text cursor-text" title={entry.notes}>
                       {entry.notes}
                     </p>
                   ) : (
