@@ -162,7 +162,25 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
       });
     } else if (selectedFolderId !== 'root') {
       // Only filter by folder if NOT searching and not root
-      filtered = filtered.filter(entry => (entry.folderId || entry.folder) === selectedFolderId);
+      // Get the selected folder object to handle both ID and path matching
+      const selectedFolder = getFolderFromId(selectedFolderId);
+      
+      filtered = filtered.filter(entry => {
+        const entryFolderId = entry.folderId || entry.folder;
+        
+        // Handle entries without folder assignment (they belong to root)
+        if (!entryFolderId || entryFolderId === '') {
+          return false; // These entries only show in root
+        }
+        
+        // Direct ID match
+        if (entryFolderId === selectedFolderId) return true;
+        
+        // Path match for legacy KeePass imports
+        if (selectedFolder && entryFolderId === selectedFolder.path) return true;
+        
+        return false;
+      });
     }
 
     setFilteredEntries(filtered);
