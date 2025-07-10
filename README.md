@@ -1,6 +1,7 @@
 # Simple Password Manager
 
 [![Download](https://img.shields.io/badge/Download-Latest-blue?style=for-the-badge&logo=download)](https://github.com/jonax1337/simple-password-manager/releases) [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE.md) [![Version](https://img.shields.io/badge/Version-1.0.0-orange?style=for-the-badge)](https://github.com/jonax1337/simple-password-manager/releases)
+[![Electron](https://img.shields.io/badge/Electron-37.2.0-47848F?style=for-the-badge&logo=Electron&logoColor=white)](https://www.electronjs.org/)
 
 **A secure, offline password manager for Windows, macOS, and Linux**  
 Keep your passwords safe with military-grade encryption, beautiful design, and modern features like drag & drop organization.
