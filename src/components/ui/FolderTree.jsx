@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Folder, FolderOpen, FolderPlus, ChevronRight, ChevronDown, MoreHorizontal } from 'lucide-react';
 import FolderNameDialog from '../dialogs/FolderNameDialog';
 import DeleteConfirmDialog from '../dialogs/DeleteConfirmDialog';
@@ -32,36 +32,6 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
     setExpandedFolders(newExpanded);
   };
 
-  // Get recursive entry count for a folder (including all descendants)
-  const getFolderEntryCount = (folder, entries) => {
-    // Don't show count for root folder
-    if (folder.id === 'root') return 0;
-    
-    // Get all folder IDs that are descendants of this folder
-    const getAllDescendantIds = (folderObj) => {
-      const ids = [folderObj.id];
-      if (folderObj.children) {
-        folderObj.children.forEach(child => {
-          ids.push(...getAllDescendantIds(child));
-        });
-      }
-      return ids;
-    };
-    
-    const descendantIds = getAllDescendantIds(folder);
-    
-    // Count entries that belong to this folder or any of its descendants
-    return entries.filter(entry => {
-      const entryFolderId = entry.folderId || entry.folder;
-      return descendantIds.includes(entryFolderId) || 
-             (typeof entryFolderId === 'string' && descendantIds.some(id => {
-               // Handle legacy string-based folder references
-               const folderObj = findFolderById(folders, id);
-               return folderObj && entryFolderId === folderObj.path;
-             }));
-    }).length;
-  };
-
   // Helper function to find folder by ID in the folder tree
   const findFolderById = (folderList, targetId) => {
     for (const folder of folderList) {
@@ -72,6 +42,72 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
       }
     }
     return null;
+  };
+
+  // Memoize entry counts for performance with large databases - optimized
+  const entryCountCache = useMemo(() => {
+    const cache = new Map();
+    
+    if (!entries || entries.length === 0) return cache;
+    
+    // Build entry lookup by folder for O(1) access
+    const entryFolderMap = new Map();
+    entries.forEach(entry => {
+      const folderId = entry.folderId || entry.folder;
+      if (!entryFolderMap.has(folderId)) {
+        entryFolderMap.set(folderId, []);
+      }
+      entryFolderMap.get(folderId).push(entry);
+    });
+
+    // Build folder path lookup for legacy entries
+    const folderPathMap = new Map();
+    const buildPathMap = (folderList) => {
+      folderList.forEach(folder => {
+        folderPathMap.set(folder.path, folder.id);
+        if (folder.children) {
+          buildPathMap(folder.children);
+        }
+      });
+    };
+    buildPathMap(folders);
+    
+    // Calculate counts efficiently
+    const calculateCounts = (folderList) => {
+      folderList.forEach(folder => {
+        if (folder.id === 'root') {
+          cache.set(folder.id, 0);
+        } else {
+          let count = 0;
+          
+          // Direct ID match entries
+          const directEntries = entryFolderMap.get(folder.id) || [];
+          count += directEntries.length;
+          
+          // Legacy path-based entries
+          const pathEntries = entryFolderMap.get(folder.path) || [];
+          count += pathEntries.length;
+          
+          // Add children counts recursively
+          if (folder.children) {
+            folder.children.forEach(child => {
+              calculateCounts([child]); // Calculate child first
+              count += cache.get(child.id) || 0;
+            });
+          }
+          
+          cache.set(folder.id, count);
+        }
+      });
+    };
+    
+    calculateCounts(folders);
+    return cache;
+  }, [entries, folders]);
+
+  // Fast lookup function
+  const getFolderEntryCount = (folder) => {
+    return entryCountCache.get(folder.id) || 0;
   };
 
   // Check if targetFolder is a descendant (child/grandchild/etc.) of sourceFolder
@@ -175,7 +211,7 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
     const isExpanded = expandedFolders.has(folder.id);
     const isSelected = selectedFolderId === folder.id;
     const hasChildren = folder.children && folder.children.length > 0;
-    const folderEntryCount = getFolderEntryCount(folder, entries);
+    const folderEntryCount = getFolderEntryCount(folder);
 
     return (
       <div key={folder.id} className="relative">

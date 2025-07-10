@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Sidebar from '../ui/Sidebar';
 import EntryList from '../ui/EntryList';
 import EntryForm from '../dialogs/EntryForm';
@@ -15,7 +15,7 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [folderDropdownOpen, setFolderDropdownOpen] = useState(false);
-  const [filteredEntries, setFilteredEntries] = useState(database.entries);
+  // Remove state since we're using memoized filteredEntries
   const [openedFromSearch, setOpenedFromSearch] = useState(false);
   
   // Resizable sidebar state
@@ -145,20 +145,26 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
     return allFolders.find(f => f.id === folderId || f.path === folderId);
   };
 
-  useEffect(() => {
+  // Memoize filtering for better performance with large databases
+  const filteredEntries = useMemo(() => {
     let filtered = database.entries;
 
     if (searchTerm) {
-      // Global search - search across ALL entries, ignore folder selection
+      // Optimize search with early termination and lowercase caching
+      const searchLower = searchTerm.toLowerCase();
+      
       filtered = filtered.filter(entry => {
+        // Early termination - check simple fields first
+        if (entry.title && entry.title.toLowerCase().includes(searchLower)) return true;
+        if (entry.username && entry.username.toLowerCase().includes(searchLower)) return true;
+        if (entry.url && entry.url.toLowerCase().includes(searchLower)) return true;
+        if (entry.notes && entry.notes.toLowerCase().includes(searchLower)) return true;
+        
+        // More expensive folder lookup last
         const entryFolder = getFolderFromId(entry.folderId || entry.folder);
-        return (
-          entry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          entry.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          entry.url.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (entry.notes && entry.notes.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (entryFolder && entryFolder.name.toLowerCase().includes(searchTerm.toLowerCase()))
-        );
+        if (entryFolder && entryFolder.name.toLowerCase().includes(searchLower)) return true;
+        
+        return false;
       });
     } else if (selectedFolderId !== 'root') {
       // Only filter by folder if NOT searching and not root
@@ -173,18 +179,20 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
           return false; // These entries only show in root
         }
         
-        // Direct ID match
+        // Direct ID match (fastest)
         if (entryFolderId === selectedFolderId) return true;
         
-        // Path match for legacy KeePass imports
+        // Path match for legacy KeePass imports (slower)
         if (selectedFolder && entryFolderId === selectedFolder.path) return true;
         
         return false;
       });
     }
 
-    setFilteredEntries(filtered);
+    return filtered;
   }, [database.entries, selectedFolderId, searchTerm]);
+
+  // Remove the old useEffect since we're using useMemo now
 
   useEffect(() => {
     if (window.electronAPI) {
@@ -463,8 +471,8 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
           {/* Mobile sidebar toggle removed - sidebar is always visible */}
         </header>
 
-        {/* Main content area - scrollable with cool custom scrollbar */}
-        <main className="flex-1 overflow-auto smooth-scroll scrollbar-cool">
+        {/* Main content area - let EntryList handle its own scrolling */}
+        <main className="flex-1 flex flex-col min-h-0">
           <EntryList
             entries={filteredEntries}
             onEditEntry={handleEditEntry}

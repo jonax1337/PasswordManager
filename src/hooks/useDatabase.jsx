@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 export const useDatabase = () => {
   const [database, setDatabase] = useState({
@@ -23,6 +23,38 @@ export const useDatabase = () => {
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastSavedDatabase, setLastSavedDatabase] = useState(null);
+
+  // Performance optimization: Create lookup maps for faster operations
+  const { entryMap, folderMap, folderPathMap } = useMemo(() => {
+    // Entry lookup map by ID
+    const entryLookup = new Map();
+    database.entries.forEach((entry, index) => {
+      entryLookup.set(entry.id, { entry, index });
+    });
+
+    // Folder lookup map by ID
+    const folderLookup = new Map();
+    const pathLookup = new Map();
+    
+    const buildFolderMaps = (folders) => {
+      folders.forEach(folder => {
+        folderLookup.set(folder.id, folder);
+        pathLookup.set(folder.id, folder.path);
+        
+        if (folder.children) {
+          buildFolderMaps(folder.children);
+        }
+      });
+    };
+    
+    buildFolderMaps(database.folders);
+    
+    return {
+      entryMap: entryLookup,
+      folderMap: folderLookup,
+      folderPathMap: pathLookup
+    };
+  }, [database.entries, database.folders]);
 
   // Check if database is in default state (no real changes)
   const isDefaultDatabase = (db) => {
@@ -65,42 +97,52 @@ export const useDatabase = () => {
   };
 
   const moveEntryToFolder = (entryId, targetFolderId) => {
-    // Find the target folder and get its path
-    const findFolderPath = (folders, folderId) => {
-      for (const folder of folders) {
-        if (folder.id === folderId) {
-          return folder.path;
-        }
-        if (folder.children) {
-          const found = findFolderPath(folder.children, folderId);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
+    // Use fast lookup instead of recursive search
+    const targetPath = folderPathMap.get(targetFolderId);
+    if (targetPath === undefined) return;
 
-    const targetPath = findFolderPath(database.folders, targetFolderId);
-    if (!targetPath) return;
+    const entryInfo = entryMap.get(entryId);
+    if (!entryInfo) return;
 
-    setDatabase(prev => ({
-      ...prev,
-      entries: prev.entries.map(entry =>
-        entry.id === entryId 
-          ? { ...entry, folderId: targetFolderId, folder: targetPath }
-          : entry
-      )
-    }));
+    // Direct array modification is faster than map for single updates
+    setDatabase(prev => {
+      const newEntries = [...prev.entries];
+      newEntries[entryInfo.index] = {
+        ...entryInfo.entry,
+        folderId: targetFolderId,
+        folder: targetPath
+      };
+
+      return {
+        ...prev,
+        entries: newEntries
+      };
+    });
   };
 
   const deleteEntry = (id) => {
-    setDatabase(prev => ({
-      ...prev,
-      entries: prev.entries.filter(entry => entry.id !== id)
-    }));
+    const entryInfo = entryMap.get(id);
+    if (!entryInfo) return;
+
+    // Use splice for faster deletion in large arrays
+    setDatabase(prev => {
+      const newEntries = [...prev.entries];
+      newEntries.splice(entryInfo.index, 1);
+      
+      return {
+        ...prev,
+        entries: newEntries
+      };
+    });
   };
 
-  // Folder management functions
+  // Folder management functions - optimized with lookup map
   const findFolderById = (folders, id) => {
+    // Use fast lookup when available
+    const folder = folderMap.get(id);
+    if (folder) return folder;
+    
+    // Fallback to recursive search for edge cases
     for (const folder of folders) {
       if (folder.id === id) return folder;
       if (folder.children) {
@@ -301,14 +343,18 @@ export const useDatabase = () => {
   };
 
   const reorderEntries = (draggedEntryId, targetEntryId, position = 'after') => {
+    // Use fast lookup for indices
+    const draggedInfo = entryMap.get(draggedEntryId);
+    const targetInfo = entryMap.get(targetEntryId);
+    
+    if (!draggedInfo || !targetInfo || draggedInfo.index === targetInfo.index) {
+      return;
+    }
+
     setDatabase(prev => {
       const entries = [...prev.entries];
-      const draggedIndex = entries.findIndex(entry => entry.id === draggedEntryId);
-      const targetIndex = entries.findIndex(entry => entry.id === targetEntryId);
-      
-      if (draggedIndex === -1 || targetIndex === -1 || draggedIndex === targetIndex) {
-        return prev;
-      }
+      const draggedIndex = draggedInfo.index;
+      const targetIndex = targetInfo.index;
       
       // Remove the dragged entry
       const [draggedEntry] = entries.splice(draggedIndex, 1);
