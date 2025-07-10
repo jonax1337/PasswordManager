@@ -306,3 +306,14 @@ input[type="checkbox"].theme-checkbox:focus {
 .selectable-text {
   pointer-events: auto;
 }
+
+/* Smooth folder drag indicators */
+.folder-drop-indicator {
+  transition: all 0.15s ease-out;
+}
+
+/* Prevent visual jumping during folder drag */
+.folder-tree-item {
+  position: relative;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}

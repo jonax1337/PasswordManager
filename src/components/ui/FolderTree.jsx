@@ -4,7 +4,7 @@ import FolderNameDialog from '../dialogs/FolderNameDialog';
 import DeleteConfirmDialog from '../dialogs/DeleteConfirmDialog';
 import IconRenderer from './IconRenderer';
 
-const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, onEditFolder, onRenameFolder, onDeleteFolder, onMoveFolder, onMoveEntry, entryCount }) => {
+const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, onEditFolder, onRenameFolder, onDeleteFolder, onMoveFolder, onMoveEntry, entries }) => {
   // For backward compatibility, use onRenameFolder if onEditFolder is not provided
   const handleEditFolder = onEditFolder || onRenameFolder;
   const [expandedFolders, setExpandedFolders] = useState(new Set(['root']));
@@ -32,10 +32,84 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
     setExpandedFolders(newExpanded);
   };
 
-  const getFolderEntryCount = (folderPath) => {
-    if (folderPath === '') return entryCount; // Root folder shows all entries
-    // TODO: Implement actual counting based on folder path
-    return 0;
+  // Get recursive entry count for a folder (including all descendants)
+  const getFolderEntryCount = (folder, entries) => {
+    // Don't show count for root folder
+    if (folder.id === 'root') return 0;
+    
+    // Get all folder IDs that are descendants of this folder
+    const getAllDescendantIds = (folderObj) => {
+      const ids = [folderObj.id];
+      if (folderObj.children) {
+        folderObj.children.forEach(child => {
+          ids.push(...getAllDescendantIds(child));
+        });
+      }
+      return ids;
+    };
+    
+    const descendantIds = getAllDescendantIds(folder);
+    
+    // Count entries that belong to this folder or any of its descendants
+    return entries.filter(entry => {
+      const entryFolderId = entry.folderId || entry.folder;
+      return descendantIds.includes(entryFolderId) || 
+             (typeof entryFolderId === 'string' && descendantIds.some(id => {
+               // Handle legacy string-based folder references
+               const folderObj = findFolderById(folders, id);
+               return folderObj && entryFolderId === folderObj.path;
+             }));
+    }).length;
+  };
+
+  // Helper function to find folder by ID in the folder tree
+  const findFolderById = (folderList, targetId) => {
+    for (const folder of folderList) {
+      if (folder.id === targetId) return folder;
+      if (folder.children) {
+        const found = findFolderById(folder.children, targetId);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  // Check if targetFolder is a descendant (child/grandchild/etc.) of sourceFolder
+  const isDescendantOf = (sourceFolder, targetFolderId, folderList) => {
+    if (!sourceFolder || !sourceFolder.children) return false;
+    
+    const checkChildren = (children) => {
+      for (const child of children) {
+        if (child.id === targetFolderId) {
+          return true; // Found target in children
+        }
+        if (child.children && checkChildren(child.children)) {
+          return true; // Found in grandchildren
+        }
+      }
+      return false;
+    };
+    
+    return checkChildren(sourceFolder.children);
+  };
+
+  // Check if a folder drop is valid (prevent dropping into own descendants)
+  const isValidFolderDrop = (draggedFolderId, targetFolderId, position) => {
+    if (!draggedFolder || draggedFolderId === targetFolderId) {
+      return false; // Can't drop on self
+    }
+    
+    // Prevent dropping above/below the root folder
+    if (targetFolderId === 'root' && (position === 'above' || position === 'below')) {
+      return false; // Can't move folders outside the root hierarchy
+    }
+    
+    if (position === 'into') {
+      // Can't drop into own descendants
+      return !isDescendantOf(draggedFolder, targetFolderId, folders);
+    }
+    
+    return true; // Other above/below positions are valid
   };
 
   const handleRightClick = (e, folder) => {
@@ -101,12 +175,22 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
     const isExpanded = expandedFolders.has(folder.id);
     const isSelected = selectedFolderId === folder.id;
     const hasChildren = folder.children && folder.children.length > 0;
-    const folderEntryCount = getFolderEntryCount(folder.path);
+    const folderEntryCount = getFolderEntryCount(folder, entries);
 
     return (
-      <div key={folder.id}>
+      <div key={folder.id} className="relative">
+        {/* Drop indicator for above position */}
+        {dragOverFolder === folder.id && dropPosition === 'above' && !draggedEntry && (
+          <div 
+            className="absolute top-0 left-0 right-0 h-0.5 bg-blue-400 rounded-full z-10"
+            style={{ left: `${8 + level * 16}px` }}
+          />
+        )}
+        
         <div 
-          className={`flex items-center gap-1 px-2 py-1.5 rounded-lg transition-colors cursor-pointer group ${
+          className={`flex items-center gap-1 px-2 py-1.5 rounded-lg transition-colors group relative ${
+            folder.id === 'root' ? 'cursor-default' : 'cursor-pointer'
+          } ${
             isSelected
               ? 'theme-surface theme-primary'
               : 'theme-text-secondary'
@@ -116,17 +200,20 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
                 'theme-button-hover border-2 border-green-400 border-dashed' :
               dropPosition === 'into' 
                 ? 'theme-button-hover border-2 border-blue-400 border-dashed' 
-                : dropPosition === 'above'
-                ? 'border-t-4 border-blue-400'
-                : dropPosition === 'below'
-                ? 'border-b-4 border-blue-400'
-                : ''
+                : 'theme-button-hover'
             ) : ''
+          } ${
+            draggedFolder && !isValidFolderDrop(draggedFolder.id, folder.id, dropPosition) && dragOverFolder === folder.id ?
+              'opacity-50 cursor-not-allowed' : ''
           }`}
           style={{ paddingLeft: `${8 + level * 16}px` }}
           onContextMenu={(e) => handleRightClick(e, folder)}
-          draggable={true}
+          draggable={folder.id !== 'root'} // Root folder cannot be dragged
           onDragStart={(e) => {
+            if (folder.id === 'root') {
+              e.preventDefault();
+              return;
+            }
             setDraggedFolder(folder);
             e.dataTransfer.effectAllowed = 'move';
           }}
@@ -153,24 +240,38 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
             }
             
             if ((draggedFolder && draggedFolder.id !== folder.id) || isEntryDrag) {
-              e.dataTransfer.dropEffect = 'move';
-              setDragOverFolder(folder.id);
-              
               if (isEntryDrag) {
-                // For entries, always drop "into" the folder
+                // Entries can always be dropped into folders
+                e.dataTransfer.dropEffect = 'move';
+                setDragOverFolder(folder.id);
                 setDropPosition('into');
               } else {
-                // For folders, calculate drop position based on mouse Y position
+                // For folders, calculate drop position and validate
                 const rect = e.currentTarget.getBoundingClientRect();
                 const mouseY = e.clientY - rect.top;
                 const elementHeight = rect.height;
+                const relativeY = mouseY / elementHeight;
                 
-                if (mouseY < elementHeight * 0.25) {
-                  setDropPosition('above');
-                } else if (mouseY > elementHeight * 0.75) {
-                  setDropPosition('below');
+                // Use hysteresis to prevent jumping between positions
+                let newPosition = dropPosition;
+                
+                if (relativeY < 0.2) {
+                  newPosition = 'above';
+                } else if (relativeY > 0.8) {
+                  newPosition = 'below';
+                } else if (relativeY >= 0.3 && relativeY <= 0.7) {
+                  newPosition = 'into';
+                }
+                
+                // Validate the drop before allowing it
+                if (isValidFolderDrop(draggedFolder.id, folder.id, newPosition)) {
+                  e.dataTransfer.dropEffect = 'move';
+                  setDragOverFolder(folder.id);
+                  setDropPosition(newPosition);
                 } else {
-                  setDropPosition('into');
+                  e.dataTransfer.dropEffect = 'none';
+                  setDragOverFolder(null);
+                  setDropPosition(null);
                 }
               }
             }
@@ -193,14 +294,17 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
                 onMoveEntry(data.entryId, folder.id);
               }
             } catch (error) {
-              // Handle folder drops
+              // Handle folder drops with validation
               if (draggedFolder && draggedFolder.id !== folder.id && onMoveFolder) {
-                if (dropPosition === 'into') {
-                  onMoveFolder(draggedFolder.id, folder.id, 'into');
-                } else if (dropPosition === 'above') {
-                  onMoveFolder(draggedFolder.id, folder.id, 'above');
-                } else if (dropPosition === 'below') {
-                  onMoveFolder(draggedFolder.id, folder.id, 'below');
+                // Double-check validation before executing move
+                if (isValidFolderDrop(draggedFolder.id, folder.id, dropPosition)) {
+                  if (dropPosition === 'into') {
+                    onMoveFolder(draggedFolder.id, folder.id, 'into');
+                  } else if (dropPosition === 'above') {
+                    onMoveFolder(draggedFolder.id, folder.id, 'above');
+                  } else if (dropPosition === 'below') {
+                    onMoveFolder(draggedFolder.id, folder.id, 'below');
+                  }
                 }
               }
             }
@@ -213,7 +317,7 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
           {hasChildren ? (
             <button
               onClick={() => toggleFolder(folder.id)}
-              className="p-0.5 hover:opacity-80 theme-button-secondary rounded transition-colors"
+              className="flex items-center justify-center w-4 h-4 hover:opacity-80 theme-button-secondary rounded transition-colors flex-shrink-0"
             >
               {isExpanded ? (
                 <ChevronDown className="w-3 h-3" />
@@ -222,17 +326,22 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
               )}
             </button>
           ) : (
-            <div className="w-4" />
+            <div className="w-4 h-4 flex-shrink-0" />
           )}
 
           <div 
             className="flex items-center gap-2 flex-1 min-w-0"
             onClick={() => onFolderSelect(folder.id)}
+            onDoubleClick={() => {
+              if (hasChildren) {
+                toggleFolder(folder.id);
+              }
+            }}
           >
             {folder.icon ? (
               <IconRenderer icon={folder.icon} className="w-4 h-4 flex-shrink-0" />
             ) : (
-              isSelected || isExpanded ? (
+              isExpanded ? (
                 <FolderOpen className="w-4 h-4 flex-shrink-0" />
               ) : (
                 <Folder className="w-4 h-4 flex-shrink-0" />
@@ -260,7 +369,14 @@ const FolderTree = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, on
             <MoreHorizontal className="w-3 h-3" />
           </button>
         </div>
-
+        
+        {/* Drop indicator for below position */}
+        {dragOverFolder === folder.id && dropPosition === 'below' && !draggedEntry && (
+          <div 
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400 rounded-full z-10"
+            style={{ left: `${8 + level * 16}px` }}
+          />
+        )}
 
         {/* Render children if expanded */}
         {isExpanded && hasChildren && (

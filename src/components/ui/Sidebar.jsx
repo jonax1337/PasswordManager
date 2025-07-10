@@ -3,7 +3,7 @@ import { Hash, FolderPlus } from 'lucide-react';
 import FolderTree from './FolderTree';
 import FolderNameDialog from '../dialogs/FolderNameDialog';
 
-const Sidebar = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, onRenameFolder, onDeleteFolder, onMoveFolder, onMoveEntry, entryCount }) => {
+const Sidebar = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, onRenameFolder, onDeleteFolder, onMoveFolder, onMoveEntry, entries }) => {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
   const [showFolderDialog, setShowFolderDialog] = useState(false);
@@ -63,7 +63,7 @@ const Sidebar = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, onRen
           onDeleteFolder={onDeleteFolder}
           onMoveFolder={onMoveFolder}
           onMoveEntry={onMoveEntry}
-          entryCount={entryCount}
+          entries={entries}
         />
       </div>
 
@@ -104,7 +104,7 @@ const Sidebar = ({ folders, selectedFolderId, onFolderSelect, onAddFolder, onRen
           <div className="space-y-1.5 lg:space-y-2 text-xs lg:text-sm">
             <div className="flex justify-between items-center">
               <span className="theme-text-secondary">Total Entries:</span>
-              <span className="font-medium theme-primary">{entryCount}</span>
+              <span className="font-medium theme-primary">{entries.length}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="theme-text-secondary">Folders:</span>

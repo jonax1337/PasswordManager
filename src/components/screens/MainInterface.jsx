@@ -333,7 +333,7 @@ const MainInterface = ({ database, onAddEntry, onUpdateEntry, onDeleteEntry, onS
             onDeleteFolder={onDeleteFolder}
             onMoveFolder={onMoveFolder}
             onMoveEntry={onMoveEntry}
-            entryCount={database.entries.length}
+            entries={database.entries}
           />
         </div>
         
