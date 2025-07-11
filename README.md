@@ -1,404 +1,240 @@
-# 🔐 Simple Password Manager
+# Simple Password Manager
 
-**Your personal vault for all passwords - secure, beautiful, and completely offline.**
+A secure, offline password manager built with modern web technologies. Keep all your passwords safe with military-grade encryption while enjoying a beautiful, intuitive interface.
 
-[![Download](https://img.shields.io/badge/Download-Latest-blue?style=for-the-badge&logo=download)](https://github.com/jonax1337/simple-password-manager/releases) [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE.md) [![Version](https://img.shields.io/badge/Version-1.0.0-orange?style=for-the-badge)](https://github.com/jonax1337/simple-password-manager/releases)
+![Version](https://img.shields.io/badge/version-0.0.1-BETA-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Electron](https://img.shields.io/badge/electron-37.2.1-blue) ![React](https://img.shields.io/badge/react-18.3.1-blue)
 
-> **Stop reusing weak passwords!** Simple Password Manager keeps all your accounts secure with military-grade encryption while being incredibly easy to use. No cloud, no subscriptions, no tracking - just you and your passwords, protected.
+## Features
 
-**[📥 Download for Windows, macOS & Linux](https://github.com/jonax1337/simple-password-manager/releases)**
+### Security First
+- **AES-256 encryption** - Military-grade security for all your passwords
+- **Offline-only operation** - Your data never leaves your device
+- **Zero-knowledge architecture** - Your master password is never stored
+- **Open source** - Security experts can verify the code
 
-![Simple Password Manager Screenshot](https://via.placeholder.com/800x450/2D3748/FFFFFF?text=App+Screenshot+Coming+Soon)
+### Beautiful Interface
+- **Modern design** with smooth animations and intuitive navigation
+- **Multiple themes** - Light, dark, and system themes
+- **Responsive layout** that adapts to your screen size
+- **Drag-and-drop organization** for effortless password management
 
----
+### Powerful Features
+- **Unlimited password storage** organized in folders
+- **Advanced password generator** with customizable options
+- **Global search** across all entries and folders
+- **KeePass import** - Migrate from existing KeePass databases
+- **Keyboard shortcuts** for power users
 
-## 🤔 Why Choose Simple Password Manager?
+## Quick Start
 
-### 😰 **The Problem You Know Too Well**
-- Using the same password everywhere? *That's dangerous.*
-- Storing passwords in browsers? *Not secure enough.*
-- Forgetting passwords constantly? *Super frustrating.*
-- Using weak passwords because they're easier to remember? *Hackers love this.*
+### Installation
 
-### ✨ **The Solution You've Been Looking For**
-Simple Password Manager solves all these problems while being **actually enjoyable to use**. Here's what makes it special:
+Download the latest release for your platform:
 
-🔒 **Bank-Level Security** - Your passwords are encrypted with the same AES-256 standard that banks use  
-🏠 **Completely Offline** - Your data never leaves your computer. Ever.  
-🎨 **Beautiful & Intuitive** - Drag & drop organization, gorgeous themes, smooth animations  
-⚡ **Lightning Fast** - Find any password in milliseconds with smart search  
-🔄 **Import Your Existing Data** - Seamlessly migrate from KeePass or other managers  
-💾 **Your Data, Your Control** - Backup files wherever you want, no subscriptions needed  
+- **Windows**: Download the `.exe` installer
+- **macOS**: Download the `.dmg` package
+- **Linux**: Download the `.AppImage` file
 
----
+[Download Latest Release](https://github.com/jonax1337/simple-password-manager/releases)
 
-## 🚀 Get Started in 60 Seconds
+### First Use
 
-### Step 1: Download & Install
-**[Get Simple Password Manager](https://github.com/jonax1337/simple-password-manager/releases)**
-- 🪟 **Windows**: Download `.exe` installer  
-- 🍎 **macOS**: Download `.dmg` file  
-- 🐧 **Linux**: Download `.AppImage` file  
+1. **Launch the application**
+2. **Create a new database** or import from KeePass
+3. **Set your master password** (this is the only password you'll need to remember)
+4. **Choose where to save** your encrypted database file
+5. **Start adding your passwords** with the built-in generator
 
-### Step 2: Create Your Vault
-1. **Launch the app** and click "Create New Database"
-2. **Choose a strong master password** (this is the ONLY password you'll need to remember!)
-3. **Pick a location** to save your encrypted database file
-4. **Done!** Your personal password vault is ready
+## How It Works
 
-### Step 3: Add Your First Password
-1. **Click the "+" button** or press `Ctrl+Alt+Win+N`
-2. **Fill in the details** - website, username, and password
-3. **Use the built-in generator** for ultra-secure passwords
-4. **Organize with folders** and custom icons
-5. **Save** and relax knowing it's protected with military-grade encryption
+### Security Architecture
+Your passwords are encrypted using AES-256 encryption before being saved to disk. The master password you choose is used to derive the encryption key, which means even if someone gains access to your database file, they cannot read your passwords without your master password.
 
-**🎉 Congratulations!** You're now using one of the most secure password managers available.
+### Database Format
+All data is stored in encrypted `.pmdb` files that contain:
+- Your password entries with usernames, URLs, and notes
+- Folder structure for organization
+- Entry metadata like creation and modification dates
 
----
+### Offline Operation
+The application works completely offline. No internet connection is required, and your data never leaves your device unless you choose to back it up yourself.
 
-## 🎯 What Makes This Special
+## User Guide
 
-### 🔐 **Unbreakable Security**
-Your passwords are protected by **AES-256 encryption** - the same standard used by governments and militaries worldwide. Even if someone steals your database file, it's mathematically impossible to crack without your master password.
+### Adding Passwords
 
-- **Zero-knowledge architecture** - We never see your data
-- **Master password never stored** - Only you know it, ever
-- **Offline-only operation** - No internet required, no data uploads
-- **Open source** - Security experts can verify our code
+1. Click the **+** button in the toolbar or use `Ctrl+Alt+Win+N`
+2. Fill in the website, username, and password
+3. Use the **password generator** for strong, unique passwords
+4. Add notes for security questions or additional information
+5. Choose a folder to organize your entry
 
-### 📁 **Organization That Actually Works**
-Stop hunting through endless lists! Organize your passwords the way that makes sense to YOU:
+### Organizing with Folders
 
-- **Drag & drop folders** - Move stuff around effortlessly
-- **Unlimited nesting** - Create folders within folders
-- **Custom icons** - Visual recognition at a glance
-- **Smart search** - Find anything by typing just a few letters
-- **Automatic counting** - See how many passwords are in each folder
+- **Create folders** by right-clicking in the sidebar
+- **Drag and drop** entries between folders
+- **Nest folders** for detailed organization
+- **Add custom icons** to folders for visual recognition
 
-### 🎨 **Beautiful Experience**
-Password management doesn't have to be boring:
+### Searching
 
-- **3 gorgeous themes** - Light, Dark, and Cute modes
-- **Smooth animations** - Everything feels responsive and polished
-- **Resizable interface** - Adapt the layout to your workflow
-- **Responsive design** - Looks perfect on any screen size
-- **Keyboard shortcuts** - Power users will love the efficiency
+- Use **global search** with `Ctrl+F` to find anything
+- Search works across titles, usernames, URLs, and notes
+- Results are highlighted and easy to navigate
 
-### 🔄 **Easy Migration**
-Already using another password manager? **No problem!**
+### Keyboard Shortcuts
 
-- **KeePass import** - Bring your entire .kdbx database with one click
-- **Preserves structure** - All your folders and organization stay intact
-- **Zero data loss** - Every password, note, and detail transfers perfectly
-- **Quick setup** - Usually takes less than 5 minutes
+| Action | Shortcut |
+|--------|----------|
+| New database | `Ctrl+N` |
+| Open database | `Ctrl+O` |
+| Save | `Ctrl+S` |
+| Add entry | `Ctrl+Alt+Win+N` |
+| Search | `Ctrl+F` |
+| Password generator | `Ctrl+G` |
+| Close/Cancel | `Escape` |
 
----
+### Importing from KeePass
 
-## 💡 Pro Tips for Getting the Most Out of It
+1. **Create a new database** or open an existing one
+2. **Click "Import from KeePass"** in the welcome screen
+3. **Select your .kdbx file** and enter the password
+4. **All entries and folders** will be imported automatically
 
-### 🎯 **Smart Organization**
-- **Use descriptive folder names**: "Work Accounts", "Social Media", "Banking", "Shopping"
-- **Add custom icons** to folders for instant visual recognition
-- **Use the notes field** for security questions or additional info
-- **Tag similar accounts** by putting them in the same folder
+## Advanced Features
 
-### 🔍 **Master the Search**
-- **Global search works everywhere** - searches titles, usernames, URLs, notes, and folders
-- **Type just a few letters** - "face" will find your Facebook account
-- **Use Enter to close** the search overlay quickly
-- **Search from anywhere** with `Ctrl+F`
+### Themes and Customization
+- **Light theme** for daytime use
+- **Dark theme** for low-light environments
+- **System theme** that follows your OS preference
+- **Resizable sidebar** to fit your workflow
 
-### 🛡️ **Security Best Practices**
-- **Use the password generator** for every new account
+### Performance
+The application is optimized for large databases:
+- **Virtual scrolling** for smooth performance with thousands of entries
+- **Efficient search** with instant results
+- **Optimized rendering** for smooth animations
+
+### Multi-Window Support
+- **Open multiple databases** simultaneously
+- **Independent windows** for different purposes
+- **Secure isolation** between database instances
+
+## Security Best Practices
+
+### Master Password
+- Use a strong, unique master password
+- Consider using a passphrase with multiple words
+- Never share your master password with anyone
+- Keep it in a secure location if written down
+
+### Backup Strategy
+- **Regular backups** of your `.pmdb` file
+- **Multiple backup locations** (USB drive, encrypted cloud storage)
+- **Test backups** periodically to ensure they work
+- **Keep backups secure** with the same care as your main file
+
+### Password Generation
+- **Use the built-in generator** for all new passwords
 - **Enable all character types** for maximum security
-- **Make passwords 16+ characters** when possible
-- **Update weak passwords** gradually using the generator
-- **Backup your database file** to multiple secure locations
+- **Use long passwords** (16+ characters when possible)
+- **Generate unique passwords** for every account
 
-### ⚡ **Efficiency Hacks**
-- **Learn the keyboard shortcuts** - they're huge time savers
-- **Double-click entries** to edit them quickly
-- **Use drag & drop** to move entries between folders
-- **Right-click folders** for quick actions
-- **Resize the sidebar** to see more of your folder structure
+## Troubleshooting
 
----
+### Common Issues
 
-## ⌨️ Keyboard Shortcuts (Power User Edition)
-
-| **What You Want To Do** | **Shortcut** | **Pro Tip** |
-|--------------------------|--------------|--------------|
-| Create new database | `Ctrl+N` | Start fresh anytime |
-| Open existing database | `Ctrl+O` | Quick access to your vault |
-| Save your changes | `Ctrl+S` | Save early, save often |
-| Add new password entry | `Ctrl+Alt+Win+N` | Muscle memory = speed |
-| Generate secure password | `Ctrl+G` | Never think of passwords again |
-| Search everything | `Ctrl+F` | Find anything in milliseconds |
-| Close/Cancel anything | `Escape` | Universal "get me out" key |
-
----
-
-## 🔄 Switching from Other Password Managers
-
-### From KeePass
-**Super easy!** We have a one-click importer:
-
-1. **Create a new database** in Simple Password Manager
-2. **Click "Import from KeePass"** during setup
-3. **Select your .kdbx file** and enter your password
-4. **Everything transfers automatically** - folders, entries, notes, everything!
-5. **Start using your data** in a modern, beautiful interface
-
-### From Browser Password Managers
-Most browsers can export passwords to CSV files:
-
-1. **Export from your browser** (Chrome: Settings > Passwords > Export)
-2. **Import the CSV** using our import tool
-3. **Organize into folders** using our drag & drop interface
-4. **Generate new secure passwords** to replace the weak ones
-5. **Delete browser passwords** once you've migrated everything
-
-### From Other Apps
-While we don't have direct importers for every app, you can usually:
-1. **Export to CSV** from your current manager
-2. **Import the CSV** into Simple Password Manager
-3. **Clean up and organize** using our tools
-4. **Upgrade your security** with our password generator
-
----
-
-## 🛡️ Security & Privacy (The Important Stuff)
-
-### 🔒 **How We Keep You Safe**
-
-**Encryption**: We use **AES-256** encryption - the gold standard used by banks, governments, and militaries. This means even if someone gets your database file, it would take longer than the age of the universe to crack it without your master password.
-
-**Zero Knowledge**: We literally cannot see your passwords. Ever. The encryption happens on your device, and we never get the keys.
-
-**Offline First**: Your passwords never touch the internet unless you choose to sync them yourself. No cloud accounts, no servers, no data collection.
-
-**Open Source**: Security experts can examine our code to verify we're doing everything correctly. No "trust us" required.
-
-### 🏠 **Your Data Stays Yours**
-
-| **What** | **Where It Lives** | **Who Can Access It** |
-|----------|-------------------|----------------------|
-| Your master password | Only in your memory | Only you |
-| Your password database | Your computer only | Only you (with master password) |
-| App usage data | Nowhere - we don't collect it | Nobody |
-| Your personal info | Your device only | Only you |
-
-### ⚠️ **Important Security Reminders**
-
-- **Your master password is everything** - if you lose it, nobody can help you recover your data
-- **Backup your database file** to secure locations (USB drive, encrypted cloud storage, etc.)
-- **Use a strong, unique master password** - consider using a passphrase with multiple words
-- **Keep the app updated** - security improvements happen regularly
-
----
-
-## 🐛 Troubleshooting & Support
-
-### Common Issues & Quick Fixes
-
-**❌ App won't start**
-- Make sure you downloaded the right version for your operating system
+**Application won't start**
+- Download the correct version for your operating system
+- Check if antivirus software is blocking the application
 - Try running as administrator (Windows) or check security settings (macOS)
-- Disable antivirus temporarily to see if it's blocking the app
-- Download the latest version - older versions might have compatibility issues
 
-**❌ Can't open my database**
-- Double-check your master password (it's case-sensitive!)
-- Make sure the .pmdb file isn't corrupted - try copying it to your desktop
-- Restart the app and try again
-- If you're sure about your password but it's not working, the file might be damaged
+**Cannot open database**
+- Verify your master password is correct (case-sensitive)
+- Check that the database file hasn't been corrupted
+- Try copying the file to a different location
 
-**❌ App is running slow**
-- Large databases (1000+ entries) might need a moment to load
-- Try restarting the app
-- Make sure you have enough free disk space
-- Close other resource-heavy applications
+**Import not working**
+- Ensure the KeePass file opens correctly in KeePass first
+- Verify you're using the correct password for the import
+- Try importing a smaller test database first
 
-**❌ Import isn't working**
-- Make sure your KeePass file isn't corrupted by opening it in KeePass first
-- Try exporting a smaller test database to troubleshoot
-- Check that you're using the correct password for the import file
+### Getting Help
 
-### 🆘 Need More Help?
+For additional support:
+1. Check [existing issues](https://github.com/jonax1337/simple-password-manager/issues)
+2. Create a [new issue](https://github.com/jonax1337/simple-password-manager/issues/new) with details
+3. Include your operating system and app version
 
-We're here to help! Here's how to get support:
+Never share your master password or database files in support requests.
 
-1. **[Check existing issues](https://github.com/jonax1337/simple-password-manager/issues)** - someone might have already solved your problem
-2. **[Create a new issue](https://github.com/jonax1337/simple-password-manager/issues/new)** with details about what's happening
-3. **Include your operating system** and app version in your report
-4. **Never share your master password or database files** in support requests
+## Development
 
----
+### Technology Stack
+- **Electron 37.2.1** - Cross-platform desktop application framework
+- **React 18.3.1** - Modern UI library with hooks
+- **Tailwind CSS 3.4.13** - Utility-first CSS framework
+- **CryptoJS 4.2.0** - Encryption library for AES-256
+- **Electron Store** - Secure settings storage
 
-## 🤝 Community & Contributing
-
-### Help Make This Better
-
-**Found a bug?** [Report it here](https://github.com/jonax1337/simple-password-manager/issues) - we fix issues quickly!
-
-**Have an idea?** [Suggest a feature](https://github.com/jonax1337/simple-password-manager/issues) - we love hearing from users!
-
-**Want to contribute code?** Check out our developer section below for technical details.
-
-**Spread the word!** Tell your friends and family about secure password management.
-
-### 🌟 **Why Your Support Matters**
-
-Every bug report, feature suggestion, and word-of-mouth recommendation helps make password security accessible to more people. Together, we're making the internet a safer place, one password at a time.
-
----
-
-## 📜 License & Legal
-
-This project is open source under the **MIT License**. This means:
-- ✅ **Free to use** for personal and commercial purposes
-- ✅ **Free to modify** and distribute
-- ✅ **No warranty** - use at your own risk (though we work hard to make it reliable!)
-- ✅ **Open source forever** - no vendor lock-in
-
-See [LICENSE.md](LICENSE.md) for the complete legal text.
-
----
-
-## 🛠️ For Developers & Tech Enthusiasts
-
-*This section is for developers who want to contribute or understand the technical implementation.*
-
-### Architecture Overview
-
-**Frontend**: React 18 with modern hooks and functional components  
-**Desktop Runtime**: Electron 37.2.0 for cross-platform compatibility  
-**Styling**: Tailwind CSS 3.3.6 with custom component system  
-**Encryption**: CryptoJS with AES-256-CBC encryption  
-**State Management**: React Context API with optimized hooks  
-**Build System**: Electron Builder with platform-specific packaging  
-
-### Key Technical Features
-
-**🔧 Performance Optimizations**
-- Virtual scrolling for large databases (1000+ entries)
-- Memoized components and calculations
-- Efficient drag & drop with minimal re-renders
-- Lookup maps for O(1) database operations
-
-**🎨 UI/UX Implementation**
-- CSS custom properties for dynamic theming
-- Responsive grid layouts with CSS Grid
-- Custom scrollbars with theme integration
-- Smooth animations with CSS transitions
-
-**🔒 Security Implementation**
-- AES-256-CBC encryption with PBKDF2 key derivation
-- Secure memory handling with automatic cleanup
-- Context isolation in Electron renderer processes
-- No network requests in production builds
-
-### Development Setup
+### Building from Source
 
 ```bash
-# Prerequisites: Node.js 16+, npm/yarn
-
-# Clone and install dependencies
+# Clone the repository
 git clone https://github.com/jonax1337/simple-password-manager.git
 cd simple-password-manager
+
+# Install dependencies
 npm install
 
-# Development commands
-npm run dev          # Start React dev server + Electron with hot reload
-npm run react-dev    # React development server only
-npm run electron-dev # Electron development only
+# Development mode
+npm run dev
 
-# Build commands
-npm run build        # Build React app for production
-npm run electron-build # Package with Electron Builder
-npm run dist         # Complete build + package for all platforms
-
-# Platform-specific builds
-npm run electron-build -- --win    # Windows NSIS installer
-npm run electron-build -- --mac    # macOS DMG package
-npm run electron-build -- --linux  # Linux AppImage
+# Build for production
+npm run build
+npm run electron-build
 ```
 
 ### Project Structure
-
 ```
 src/
-├── components/          # React components
-│   ├── ui/             # Reusable UI components
-│   ├── screens/        # Main app screens
-│   └── dialogs/        # Modal dialogs
-├── hooks/              # Custom React hooks
-├── utils/              # Utility functions
-├── contexts/           # React context providers
-└── assets/             # Static assets
+├── components/
+│   ├── screens/         # Main application screens
+│   ├── dialogs/         # Modal dialogs
+│   └── ui/              # Reusable UI components
+├── hooks/               # Custom React hooks
+├── contexts/            # React context providers
+└── utils/               # Utility functions
 
 public/
-├── electron.js         # Main Electron process
-├── preload.js         # Preload script for security
-└── icons/             # Application icons
-
-build/                 # Production build output
-release/               # Packaged applications
+├── electron.js          # Main Electron process
+├── preload.js          # Secure preload script
+└── icons/              # Application icons
 ```
 
-### Contributing Guidelines
+### Contributing
 
-**🐛 Bug Reports**
-- Use the GitHub issue template
-- Include OS, app version, and reproduction steps
-- Add console logs if available (but redact sensitive info)
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Follow the existing code style
+4. Test your changes thoroughly
+5. Submit a pull request with a clear description
 
-**💡 Feature Requests**
-- Describe the use case and expected behavior
-- Consider backward compatibility
-- Think about security implications
+## License
 
-**🔧 Pull Requests**
-- Fork the repo and create a feature branch
-- Follow existing code style and patterns
-- Test on multiple platforms if possible
-- Update documentation for new features
+This project is licensed under the MIT License. See [LICENSE](LICENSE.md) for details.
 
-### Technology Choices & Rationale
+## Privacy
 
-**Why Electron?** Cross-platform desktop apps with web technologies, mature ecosystem, secure architecture with context isolation.
+This application:
+- **Does not collect** any personal data
+- **Does not connect** to the internet
+- **Does not send** any telemetry or analytics
+- **Stores all data** locally on your device
 
-**Why React?** Modern, performant UI library with excellent developer experience and strong ecosystem.
-
-**Why CryptoJS?** Battle-tested encryption library with AES-256 support and good performance characteristics.
-
-**Why Tailwind?** Utility-first CSS framework enables rapid UI development and consistent theming.
-
-**Why Local Storage?** Maximum security and privacy - no cloud dependencies, user controls their data completely.
-
-### Performance Considerations
-
-The app is optimized for large databases with several techniques:
-
-- **Virtual Scrolling**: Only renders visible entries (50+ entry threshold)
-- **Memoization**: Heavy calculations cached with useMemo/useCallback
-- **Index Maps**: O(1) lookups for entries and folders by ID
-- **Batch Updates**: Drag & drop operations use direct array manipulation
-- **Throttled Events**: Scroll and resize events use requestAnimationFrame
-
-### Security Architecture
-
-- **Encryption**: AES-256-CBC with PBKDF2 key derivation (100,000 iterations)
-- **Key Management**: Master password never stored, keys derived on-demand
-- **Memory Safety**: Sensitive data cleared after use where possible
-- **Process Isolation**: Renderer process sandboxed with context isolation
-- **No Network**: App functions completely offline by design
+Your privacy and security are our top priorities.
 
 ---
 
-**🔐 Ready to take control of your digital security?**
-
-**[Download Simple Password Manager](https://github.com/jonax1337/simple-password-manager/releases)** and experience password management the way it should be - secure, beautiful, and completely under your control.
-
-*Your future self will thank you for starting today.*
+**Ready to secure your digital life?** Download Simple Password Manager today and take control of your online security.
