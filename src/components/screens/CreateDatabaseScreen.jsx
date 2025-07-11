@@ -40,7 +40,7 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
-    if (passwordStrength && passwordStrength.strength === 'weak') {
+    if (passwordStrength && (passwordStrength.strength === 'very-weak' || passwordStrength.strength === 'weak')) {
       newErrors.password = 'Please choose a stronger password';
     }
 
@@ -57,18 +57,22 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
 
   const getStrengthColor = (strength) => {
     switch (strength) {
-      case 'weak': return 'text-red-600 bg-red-50';
-      case 'medium': return 'text-yellow-600 bg-yellow-50';
-      case 'strong': return 'text-green-600 bg-green-50';
-      default: return 'text-gray-600 bg-gray-50';
+      case 'very-weak': return `strength-very-weak`;
+      case 'weak': return `strength-weak`;
+      case 'medium': return `strength-medium`;
+      case 'strong': return `strength-strong`;
+      case 'very-strong': return `strength-very-strong`;
+      default: return `theme-text-secondary bg-opacity-10 theme-border`;
     }
   };
 
   const getStrengthBarColor = (strength) => {
     switch (strength) {
-      case 'weak': return 'password-strength-weak';
-      case 'medium': return 'password-strength-medium';
-      case 'strong': return 'password-strength-strong';
+      case 'very-weak': return 'strength-bar-very-weak';
+      case 'weak': return 'strength-bar-weak';
+      case 'medium': return 'strength-bar-medium';
+      case 'strong': return 'strength-bar-strong';
+      case 'very-strong': return 'strength-bar-very-strong';
       default: return 'bg-gray-200';
     }
   };
@@ -142,14 +146,23 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
                   <div className="flex items-center justify-between">
                     <span className="text-xs sm:text-sm theme-text-secondary">Password strength:</span>
                     <span className={`text-xs sm:text-sm px-2 py-1 rounded-full ${getStrengthColor(passwordStrength.strength)}`}>
-                      {passwordStrength.strength.toUpperCase()}
+                      {passwordStrength.strength.replace('-', ' ').toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs theme-text-secondary">Encryption Strength:</span>
+                    <span className="text-xs theme-text-primary font-semibold">
+                      {passwordStrength.encryptionBits} bits
                     </span>
                   </div>
                   <div className="w-full theme-border rounded-full h-2">
                     <div 
                       className={`h-2 rounded-full ${getStrengthBarColor(passwordStrength.strength)}`}
-                      style={{ width: `${(passwordStrength.score / 6) * 100}%` }}
+                      style={{ width: `${Math.min((passwordStrength.entropy / 100) * 100, 100)}%` }}
                     />
+                  </div>
+                  <div className="text-xs theme-text-secondary">
+                    Entropy: {passwordStrength.entropy.toFixed(1)} bits
                   </div>
                   {passwordStrength.feedback.length > 0 && (
                     <ul className="text-xs theme-text-secondary list-disc list-inside">
@@ -211,7 +224,7 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
 
             <button
               type="submit"
-              disabled={!password || !confirmPassword || passwordStrength?.strength === 'weak'}
+              disabled={!password || !confirmPassword || passwordStrength?.strength === 'very-weak' || passwordStrength?.strength === 'weak'}
               className="w-full theme-button py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               Create Database

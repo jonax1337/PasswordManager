@@ -35,17 +35,51 @@ html, body, #root {
 
 /* Custom theme-aware form controls */
 
-/* Password strength colors */
+/* Password strength colors with linear gradients */
+.strength-very-weak {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  @apply text-white;
+}
+
 .strength-weak {
-  @apply bg-red-500;
+  background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+  @apply text-white;
 }
 
 .strength-medium {
-  @apply bg-yellow-500;
+  background: linear-gradient(135deg, #eab308 0%, #f59e0b 100%);
+  @apply text-white;
 }
 
 .strength-strong {
-  @apply bg-green-500;
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  @apply text-white;
+}
+
+.strength-very-strong {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  @apply text-white;
+}
+
+/* Password strength progress bars with gradients */
+.strength-bar-very-weak {
+  background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+}
+
+.strength-bar-weak {
+  background: linear-gradient(90deg, #ea580c 0%, #dc2626 100%);
+}
+
+.strength-bar-medium {
+  background: linear-gradient(90deg, #eab308 0%, #f59e0b 100%);
+}
+
+.strength-bar-strong {
+  background: linear-gradient(90deg, #16a34a 0%, #15803d 100%);
+}
+
+.strength-bar-very-strong {
+  background: linear-gradient(90deg, #059669 0%, #047857 100%);
 }
 
 /* Custom range slider styling */

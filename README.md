@@ -12,7 +12,9 @@ A secure, offline password manager built with modern web technologies. Keep all 
 ## ✨ Features
 
 ### Security First
-- **AES-256 encryption** - Military-grade security for all your passwords
+- **AES-256 encryption with PBKDF2** - Military-grade security with 100,000 iterations
+- **Advanced brute-force protection** - Automatic lockout after failed attempts
+- **Persistent security tracking** - Protection survives app restarts
 - **Offline-only operation** - Your data never leaves your device
 - **Zero-knowledge architecture** - Your master password is never stored
 - **Open source** - Security experts can verify the code
@@ -58,13 +60,29 @@ Download the latest release for your platform:
 ## ⚙️ How It Works
 
 ### Security Architecture
-Your passwords are encrypted using AES-256 encryption before being saved to disk. The master password you choose is used to derive the encryption key, which means even if someone gains access to your database file, they cannot read your passwords without your master password.
+Your passwords are protected by multiple layers of security:
+
+**Encryption**: AES-256 encryption with PBKDF2 key derivation (100,000 iterations) and unique salt per database. This makes brute-force attacks computationally infeasible.
+
+**Key Derivation**: Your master password is never stored. Instead, it's used with PBKDF2 to derive the encryption key on-demand, with a unique salt for each database.
+
+**Brute-Force Protection**: The application tracks failed login attempts and implements progressive lockouts:
+- 1-2 failed attempts: Warning displayed
+- 3-5 failed attempts: Temporary lockout (5-30 seconds)
+- 6-9 failed attempts: Extended lockout (1-30 minutes)
+- 10+ failed attempts: Permanent database lockout
+
+**Attack Persistence**: Security tracking survives application restarts and system reboots, preventing attackers from bypassing protections by restarting the app.
 
 ### Database Format
 All data is stored in encrypted `.pmdb` files that contain:
 - Your password entries with usernames, URLs, and notes
 - Folder structure for organization
 - Entry metadata like creation and modification dates
+- Cryptographic salt for enhanced security
+- Version information for future compatibility
+
+**Security Storage**: Failed attempt tracking is stored separately in an encrypted security file, preventing tampering while maintaining your privacy.
 
 ### Offline Operation
 The application works completely offline. No internet connection is required, and your data never leaves your device unless you choose to back it up yourself.
@@ -73,7 +91,7 @@ The application works completely offline. No internet connection is required, an
 
 ### Adding Passwords
 
-1. Click the **+** button in the toolbar or use `Ctrl+Alt+Win+N`
+1. Click the **+** button in the toolbar
 2. Fill in the website, username, and password
 3. Use the **password generator** for strong, unique passwords
 4. Add notes for security questions or additional information
@@ -136,22 +154,33 @@ The application is optimized for large databases:
 ## 🛡️ Security Best Practices
 
 ### Master Password
-- Use a strong, unique master password
+- Use a strong, unique master password (16+ characters recommended)
 - Consider using a passphrase with multiple words
 - Never share your master password with anyone
 - Keep it in a secure location if written down
+- **Remember**: After 10 failed attempts, your database will be permanently locked
 
 ### Backup Strategy
 - **Regular backups** of your `.pmdb` file
 - **Multiple backup locations** (USB drive, encrypted cloud storage)
 - **Test backups** periodically to ensure they work
 - **Keep backups secure** with the same care as your main file
+- **Security files**: Don't backup the security tracking files (they reset protections)
 
 ### Password Generation
 - **Use the built-in generator** for all new passwords
 - **Enable all character types** for maximum security
 - **Use long passwords** (16+ characters when possible)
 - **Generate unique passwords** for every account
+- **Monitor password strength** with the built-in entropy calculator
+
+### Lockout Recovery
+If your database becomes permanently locked:
+1. **Locate the security file**: Check the error message for the exact path
+2. **Close the application** completely
+3. **Delete the security file** (usually `security.encrypted` in app data folder)
+4. **Restart the application** - lockout will be reset
+5. **Use correct master password** to avoid re-lockout
 
 ## 🔧 Troubleshooting
 
@@ -166,11 +195,24 @@ The application is optimized for large databases:
 - Verify your master password is correct (case-sensitive)
 - Check that the database file hasn't been corrupted
 - Try copying the file to a different location
+- **Check for lockout**: Look for security warnings in the login screen
+
+**Database permanently locked**
+- **Don't panic**: Your data is safe, just protected
+- **Find security file**: Look for the path shown in the error message
+- **Delete security file**: Remove `security.encrypted` from app data folder
+- **Restart app**: Lockout protection will be reset
+- **Use correct password**: Be extra careful to avoid re-lockout
 
 **Import not working**
 - Ensure the KeePass file opens correctly in KeePass first
 - Verify you're using the correct password for the import
 - Try importing a smaller test database first
+
+**Legacy database compatibility**
+- Old databases are automatically upgraded to new security format
+- First save after upgrade will use enhanced PBKDF2 encryption
+- Keep backups of original files before upgrading
 
 ### Getting Help
 
@@ -187,8 +229,9 @@ Never share your master password or database files in support requests.
 - **Electron 37.2.1** - Cross-platform desktop application framework
 - **React 18.3.1** - Modern UI library with hooks
 - **Tailwind CSS 3.4.13** - Utility-first CSS framework
-- **CryptoJS 4.2.0** - Encryption library for AES-256
+- **CryptoJS 4.2.0** - Encryption library for AES-256 with PBKDF2
 - **Electron Store** - Secure settings storage
+- **Node.js Crypto** - System-level cryptographic operations
 
 ### Building from Source
 

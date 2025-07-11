@@ -130,21 +130,23 @@ const EntryForm = ({ entry, folders, currentFolderId, onSubmit, onClose }) => {
   };
 
   const getStrengthColor = (strength) => {
-    // Match die Text-Farbe entsprechend der Stärke
     switch (strength) {
-      case 'weak': return 'text-red-600 bg-red-50';
-      case 'medium': return 'text-yellow-600 bg-yellow-50';
-      case 'strong': return 'text-green-600 bg-green-50';
-      default: return 'theme-text-secondary';
+      case 'very-weak': return `strength-very-weak`;
+      case 'weak': return `strength-weak`;
+      case 'medium': return `strength-medium`;
+      case 'strong': return `strength-strong`;
+      case 'very-strong': return `strength-very-strong`;
+      default: return `theme-text-secondary bg-opacity-10 theme-border`;
     }
   };
 
   const getStrengthBarColor = (strength) => {
-    // Gleiche CSS-Klassennamen wie in PasswordGenerator
     switch (strength) {
-      case 'weak': return 'strength-weak';
-      case 'medium': return 'strength-medium';
-      case 'strong': return 'strength-strong';
+      case 'very-weak': return 'strength-bar-very-weak';
+      case 'weak': return 'strength-bar-weak';
+      case 'medium': return 'strength-bar-medium';
+      case 'strong': return 'strength-bar-strong';
+      case 'very-strong': return 'strength-bar-very-strong';
       default: return 'theme-border';
     }
   };
@@ -323,7 +325,13 @@ const EntryForm = ({ entry, folders, currentFolderId, onSubmit, onClose }) => {
                 <div className="flex items-center justify-between">
                   <span className="text-sm theme-text-secondary">Password strength:</span>
                   <span className={`text-sm px-2 py-1 rounded-full ${getStrengthColor(passwordStrength.strength)}`}>
-                    {passwordStrength.strength.toUpperCase()}
+                    {passwordStrength.strength.replace('-', ' ').toUpperCase()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs theme-text-secondary">Encryption Strength:</span>
+                  <span className="text-xs theme-text-primary font-semibold">
+                    {passwordStrength.encryptionBits} bits
                   </span>
                 </div>
                 <div className="w-full rounded-full border relative" style={{ 
@@ -336,10 +344,13 @@ const EntryForm = ({ entry, folders, currentFolderId, onSubmit, onClose }) => {
                   <div 
                     className={`absolute top-0 left-0 bottom-0 ${getStrengthBarColor(passwordStrength.strength)}`}
                     style={{ 
-                      width: `${(passwordStrength.score / 6) * 100}%`,
+                      width: `${Math.min((passwordStrength.entropy / 100) * 100, 100)}%`,
                       borderRadius: 'inherit'
                     }}
                   />
+                </div>
+                <div className="text-xs theme-text-secondary">
+                  Entropy: {passwordStrength.entropy.toFixed(1)} bits
                 </div>
               </div>
             )}

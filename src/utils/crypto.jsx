@@ -1,9 +1,43 @@
 import CryptoJS from 'crypto-js';
 
-export const encryptData = (data, password) => {
+// Enhanced encryption with PBKDF2 and salt
+export const encryptData = (data, password, useLegacy = false) => {
+  // Use PBKDF2 encryption by default for new databases
+  // Legacy encryption only for existing databases that were loaded as legacy
+  if (useLegacy) {
+    return encryptDataLegacy(data, password);
+  }
+  
   try {
-    const encrypted = CryptoJS.AES.encrypt(data, password).toString();
-    return encrypted;
+    // Generate random salt
+    const salt = CryptoJS.lib.WordArray.random(256/8);
+    
+    // Derive key using PBKDF2 with 100,000 iterations
+    const key = CryptoJS.PBKDF2(password, salt, {
+      keySize: 256/32,
+      iterations: 100000,
+      hasher: CryptoJS.algo.SHA256
+    });
+    
+    // Generate random IV
+    const iv = CryptoJS.lib.WordArray.random(128/8);
+    
+    // Encrypt data with explicit IV
+    const encrypted = CryptoJS.AES.encrypt(data, key, {
+      iv: iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    
+    // Combine salt, IV and encrypted data
+    const combined = {
+      salt: salt.toString(CryptoJS.enc.Hex),
+      iv: iv.toString(CryptoJS.enc.Hex),
+      encrypted: encrypted.toString(),
+      version: 2 // Version for future compatibility
+    };
+    
+    return JSON.stringify(combined);
   } catch (error) {
     console.error('Encryption error:', error);
     throw error;
@@ -12,24 +46,100 @@ export const encryptData = (data, password) => {
 
 export const decryptData = (encryptedData, password) => {
   try {
+    // Parse encrypted data
+    let parsedData;
+    let isLegacy = false;
+    
+    try {
+      parsedData = JSON.parse(encryptedData);
+    } catch (parseError) {
+      // Try legacy decryption for backward compatibility
+      isLegacy = true;
+      const result = decryptDataLegacy(encryptedData, password);
+      return { data: result, isLegacy: true };
+    }
+    
+    // Check if it's new format with version
+    if (parsedData.version === 2 && parsedData.salt && parsedData.encrypted) {
+      // New format with PBKDF2
+      const salt = CryptoJS.enc.Hex.parse(parsedData.salt);
+      const iv = parsedData.iv ? CryptoJS.enc.Hex.parse(parsedData.iv) : null;
+      
+      // Derive key using PBKDF2
+      const key = CryptoJS.PBKDF2(password, salt, {
+        keySize: 256/32,
+        iterations: 100000,
+        hasher: CryptoJS.algo.SHA256
+      });
+      
+      // Decrypt data with IV if available
+      const decryptOptions = {
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+      };
+      
+      if (iv) {
+        decryptOptions.iv = iv;
+      }
+      
+      const bytes = CryptoJS.AES.decrypt(parsedData.encrypted, key, decryptOptions);
+      
+      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+      
+      if (!decrypted || decrypted.length === 0) {
+        throw new Error('Failed to decrypt data - invalid password');
+      }
+      
+      // Verify it's valid JSON
+      try {
+        JSON.parse(decrypted);
+      } catch (jsonError) {
+        throw new Error('Decrypted data is not valid JSON');
+      }
+      
+      return { data: decrypted, isLegacy: false };
+    } else {
+      // Try legacy decryption
+      const result = decryptDataLegacy(encryptedData, password);
+      return { data: result, isLegacy: true };
+    }
+  } catch (error) {
+    console.error('Decryption error:', error);
+    throw error;
+  }
+};
+
+// Legacy encryption for backward compatibility
+const encryptDataLegacy = (data, password) => {
+  try {
+    const encrypted = CryptoJS.AES.encrypt(data, password).toString();
+    return encrypted;
+  } catch (error) {
+    console.error('Legacy encryption error:', error);
+    throw error;
+  }
+};
+
+// Legacy decryption for old format (will be removed in future versions)
+const decryptDataLegacy = (encryptedData, password) => {
+  try {
     const bytes = CryptoJS.AES.decrypt(encryptedData, password);
     const decrypted = bytes.toString(CryptoJS.enc.Utf8);
     
     if (!decrypted || decrypted.length === 0) {
-      throw new Error('Failed to decrypt data - empty result');
+      throw new Error('Failed to decrypt data - invalid password');
     }
     
     // Verify it's valid JSON
     try {
       JSON.parse(decrypted);
     } catch (jsonError) {
-      console.error('Decrypted data is not valid JSON:', decrypted.substring(0, 100));
       throw new Error('Decrypted data is not valid JSON');
     }
     
     return decrypted;
   } catch (error) {
-    console.error('Decryption error:', error);
+    console.error('Legacy decryption error:', error);
     throw error;
   }
 };
@@ -110,24 +220,67 @@ export const checkPasswordStrength = (password) => {
   let score = 0;
   let feedback = [];
 
+  // Calculate character set size for entropy calculation
+  let charsetSize = 0;
+  const hasLower = /[a-z]/.test(password);
+  const hasUpper = /[A-Z]/.test(password);
+  const hasNumbers = /[0-9]/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+  
+  if (hasLower) charsetSize += 26;
+  if (hasUpper) charsetSize += 26;
+  if (hasNumbers) charsetSize += 10;
+  if (hasSpecial) charsetSize += 32; // Common special characters
+  
+  // Calculate entropy in bits
+  const entropy = password.length * Math.log2(charsetSize);
+  
+  // Calculate encryption strength based on entropy
+  let encryptionBits = Math.floor(entropy);
+  
+  // Scoring based on entropy and password requirements
   if (password.length >= 8) score += 1;
   else feedback.push('Use at least 8 characters');
 
   if (password.length >= 12) score += 1;
 
-  if (/[a-z]/.test(password)) score += 1;
+  if (hasLower) score += 1;
   else feedback.push('Include lowercase letters');
 
-  if (/[A-Z]/.test(password)) score += 1;
+  if (hasUpper) score += 1;
   else feedback.push('Include uppercase letters');
 
-  if (/[0-9]/.test(password)) score += 1;
+  if (hasNumbers) score += 1;
   else feedback.push('Include numbers');
 
-  if (/[^A-Za-z0-9]/.test(password)) score += 1;
+  if (hasSpecial) score += 1;
   else feedback.push('Include special characters');
 
-  if (score <= 2) return { strength: 'weak', score, feedback };
-  if (score <= 4) return { strength: 'medium', score, feedback };
-  return { strength: 'strong', score, feedback };
+  // Determine strength category based on entropy
+  let strengthCategory;
+  if (entropy < 30) {
+    strengthCategory = 'very-weak';
+  } else if (entropy < 50) {
+    strengthCategory = 'weak';
+  } else if (entropy < 70) {
+    strengthCategory = 'medium';
+  } else if (entropy < 90) {
+    strengthCategory = 'strong';
+  } else {
+    strengthCategory = 'very-strong';
+  }
+
+  // Add entropy-based feedback
+  if (entropy < 50) {
+    feedback.push(`Increase complexity for stronger encryption (${encryptionBits} bits)`);
+  }
+
+  return { 
+    strength: strengthCategory, 
+    score, 
+    feedback,
+    entropy: entropy,
+    encryptionBits: encryptionBits,
+    charsetSize: charsetSize
+  };
 };

@@ -45,7 +45,10 @@ export const useFileOperations = () => {
     
     if (window.electronAPI && password) {
       try {
-        const encryptedData = encryptData(JSON.stringify(database), password);
+        // Always use PBKDF2 encryption for all saves (automatic migration)
+        // Legacy databases will be automatically upgraded to PBKDF2 on first save
+        const shouldUseLegacy = false;
+        const encryptedData = encryptData(JSON.stringify(database), password, shouldUseLegacy);
         
         let result;
         // If we have a current file path and not forcing dialog, save directly
@@ -75,10 +78,16 @@ export const useFileOperations = () => {
   const decryptDatabase = (password) => {
     if (pendingDatabaseData) {
       try {
-        const decryptedData = decryptData(pendingDatabaseData.data, password);
-        const loadedDatabase = JSON.parse(decryptedData);
+        const decryptResult = decryptData(pendingDatabaseData.data, password);
+        const loadedDatabase = JSON.parse(decryptResult.data);
         setMasterPassword(password);
-        setPendingDatabaseData(null);
+        
+        // Update pending database data to include legacy flag
+        setPendingDatabaseData({
+          ...pendingDatabaseData,
+          isLegacy: decryptResult.isLegacy
+        });
+        
         return { success: true, database: loadedDatabase };
       } catch (error) {
         console.error('Decryption error:', error);

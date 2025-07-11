@@ -1,57 +1,96 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Lock, Key, ArrowLeft, AlertCircle, Eye, Unlock } from 'lucide-react';
+import { Lock, Key, ArrowLeft, AlertCircle, Eye, Unlock, Shield, ShieldAlert } from 'lucide-react';
 import Titlebar from '../ui/Titlebar';
+import { securityManager } from '../../utils/security';
 
 const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpenDatabase, onImportKeePass }) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [failedAttempts, setFailedAttempts] = useState(0);
-  const [lockoutTime, setLockoutTime] = useState(0);
+  const [securityStatus, setSecurityStatus] = useState({
+    isLocked: false,
+    isPermanentlyLocked: false,
+    failedAttempts: 0,
+    remainingAttempts: 10,
+    lockoutDuration: 0
+  });
   const [countdown, setCountdown] = useState(0);
   const showPasswordTimeoutRef = useRef(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Initialize security manager and check status
+  useEffect(() => {
+    const initializeSecurity = async () => {
+      if (!currentFile) return;
+      
+      try {
+        await securityManager.initialize();
+        const status = securityManager.getSecurityStatus(currentFile);
+        setSecurityStatus(status);
+        
+        if (status.lockoutDuration > 0) {
+          setCountdown(Math.ceil(status.lockoutDuration / 1000));
+        }
+        
+        setIsInitialized(true);
+      } catch (error) {
+        console.error('Failed to initialize security:', error);
+        setIsInitialized(true);
+      }
+    };
+    
+    initializeSecurity();
+  }, [currentFile]);
+
+  // Countdown timer
   useEffect(() => {
     let timer;
     if (countdown > 0) {
       timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-    } else if (countdown === 0 && lockoutTime > 0) {
-      setLockoutTime(0);
+    } else if (countdown === 0 && securityStatus.isLocked) {
+      // Refresh security status when countdown ends
+      const refreshStatus = async () => {
+        const status = securityManager.getSecurityStatus(currentFile);
+        setSecurityStatus(status);
+      };
+      refreshStatus();
     }
     return () => clearTimeout(timer);
-  }, [countdown]);
+  }, [countdown, currentFile, securityStatus.isLocked]);
 
-  const calculateLockoutTime = () => {
-    // Exponential backoff for lockout times
-    if (failedAttempts < 3) return 0;
-    if (failedAttempts === 3) return 5;
-    if (failedAttempts === 4) return 15;
-    if (failedAttempts === 5) return 30;
-    return Math.min(Math.pow(2, failedAttempts - 3) * 30, 600); // Max 10 minutes
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (countdown > 0) return; // Still locked out
+    if (!isInitialized) return;
+    
+    if (countdown > 0 || securityStatus.isLocked) return; // Still locked out
     
     if (password.trim()) {
-      const success = onLoginSuccess(password);
-      if (success === false) {
-        const newFailedAttempts = failedAttempts + 1;
-        setFailedAttempts(newFailedAttempts);
-        
-        const newLockoutTime = calculateLockoutTime();
-        if (newLockoutTime > 0) {
-          setLockoutTime(newLockoutTime);
-          setCountdown(newLockoutTime);
-          setError(`Too many incorrect attempts. Please wait ${newLockoutTime} seconds before trying again.`);
+      try {
+        const success = await onLoginSuccess(password);
+        if (success === false) {
+          // Record failed attempt
+          const result = await securityManager.recordFailedAttempt(currentFile);
+          setSecurityStatus(result);
+          
+          if (result.isPermanentlyLocked) {
+            setError(`Database permanently locked after ${result.failedAttempts} failed attempts. To unlock, delete the security configuration file and restart the application.`);
+          } else if (result.isLocked) {
+            const seconds = Math.ceil(result.lockoutDuration / 1000);
+            setCountdown(seconds);
+            setError(`Too many incorrect attempts. Please wait ${seconds} seconds before trying again.`);
+          } else {
+            setError(`Incorrect master password. ${result.remainingAttempts} attempts remaining.`);
+          }
         } else {
-          setError(`Incorrect master password. Please try again. (${newFailedAttempts} failed ${newFailedAttempts === 1 ? 'attempt' : 'attempts'})`);
+          // Record successful attempt
+          await securityManager.recordSuccessfulAttempt(currentFile);
+          setError('');
         }
-        
-        // Keep the password value so user can correct typos
-      } 
+      } catch (error) {
+        console.error('Login error:', error);
+        setError('An error occurred during login. Please try again.');
+      }
     }
   };
 
@@ -96,14 +135,43 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
                 )}
               </div>
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-center text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4 mr-2" />
-                {error}
-              </div>
-            </div>
-          )}
+              {/* Security Status Display */}
+              {isInitialized && securityStatus.failedAttempts > 0 && (
+                <div className={`mb-4 p-3 rounded-lg ${securityStatus.isPermanentlyLocked ? 'bg-red-50 border border-red-200' : 'bg-yellow-50 border border-yellow-200'}`}>
+                  <div className={`flex items-center text-sm ${securityStatus.isPermanentlyLocked ? 'text-red-600' : 'text-yellow-600'}`}>
+                    {securityStatus.isPermanentlyLocked ? (
+                      <ShieldAlert className="w-4 h-4 mr-2" />
+                    ) : (
+                      <Shield className="w-4 h-4 mr-2" />
+                    )}
+                    <div>
+                      {securityStatus.isPermanentlyLocked ? (
+                        <div>
+                          <p className="font-semibold">Database Permanently Locked</p>
+                          <p className="text-xs mt-1">
+                            To unlock, delete the security configuration file:<br/>
+                            <code className="bg-white px-1 rounded text-xs">{window.electronAPI?.getSecurityConfigPath?.() || 'security.encrypted'}</code>
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <p>{securityStatus.failedAttempts} failed attempts</p>
+                          <p className="text-xs">{securityStatus.remainingAttempts} attempts remaining before permanent lockout</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center text-red-600 text-sm">
+                    <AlertCircle className="w-4 h-4 mr-2" />
+                    {error}
+                  </div>
+                </div>
+              )}
 
           <form onSubmit={handleSubmit} className="space-y-6 animate-slide-up-delay-3">
             <div className="relative">
@@ -125,7 +193,7 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
                         setError('');
                       }
                     }}
-                    disabled={countdown > 0}
+                    disabled={countdown > 0 || securityStatus.isPermanentlyLocked}
                     className="w-full theme-input px-4 py-3 rounded-lg backdrop-blur-sm"
                     placeholder="Enter your master password"
                     required
@@ -159,9 +227,10 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
             <button
               type="submit"
               className="w-full theme-button py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-              disabled={countdown > 0}
+              disabled={countdown > 0 || securityStatus.isPermanentlyLocked}
             >
-              {countdown > 0 ? `Locked (${countdown}s)` : 'Unlock Database'}
+              {securityStatus.isPermanentlyLocked ? 'Database Permanently Locked' : 
+               countdown > 0 ? `Locked (${countdown}s)` : 'Unlock Database'}
             </button>
           </form>
 

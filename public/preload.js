@@ -42,5 +42,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getSetting: (key, defaultValue) => ipcRenderer.invoke('get-setting', key, defaultValue),
   setSetting: (key, value) => ipcRenderer.invoke('set-setting', key, value),
   
+  // Security management
+  getSecurityData: () => ipcRenderer.invoke('get-security-data'),
+  saveSecurityData: (data) => ipcRenderer.invoke('save-security-data', data),
+  getSystemKey: () => ipcRenderer.invoke('get-system-key'),
+  getSecurityConfigPath: () => ipcRenderer.invoke('get-security-config-path'),
+  clearSecurityData: () => ipcRenderer.invoke('clear-security-data'),
+  
   removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel)
 });

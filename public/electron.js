@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 // Check if we're in development mode
 const isDev = process.env.NODE_ENV === 'development' || 
@@ -34,6 +35,20 @@ function createWindow() {
     : `file://${path.join(__dirname, 'index.html')}`;
   
   newWindow.loadURL(startUrl);
+
+  // Set CSP for production, not for development
+  if (!isDev) {
+    newWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          'Content-Security-Policy': [
+            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';"
+          ]
+        }
+      });
+    });
+  }
 
   newWindow.once('ready-to-show', () => {
     newWindow.show();
@@ -207,6 +222,57 @@ ipcMain.handle('get-setting', (event, key, defaultValue = null) => {
 
 ipcMain.handle('set-setting', (event, key, value) => {
   store.set(key, value);
+});
+
+// Security management
+let systemKey = null;
+
+function getSystemKey() {
+  if (!systemKey) {
+    // Generate or retrieve system key for security data encryption
+    const keyPath = path.join(app.getPath('userData'), 'system.key');
+    
+    if (fs.existsSync(keyPath)) {
+      systemKey = fs.readFileSync(keyPath, 'utf8');
+    } else {
+      // Generate new system key
+      systemKey = crypto.randomBytes(32).toString('hex');
+      fs.writeFileSync(keyPath, systemKey, 'utf8');
+    }
+  }
+  return systemKey;
+}
+
+function getSecurityDataPath() {
+  return path.join(app.getPath('userData'), 'security.encrypted');
+}
+
+ipcMain.handle('get-security-data', () => {
+  const securityPath = getSecurityDataPath();
+  if (fs.existsSync(securityPath)) {
+    return fs.readFileSync(securityPath, 'utf8');
+  }
+  return null;
+});
+
+ipcMain.handle('save-security-data', (event, encryptedData) => {
+  const securityPath = getSecurityDataPath();
+  fs.writeFileSync(securityPath, encryptedData, 'utf8');
+});
+
+ipcMain.handle('get-system-key', () => {
+  return getSystemKey();
+});
+
+ipcMain.handle('get-security-config-path', () => {
+  return getSecurityDataPath();
+});
+
+ipcMain.handle('clear-security-data', () => {
+  const securityPath = getSecurityDataPath();
+  if (fs.existsSync(securityPath)) {
+    fs.unlinkSync(securityPath);
+  }
 });
 
 // Handle file opening from command line
