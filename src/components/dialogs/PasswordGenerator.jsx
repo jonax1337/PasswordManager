@@ -168,15 +168,9 @@ const PasswordGenerator = ({ onClose }) => {
             {passwordStrength && (
               <div className="mt-3 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm theme-text-secondary">Strength:</span>
-                  <span className={`text-sm px-2 py-1 rounded-full ${getStrengthColor(passwordStrength.strength)}`}>
-                    {passwordStrength.strength.replace('-', ' ').toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs theme-text-secondary">Encryption Strength:</span>
-                  <span className="text-xs theme-text-primary font-semibold">
-                    {passwordStrength.encryptionBits} bits
+                  <span className="text-sm theme-text-secondary">Security:</span>
+                  <span className={`text-xs px-2 py-1 rounded-full ${getStrengthColor(passwordStrength.strength)}`}>
+                    {passwordStrength.strength.replace('-', ' ').toUpperCase()} • {passwordStrength.encryptionBits} bits
                   </span>
                 </div>
                 <div className="w-full rounded-full border relative" style={{ 
@@ -193,9 +187,6 @@ const PasswordGenerator = ({ onClose }) => {
                       borderRadius: 'inherit'
                     }}
                   />
-                </div>
-                <div className="text-xs theme-text-secondary">
-                  Entropy: {passwordStrength.entropy.toFixed(1)} bits
                 </div>
               </div>
             )}

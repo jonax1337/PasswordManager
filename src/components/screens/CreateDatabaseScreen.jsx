@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, FileKey, Eye, EyeOff, AlertCircle, CheckCircle, Upload, FileLock2, FileLock, File, FilePlus, FilePlus2 } from 'lucide-react';
 import { checkPasswordStrength } from '../../utils/crypto';
 import Titlebar from '../ui/Titlebar';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpenDatabase, onImportKeePass }) => {
+  const { themes, actualTheme } = useTheme();
+  const themeColors = themes[actualTheme]?.colors || themes.light.colors;
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -144,25 +147,25 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
               {passwordStrength && (
                 <div className="mt-3 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs sm:text-sm theme-text-secondary">Password strength:</span>
-                    <span className={`text-xs sm:text-sm px-2 py-1 rounded-full ${getStrengthColor(passwordStrength.strength)}`}>
-                      {passwordStrength.strength.replace('-', ' ').toUpperCase()}
+                    <span className="text-xs sm:text-sm theme-text-secondary">Security:</span>
+                    <span className={`text-xs px-2 py-1 rounded-full ${getStrengthColor(passwordStrength.strength)}`}>
+                      {passwordStrength.strength.replace('-', ' ').toUpperCase()} • {passwordStrength.encryptionBits} bits
                     </span>
                   </div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs theme-text-secondary">Encryption Strength:</span>
-                    <span className="text-xs theme-text-primary font-semibold">
-                      {passwordStrength.encryptionBits} bits
-                    </span>
-                  </div>
-                  <div className="w-full theme-border rounded-full h-2">
+                  <div className="w-full rounded-full border relative" style={{ 
+                    backgroundColor: actualTheme === 'dark' ? '#1f2937' : actualTheme === 'cute' ? '#fdf2f8' : '#f8fafc',
+                    borderColor: themeColors.border,
+                    height: '8px',
+                    padding: 0,
+                    overflow: 'hidden'
+                  }}>
                     <div 
-                      className={`h-2 rounded-full ${getStrengthBarColor(passwordStrength.strength)}`}
-                      style={{ width: `${Math.min((passwordStrength.entropy / 100) * 100, 100)}%` }}
+                      className={`absolute top-0 left-0 bottom-0 ${getStrengthBarColor(passwordStrength.strength)}`}
+                      style={{ 
+                        width: `${Math.min((passwordStrength.entropy / 100) * 100, 100)}%`,
+                        borderRadius: 'inherit'
+                      }}
                     />
-                  </div>
-                  <div className="text-xs theme-text-secondary">
-                    Entropy: {passwordStrength.entropy.toFixed(1)} bits
                   </div>
                   {passwordStrength.feedback.length > 0 && (
                     <ul className="text-xs theme-text-secondary list-disc list-inside">
@@ -213,11 +216,15 @@ const CreateDatabaseScreen = ({ onDatabaseCreated, onBack, onNewDatabase, onOpen
               )}
             </div>
 
-            <div className="border border-red-400 rounded-lg p-3">
-              <div className="flex items-start">
-                <div className="text-xs sm:text-sm theme-text">
-                  <strong>Important:</strong> Your master password cannot be recovered if forgotten. 
-                  Make sure to choose a strong password that you will remember.
+            <div className="mb-4 p-3 rounded-lg bg-blue-50 border border-blue-200">
+              <div className="flex items-start text-blue-600 text-sm">
+                <AlertCircle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="font-medium mb-1">Important Notice</p>
+                  <p className="text-xs opacity-80">
+                    Your master password cannot be recovered if forgotten. 
+                    Choose a strong password that you will remember.
+                  </p>
                 </div>
               </div>
             </div>
