@@ -1,13 +1,13 @@
 {
   "name": "simple-password-manager",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A simple password manager inspired by KeePass",
   "main": "build/electron.js",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=\"--no-deprecation\" concurrently --kill-others-on-fail \"npm run react-dev\" \"npm run electron-dev\"",
     "react-dev": "cross-env GENERATE_SOURCEMAP=false npx craco start",
     "electron-dev": "wait-on http://localhost:3000 && cross-env NODE_OPTIONS=\"--no-deprecation\" electron .",
-    "build": "cross-env GENERATE_SOURCEMAP=false npx craco build && copy public\\electron.js build\\ && copy public\\preload.js build\\",
+    "build": "cross-env GENERATE_SOURCEMAP=false npx craco build",
     "electron-build": "electron-builder",
     "dist": "npm run build && npm run electron-build",
     "start": "electron ."

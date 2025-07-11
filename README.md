@@ -245,11 +245,6 @@ rm ~/.config/simple-password-manager/security.encrypted
 - Verify you're using the correct password for the import
 - Try importing a smaller test database first
 
-**Legacy database compatibility**
-- Old databases are automatically upgraded to new security format
-- First save after upgrade will use enhanced PBKDF2 encryption
-- Keep backups of original files before upgrading
-
 ### Getting Help
 
 For additional support:
@@ -324,5 +319,3 @@ This application:
 - **Does not connect** to the internet
 - **Does not send** any telemetry or analytics
 - **Stores all data** locally on your device
-
-Your privacy and security are top priorities.
