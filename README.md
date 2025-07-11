@@ -1,10 +1,15 @@
-# Simple Password Manager
+# 🔐 Simple Password Manager
 
 A secure, offline password manager built with modern web technologies. Keep all your passwords safe with military-grade encryption while enjoying a beautiful, intuitive interface.
 
-![Version](https://img.shields.io/badge/version-0.0.1-BETA-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Electron](https://img.shields.io/badge/electron-37.2.1-blue) ![React](https://img.shields.io/badge/react-18.3.1-blue)
+[![Electron](https://img.shields.io/badge/Electron-37.2.1-47848F?style=for-the-badge&logo=electron&logoColor=white)](https://www.electronjs.org/)
+[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.13-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![CryptoJS](https://img.shields.io/badge/CryptoJS-AES--256-FF6B35?style=for-the-badge&logo=javascript&logoColor=white)](https://cryptojs.gitbook.io/docs/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE.md)
+[![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge)](https://github.com/jonax1337/simple-password-manager/releases)
 
-## Features
+## ✨ Features
 
 ### Security First
 - **AES-256 encryption** - Military-grade security for all your passwords
@@ -24,8 +29,13 @@ A secure, offline password manager built with modern web technologies. Keep all 
 - **Global search** across all entries and folders
 - **KeePass import** - Migrate from existing KeePass databases
 - **Keyboard shortcuts** for power users
+- **Multi-window support** - Open multiple databases simultaneously
+- **Auto-save functionality** - Never lose your work
+- **Custom icons** for folders and entries
+- **Password strength indicator** - Know how secure your passwords are
+- **Copy to clipboard** with automatic clearing for security
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Installation
 
@@ -45,7 +55,7 @@ Download the latest release for your platform:
 4. **Choose where to save** your encrypted database file
 5. **Start adding your passwords** with the built-in generator
 
-## How It Works
+## ⚙️ How It Works
 
 ### Security Architecture
 Your passwords are encrypted using AES-256 encryption before being saved to disk. The master password you choose is used to derive the encryption key, which means even if someone gains access to your database file, they cannot read your passwords without your master password.
@@ -59,7 +69,7 @@ All data is stored in encrypted `.pmdb` files that contain:
 ### Offline Operation
 The application works completely offline. No internet connection is required, and your data never leaves your device unless you choose to back it up yourself.
 
-## User Guide
+## 📖 User Guide
 
 ### Adding Passwords
 
@@ -101,7 +111,7 @@ The application works completely offline. No internet connection is required, an
 3. **Select your .kdbx file** and enter the password
 4. **All entries and folders** will be imported automatically
 
-## Advanced Features
+## 🔧 Advanced Features
 
 ### Themes and Customization
 - **Light theme** for daytime use
@@ -114,13 +124,16 @@ The application is optimized for large databases:
 - **Virtual scrolling** for smooth performance with thousands of entries
 - **Efficient search** with instant results
 - **Optimized rendering** for smooth animations
+- **Memory management** - Efficient handling of large password databases
+- **Fast startup** - Quick application launch times
+- **Responsive UI** - Smooth interactions even with large datasets
 
 ### Multi-Window Support
 - **Open multiple databases** simultaneously
 - **Independent windows** for different purposes
 - **Secure isolation** between database instances
 
-## Security Best Practices
+## 🛡️ Security Best Practices
 
 ### Master Password
 - Use a strong, unique master password
@@ -140,7 +153,7 @@ The application is optimized for large databases:
 - **Use long passwords** (16+ characters when possible)
 - **Generate unique passwords** for every account
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
 ### Common Issues
 
@@ -168,7 +181,7 @@ For additional support:
 
 Never share your master password or database files in support requests.
 
-## Development
+## 💻 Development
 
 ### Technology Stack
 - **Electron 37.2.1** - Cross-platform desktop application framework
@@ -221,11 +234,11 @@ Contributions are welcome! Please:
 4. Test your changes thoroughly
 5. Submit a pull request with a clear description
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE.md) for details.
 
-## Privacy
+## 🔒 Privacy
 
 This application:
 - **Does not collect** any personal data
