@@ -68,7 +68,7 @@ tmp/
 temp/
 
 # Package manager lockfiles (keep only one)
-package-lock.json
+
 # yarn.lock
 
 # ESLint cache
