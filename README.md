@@ -72,6 +72,8 @@ Your passwords are protected by multiple layers of security:
 - 6-9 failed attempts: Extended lockout (1-30 minutes)
 - 10+ failed attempts: Permanent database lockout
 
+**User-Specific Locking**: Security tracking is tied to the user running the application. If one user locks a database, other users on the same system can still access it with the correct master password. This prevents one user from accidentally locking out others from shared databases.
+
 **Attack Persistence**: Security tracking survives application restarts and system reboots, preventing attackers from bypassing protections by restarting the app.
 
 ### Database Format
@@ -174,13 +176,46 @@ The application is optimized for large databases:
 - **Generate unique passwords** for every account
 - **Monitor password strength** with the built-in entropy calculator
 
+### Understanding Database Lockout
+
+**How Lockout Works**:
+The application protects against brute-force attacks by tracking failed login attempts for each database file. When you enter an incorrect master password repeatedly, the system implements progressive lockouts:
+
+1. **Attempts 1-2**: Simple warning with remaining attempts shown
+2. **Attempts 3-5**: Short lockouts (5-30 seconds) to slow down attacks
+3. **Attempts 6-9**: Extended lockouts (1-30 minutes) for persistent attacks
+4. **Attempt 10+**: Permanent lockout - database becomes inaccessible
+
+**Important**: The lockout is **user-specific** and tied to your user account on the computer. If you lock a database, other users on the same system can still access it with the correct master password.
+
+**Security File Location**: 
+The lockout information is stored in an encrypted security file in your application data folder:
+- **Windows**: `C:\Users\[YourName]\AppData\Roaming\simple-password-manager\security.encrypted`
+- **macOS**: `~/Library/Application Support/simple-password-manager/security.encrypted`
+- **Linux**: `~/.config/simple-password-manager/security.encrypted`
+
 ### Lockout Recovery
 If your database becomes permanently locked:
-1. **Locate the security file**: Check the error message for the exact path
+1. **Locate the security file**: The exact path is shown in the lockout message
 2. **Close the application** completely
 3. **Delete the security file** (usually `security.encrypted` in app data folder)
 4. **Restart the application** - lockout will be reset
 5. **Use correct master password** to avoid re-lockout
+
+**Recovery Examples**:
+```bash
+# Windows (Command Prompt)
+del "C:\Users\[YourName]\AppData\Roaming\simple-password-manager\security.encrypted"
+
+# macOS/Linux (Terminal)
+rm ~/.config/simple-password-manager/security.encrypted
+```
+
+**Important Notes**:
+- Deleting the security file resets ALL lockout protections for ALL databases
+- Other users on the same computer are not affected by your lockout
+- Keep your master password secure to avoid lockouts entirely
+- The database file itself is never damaged - only access is restricted
 
 ## 🔧 Troubleshooting
 
@@ -198,10 +233,11 @@ If your database becomes permanently locked:
 - **Check for lockout**: Look for security warnings in the login screen
 
 **Database permanently locked**
-- **Don't panic**: Your data is safe, just protected
+- **Don't panic**: Your data is safe, just protected from brute-force attacks
+- **User-specific**: Only affects your user account - others can still access the database
 - **Find security file**: Look for the path shown in the error message
 - **Delete security file**: Remove `security.encrypted` from app data folder
-- **Restart app**: Lockout protection will be reset
+- **Restart app**: Lockout protection will be reset for all databases
 - **Use correct password**: Be extra careful to avoid re-lockout
 
 **Import not working**
@@ -289,8 +325,4 @@ This application:
 - **Does not send** any telemetry or analytics
 - **Stores all data** locally on your device
 
-Your privacy and security are our top priorities.
-
----
-
-**Ready to secure your digital life?** Download Simple Password Manager today and take control of your online security.
+Your privacy and security are top priorities.

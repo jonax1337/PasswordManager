@@ -17,6 +17,7 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
   const [countdown, setCountdown] = useState(0);
   const showPasswordTimeoutRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [securityFilePath, setSecurityFilePath] = useState('security.encrypted');
 
   // Initialize security manager and check status
   useEffect(() => {
@@ -33,6 +34,16 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
         }
         
         setIsInitialized(true);
+        
+        // Get security config path
+        if (window.electronAPI?.getSecurityConfigPath) {
+          try {
+            const path = await window.electronAPI.getSecurityConfigPath();
+            setSecurityFilePath(path);
+          } catch (error) {
+            console.error('Failed to get security config path:', error);
+          }
+        }
       } catch (error) {
         console.error('Failed to initialize security:', error);
         setIsInitialized(true);
@@ -137,26 +148,25 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
 
               {/* Security Status Display */}
               {isInitialized && securityStatus.failedAttempts > 0 && (
-                <div className={`mb-4 p-3 rounded-lg ${securityStatus.isPermanentlyLocked ? 'bg-red-50 border border-red-200' : 'bg-yellow-50 border border-yellow-200'}`}>
-                  <div className={`flex items-center text-sm ${securityStatus.isPermanentlyLocked ? 'text-red-600' : 'text-yellow-600'}`}>
+                <div className={`mb-4 p-3 rounded-lg animate-slide-up-delay-2 ${securityStatus.isPermanentlyLocked ? 'bg-red-50 border border-red-200' : 'bg-yellow-50 border border-yellow-200'}`}>
+                  <div className={`flex items-start text-sm ${securityStatus.isPermanentlyLocked ? 'text-red-600' : 'text-yellow-600'}`}>
                     {securityStatus.isPermanentlyLocked ? (
-                      <ShieldAlert className="w-4 h-4 mr-2" />
+                      <ShieldAlert className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
                     ) : (
-                      <Shield className="w-4 h-4 mr-2" />
+                      <Shield className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
                     )}
-                    <div>
+                    <div className="flex-1">
                       {securityStatus.isPermanentlyLocked ? (
                         <div>
-                          <p className="font-semibold">Database Permanently Locked</p>
-                          <p className="text-xs mt-1">
-                            To unlock, delete the security configuration file:<br/>
-                            <code className="bg-white px-1 rounded text-xs">{window.electronAPI?.getSecurityConfigPath?.() || 'security.encrypted'}</code>
+                          <p className="font-semibold mb-1">Database Permanently Locked</p>
+                          <p className="text-xs opacity-80">
+                            Delete security file to unlock: <code className="bg-white px-1 rounded text-xs">{securityFilePath}</code>
                           </p>
                         </div>
                       ) : (
                         <div>
-                          <p>{securityStatus.failedAttempts} failed attempts</p>
-                          <p className="text-xs">{securityStatus.remainingAttempts} attempts remaining before permanent lockout</p>
+                          <p className="font-medium">{securityStatus.failedAttempts} failed attempt{securityStatus.failedAttempts > 1 ? 's' : ''}</p>
+                          <p className="text-xs opacity-80">{securityStatus.remainingAttempts} remaining before lockout</p>
                         </div>
                       )}
                     </div>
@@ -164,16 +174,19 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
                 </div>
               )}
 
-              {error && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <div className="flex items-center text-red-600 text-sm">
-                    <AlertCircle className="w-4 h-4 mr-2" />
-                    {error}
+              {/* Discrete error message for non-security errors */}
+              {error && !securityStatus.isPermanentlyLocked && !error.includes('wait') && !error.includes('attempts') && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg animate-slide-up-delay-3">
+                  <div className="flex items-start text-red-600 text-sm">
+                    <AlertCircle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      {error}
+                    </div>
                   </div>
                 </div>
               )}
 
-          <form onSubmit={handleSubmit} className="space-y-6 animate-slide-up-delay-3">
+          <form onSubmit={handleSubmit} className="space-y-6 animate-slide-up-delay-4">
             <div className="relative">
               <label htmlFor="password" className="block text-xs sm:text-sm font-medium theme-text mb-2">
                 Master Password
@@ -199,6 +212,20 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
                     required
                   />
                 </div>
+                
+                {/* Discrete error hints below password field */}
+                {error && (securityStatus.isPermanentlyLocked || error.includes('wait') || error.includes('attempts')) && (
+                  <div className="mt-2 text-xs text-red-600 animate-slide-up-delay-4">
+                    {securityStatus.isPermanentlyLocked ? (
+                      "Database locked - see security notice above"
+                    ) : error.includes('wait') ? (
+                      `Please wait ${countdown}s before trying again`
+                    ) : error.includes('attempts') ? (
+                      `Incorrect password - ${securityStatus.remainingAttempts} attempts remaining`
+                    ) : null}
+                  </div>
+                )}
+                
                 <button
                   type="button"
                   onMouseDown={() => {
@@ -234,7 +261,7 @@ const LoginScreen = ({ onLoginSuccess, currentFile, onBack, onNewDatabase, onOpe
             </button>
           </form>
 
-          <div className="mt-4 sm:mt-6 text-center animate-slide-up-delay-4">
+          <div className="mt-4 sm:mt-6 text-center animate-slide-up-delay-5">
             <p className="text-xs sm:text-sm theme-text-secondary">
               Wrong database? <button onClick={onBack} className="text-blue-600 hover:opacity-80 underline">Go back</button> to select a different one.
             </p>
